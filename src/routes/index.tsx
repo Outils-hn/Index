@@ -128,9 +128,23 @@ function Index() {
                 {c.name}
               </Button>
             );
-          })}
+          })}          
         </div>
-
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground/70 mt-3 mb-6">
+          <span className="uppercase tracking-wider text-[10px] font-medium text-muted-foreground/50">Validité :</span>
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[oklch(0.6_0.18_150)] shadow-[0_0_4px_oklch(0.65_0.2_150)]" />
+            À jour (&lt;1 an)
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[oklch(0.7_0.17_70)] shadow-[0_0_4px_oklch(0.75_0.18_70)]" />
+            À vérifier (1-2 ans)
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[oklch(0.6_0.2_28)] shadow-[0_0_4px_oklch(0.65_0.22_28)]" />
+            Possiblement obsolète (&gt;2 ans)
+          </span>
+        </div>
         <div className="text-sm text-muted-foreground mb-4">
           {isLoading
             ? "Chargement…"

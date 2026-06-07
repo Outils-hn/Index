@@ -161,14 +161,11 @@ export function ProductCard({ product }: { product: Product }) {
               month: "short",
               year: "numeric",
             })}
+            <span
+              className={`inline-block h-2 w-2 rounded-full ${vStyle.dot}`}
+              title={`${vStyle.label}`}
+            />
           </div>
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium ${vStyle.pill}`}
-            title={`Statut: ${vStyle.label}`}
-          >
-            <span className={`h-1.5 w-1.5 rounded-full ${vStyle.dot}`} />
-            {vStyle.label}
-          </span>
           {user && validity !== "valid" && (
             <button
               type="button"
