@@ -138,6 +138,18 @@ function Admin() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppHeader />
+        <main className="mx-auto max-w-6xl px-6 py-16 flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Chargement de la session…
+        </main>
+      </div>
+    );
+  }
+
   if (!user) return null;
 
   const isOwner = (createdBy: string | null) => createdBy === user.id;
