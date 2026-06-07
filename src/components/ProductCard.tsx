@@ -1,6 +1,5 @@
 import { ExternalLink, FileText, Calendar, UserCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { categoryLabel } from "@/lib/categories";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -53,7 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-1">
-            {categoryLabel(product.category)}
+            {product.category}
           </div>
           <h3 className="font-bold text-foreground leading-tight text-lg">{product.name}</h3>
           <div className="text-sm text-muted-foreground mt-1">{product.supplier}</div>
