@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,10 +29,8 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/admin" });
-    });
-  }, [navigate]);
+    if (!authLoading && user) navigate({ to: "/admin" });
+  }, [authLoading, user, navigate]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
