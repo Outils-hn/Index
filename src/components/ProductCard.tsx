@@ -1,7 +1,5 @@
 import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { getCategoryIcon } from "@/lib/category-icons";
-import { fetchCategories } from "@/lib/taxonomies";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,12 +38,7 @@ function tagClass(tag: string) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const { data: categories = [] } = useQuery({
-    queryKey: ["categories"],
-    queryFn: fetchCategories,
-  });
-  const catEntry = categories.find((c) => c.name === product.category);
-  const CategoryIcon = getCategoryIcon(catEntry?.icon);
+  const CategoryIcon = getCategoryIcon(product.category);
   const fullName = [product.author?.first_name, product.author?.last_name]
     .filter(Boolean)
     .join(" ")

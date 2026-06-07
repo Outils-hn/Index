@@ -111,7 +111,7 @@ function Index() {
             Toutes
           </Button>
           {categories.map((c) => {
-            const Icon = getCategoryIcon(c.icon);
+            const Icon = getCategoryIcon(c.name);
             return (
               <Button
                 key={c.id}

@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CategoryIconPicker } from "@/components/CategoryIconPicker";
 
 interface Props {
   open: boolean;
@@ -21,8 +20,7 @@ interface Props {
   description?: string;
   label: string;
   placeholder?: string;
-  withIconPicker?: boolean;
-  onSubmit: (name: string, icon?: string | null) => Promise<{ name: string }>;
+  onSubmit: (name: string) => Promise<{ name: string }>;
   onCreated?: (name: string) => void;
 }
 
@@ -33,12 +31,10 @@ export function QuickAddDialog({
   description,
   label,
   placeholder,
-  withIconPicker,
   onSubmit,
   onCreated,
 }: Props) {
   const [value, setValue] = useState("");
-  const [icon, setIcon] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
@@ -51,11 +47,10 @@ export function QuickAddDialog({
     }
     setLoading(true);
     try {
-      const created = await onSubmit(name, withIconPicker ? icon : undefined);
+      const created = await onSubmit(name);
       toast.success("Ajouté.");
       onCreated?.(created.name);
       setValue("");
-      setIcon(null);
       onOpenChange(false);
     } catch (err: any) {
       toast.error(err.message ?? "Erreur lors de l'ajout.");
@@ -83,15 +78,6 @@ export function QuickAddDialog({
               placeholder={placeholder}
             />
           </div>
-          {withIconPicker && (
-            <div className="space-y-2">
-              <Label>Icône (optionnel)</Label>
-              <CategoryIconPicker value={icon} onChange={setIcon} />
-              <p className="text-xs text-muted-foreground">
-                Une icône neutre est utilisée par défaut.
-              </p>
-            </div>
-          )}
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Annuler

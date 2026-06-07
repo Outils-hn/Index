@@ -17,16 +17,8 @@ import {
   renameSupplier,
   deleteCategory,
   deleteSupplier,
-  updateCategoryIcon,
   type Taxonomy,
 } from "@/lib/taxonomies";
-import { getCategoryIcon } from "@/lib/category-icons";
-import { CategoryIconPicker } from "@/components/CategoryIconPicker";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 export const Route = createFileRoute("/config")({
   head: () => ({
@@ -80,10 +72,9 @@ function ConfigPage() {
             icon={<Tags className="h-4 w-4" />}
             queryKey="categories"
             fetcher={fetchCategories}
-            creator={(name, icon) => createCategory(name, icon)}
+            creator={createCategory}
             renamer={renameCategory}
             remover={deleteCategory}
-            iconUpdater={updateCategoryIcon}
             addLabel="Ajouter une catégorie"
             placeholder="Ex. Isolants"
           />
@@ -92,7 +83,7 @@ function ConfigPage() {
             icon={<Building2 className="h-4 w-4" />}
             queryKey="suppliers"
             fetcher={fetchSuppliers}
-            creator={(name) => createSupplier(name)}
+            creator={createSupplier}
             renamer={renameSupplier}
             remover={deleteSupplier}
             addLabel="Ajouter un fournisseur"
@@ -109,10 +100,9 @@ interface PanelProps {
   icon: React.ReactNode;
   queryKey: string;
   fetcher: () => Promise<Taxonomy[]>;
-  creator: (name: string, icon?: string | null) => Promise<Taxonomy>;
+  creator: (name: string) => Promise<Taxonomy>;
   renamer: (id: string, name: string) => Promise<void>;
   remover: (id: string) => Promise<void>;
-  iconUpdater?: (id: string, icon: string | null) => Promise<void>;
   addLabel: string;
   placeholder: string;
 }
@@ -125,7 +115,6 @@ function TaxonomyPanel({
   creator,
   renamer,
   remover,
-  iconUpdater,
   addLabel,
   placeholder,
 }: PanelProps) {
@@ -153,15 +142,6 @@ function TaxonomyPanel({
     mutationFn: (id: string) => remover(id),
     onSuccess: () => {
       toast.success("Supprimé.");
-      qc.invalidateQueries({ queryKey: [queryKey] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const iconMutation = useMutation({
-    mutationFn: ({ id, icon }: { id: string; icon: string | null }) =>
-      iconUpdater ? iconUpdater(id, icon) : Promise.resolve(),
-    onSuccess: () => {
       qc.invalidateQueries({ queryKey: [queryKey] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -248,7 +228,6 @@ function TaxonomyPanel({
                   </>
                 ) : (
                   <>
-                    {iconUpdater && <IconCell item={it} onChange={(ic) => iconMutation.mutate({ id: it.id, icon: ic })} />}
                     <span className="flex-1 truncate">{it.name}</span>
                     <Button
                       size="icon"
@@ -286,35 +265,12 @@ function TaxonomyPanel({
         title={addLabel}
         label="Nom"
         placeholder={placeholder}
-        withIconPicker={!!iconUpdater}
-        onSubmit={async (n, icon) => {
-          const c = await creator(n, icon);
+        onSubmit={async (n) => {
+          const c = await creator(n);
           qc.invalidateQueries({ queryKey: [queryKey] });
           return c;
         }}
       />
     </section>
-  );
-}
-
-function IconCell({ item, onChange }: { item: Taxonomy; onChange: (icon: string | null) => void }) {
-  const Icon = getCategoryIcon(item.icon);
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-8 w-8 text-muted-foreground hover:text-foreground"
-          aria-label="Changer l'icône"
-          title="Changer l'icône"
-        >
-          <Icon className="h-4 w-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <CategoryIconPicker value={item.icon ?? null} onChange={onChange} />
-      </PopoverContent>
-    </Popover>
   );
 }

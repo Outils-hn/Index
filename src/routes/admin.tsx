@@ -424,9 +424,8 @@ function Admin() {
         description="Cette catégorie sera disponible dans tous les formulaires."
         label="Nom de la catégorie"
         placeholder="Ex. Isolants"
-        withIconPicker
-        onSubmit={async (n, icon) => {
-          const c = await createCategory(n, icon);
+        onSubmit={async (n) => {
+          const c = await createCategory(n);
           qc.invalidateQueries({ queryKey: ["categories"] });
           return c;
         }}
