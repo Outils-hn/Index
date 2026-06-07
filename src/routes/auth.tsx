@@ -37,7 +37,7 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -46,8 +46,13 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Compte créé. Vous êtes connecté.");
-        navigate({ to: "/admin" });
+        if (data.session) {
+          toast.success("Compte créé. Vous êtes connecté.");
+          navigate({ to: "/admin" });
+        } else {
+          toast.success("Compte créé. Vérifiez votre email pour confirmer.");
+          setMode("signin");
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
