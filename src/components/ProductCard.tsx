@@ -1,4 +1,4 @@
-import { ExternalLink, FileText, Calendar, UserCircle2 } from "lucide-react";
+import { ExternalLink, FileText, Calendar, UserCircle2, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ export interface Product {
   tags: string[];
   pdf_path: string | null;
   pdf_filename: string | null;
+  url: string | null;
   updated_at: string;
   created_by: string | null;
   author?: {
@@ -55,7 +56,22 @@ export function ProductCard({ product }: { product: Product }) {
             {product.category}
           </div>
           <h3 className="font-bold text-foreground leading-tight text-lg">{product.name}</h3>
-          <div className="text-sm text-muted-foreground mt-1">{product.supplier}</div>
+          <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
+            <span className="truncate">{product.supplier}</span>
+            {product.url && (
+              <a
+                href={product.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-muted-foreground/70 hover:text-accent transition-colors shrink-0"
+                aria-label={`Site web de ${product.supplier}`}
+                title="Ouvrir le site du fournisseur"
+              >
+                <Globe className="h-3.5 w-3.5" />
+              </a>
+            )}
+          </div>
         </div>
         <div className="h-10 w-10 rounded-md border border-border bg-secondary grid place-items-center text-muted-foreground shrink-0">
           <FileText className="h-5 w-5" />

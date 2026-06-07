@@ -47,6 +47,7 @@ export type Database = {
           supplier: string
           tags: string[]
           updated_at: string
+          url: string | null
         }
         Insert: {
           category: string
@@ -59,6 +60,7 @@ export type Database = {
           supplier: string
           tags?: string[]
           updated_at?: string
+          url?: string | null
         }
         Update: {
           category?: string
@@ -71,6 +73,7 @@ export type Database = {
           supplier?: string
           tags?: string[]
           updated_at?: string
+          url?: string | null
         }
         Relationships: []
       }

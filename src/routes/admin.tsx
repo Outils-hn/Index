@@ -46,6 +46,7 @@ function Admin() {
   const [supplier, setSupplier] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [tagsInput, setTagsInput] = useState("");
+  const [url, setUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -95,6 +96,7 @@ function Admin() {
     setSupplier("");
     setCategory("");
     setTagsInput("");
+    setUrl("");
     setFile(null);
   };
 
@@ -125,6 +127,7 @@ function Admin() {
         tags,
         pdf_path: path,
         pdf_filename: file.name,
+        url: url.trim() || null,
         created_by: user.id,
       });
       if (error) {
@@ -248,6 +251,18 @@ function Admin() {
                 placeholder="étanchéité, polyuréthane, extérieur"
               />
               <p className="text-xs text-muted-foreground">Séparés par des virgules.</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="url">Lien internet du produit (URL)</Label>
+              <Input
+                id="url"
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://www.fournisseur.com/produit"
+              />
+              <p className="text-xs text-muted-foreground">Optionnel.</p>
             </div>
 
             <div className="space-y-2">
