@@ -123,10 +123,6 @@ function Admin() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (!user) return null;
-
-  const isOwner = (createdBy: string | null) => createdBy === user.id;
-
   const deleteMutation = useMutation({
     mutationFn: async (p: { id: string; pdf_path: string | null }) => {
       if (p.pdf_path) {
@@ -141,6 +137,10 @@ function Admin() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  if (!user) return null;
+
+  const isOwner = (createdBy: string | null) => createdBy === user.id;
 
   return (
     <div className="min-h-screen bg-background">
