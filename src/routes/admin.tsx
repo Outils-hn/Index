@@ -152,8 +152,6 @@ function Admin() {
 
   if (!user) return null;
 
-  const isOwner = (createdBy: string | null) => createdBy === user.id;
-
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
@@ -302,8 +300,7 @@ function Admin() {
                         )}
                       </div>
                     </div>
-                    {isOwner(p.created_by) ? (
-                      <Button
+                    <Button
                         size="icon"
                         variant="ghost"
                         onClick={() => {
@@ -314,12 +311,7 @@ function Admin() {
                         className="text-muted-foreground hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
-                      </Button>
-                    ) : (
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 px-2">
-                        autre auteur
-                      </span>
-                    )}
+                    </Button>
                   </li>
                 ))}
               </ul>
