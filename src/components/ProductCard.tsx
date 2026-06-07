@@ -14,7 +14,12 @@ export interface Product {
   pdf_filename: string | null;
   updated_at: string;
   created_by: string | null;
-  author?: { display_name: string | null; email: string | null } | null;
+  author?: {
+    display_name: string | null;
+    email: string | null;
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
 }
 
 const TAG_PALETTE = [
@@ -31,6 +36,12 @@ function tagClass(tag: string) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
+  const fullName = [product.author?.first_name, product.author?.last_name]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  const authorLabel = fullName || product.author?.display_name || "Utilisateur supprimé";
+
   const openPdf = () => {
     if (!product.pdf_path) return;
     const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path);
@@ -85,8 +96,7 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80 -mt-2">
         <UserCircle2 className="h-3 w-3" />
         <span className="truncate">
-          Ajouté par{" "}
-          {product.author?.display_name || product.author?.email || "Utilisateur supprimé"}
+          Ajouté par {authorLabel}
         </span>
       </div>
     </article>

@@ -296,7 +296,9 @@ function Admin() {
                       <div className="text-xs text-muted-foreground">
                         {p.supplier} · {categoryLabel(p.category)}
                         {p.author && (
-                          <> · <span className="italic">{p.author.display_name || p.author.email}</span></>
+                          <> · <span className="italic">
+                            {[p.author.first_name, p.author.last_name].filter(Boolean).join(" ") || p.author.display_name}
+                          </span></>
                         )}
                       </div>
                     </div>
