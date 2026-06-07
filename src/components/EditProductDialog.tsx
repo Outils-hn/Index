@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
   const [category, setCategory] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [url, setUrl] = useState("");
+  const [note, setNote] = useState("");
   const [newFile, setNewFile] = useState<File | null>(null);
   const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -60,6 +62,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
       setCategory(product.category);
       setTagsInput(product.tags.join(", "));
       setUrl(product.url ?? "");
+      setNote(product.note ?? "");
       setNewFile(null);
     }
   }, [product, open]);
@@ -117,6 +120,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
           category,
           tags,
           url: url.trim() || null,
+          note: note.trim() || null,
           pdf_path,
           pdf_filename,
           updated_at: new Date().toISOString(),
@@ -202,6 +206,17 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-note">Note ou avertissement (facultatif)</Label>
+            <Textarea
+              id="edit-note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Ex. Ne pas laisser au soleil, temps de séchage 24h…"
+              rows={3}
             />
           </div>
 
