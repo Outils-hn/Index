@@ -39,13 +39,22 @@ export function AppHeader() {
             Vue projeteur
           </Link>
           {user && (
-            <Link
-              to="/admin"
-              className="px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition"
-              activeProps={{ className: "px-3 py-2 rounded-md text-foreground bg-secondary" }}
-            >
-              Administration
-            </Link>
+            <>
+              <Link
+                to="/admin"
+                className="px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition"
+                activeProps={{ className: "px-3 py-2 rounded-md text-foreground bg-secondary" }}
+              >
+                Administration
+              </Link>
+              <Link
+                to="/config"
+                className="px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition"
+                activeProps={{ className: "px-3 py-2 rounded-md text-foreground bg-secondary" }}
+              >
+                Configuration
+              </Link>
+            </>
           )}
           <div className="ml-2 pl-3 border-l border-border flex items-center gap-2">
             {user ? (
