@@ -9,6 +9,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -49,6 +50,7 @@ function Admin() {
   const [category, setCategory] = useState<string>("");
   const [tagsInput, setTagsInput] = useState("");
   const [url, setUrl] = useState("");
+  const [note, setNote] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -100,6 +102,7 @@ function Admin() {
     setCategory("");
     setTagsInput("");
     setUrl("");
+    setNote("");
     setFile(null);
   };
 
@@ -131,6 +134,7 @@ function Admin() {
         pdf_path: path,
         pdf_filename: file.name,
         url: url.trim() || null,
+        note: note.trim() || null,
         created_by: user.id,
       });
       if (error) {

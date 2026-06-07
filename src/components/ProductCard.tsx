@@ -1,4 +1,4 @@
-import { ExternalLink, FileText, Calendar, UserCircle2, Globe } from "lucide-react";
+import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ export interface Product {
   pdf_path: string | null;
   pdf_filename: string | null;
   url: string | null;
+  note: string | null;
   updated_at: string;
   created_by: string | null;
   author?: {
@@ -114,6 +115,13 @@ export function ProductCard({ product }: { product: Product }) {
           Ajouté par {authorLabel}
         </span>
       </div>
+
+      {product.note && product.note.trim() && (
+        <div className="rounded-md border border-[oklch(0.85_0.12_85)] bg-[oklch(0.97_0.05_85)] text-[oklch(0.35_0.1_60)] px-3 py-2 flex items-start gap-2 text-xs leading-relaxed">
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-[oklch(0.55_0.15_60)]" />
+          <p className="whitespace-pre-wrap">{product.note}</p>
+        </div>
+      )}
     </article>
   );
 }

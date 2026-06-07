@@ -42,6 +42,7 @@ export type Database = {
           created_by: string | null
           id: string
           name: string
+          note: string | null
           pdf_filename: string | null
           pdf_path: string | null
           supplier: string
@@ -55,6 +56,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           name: string
+          note?: string | null
           pdf_filename?: string | null
           pdf_path?: string | null
           supplier: string
@@ -68,6 +70,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           name?: string
+          note?: string | null
           pdf_filename?: string | null
           pdf_path?: string | null
           supplier?: string
