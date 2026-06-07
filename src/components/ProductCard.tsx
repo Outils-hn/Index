@@ -120,21 +120,8 @@ export function ProductCard({ product }: { product: Product }) {
             {product.category}
           </div>
           <h3 className="font-bold text-foreground leading-tight text-lg">{product.name}</h3>
-          <div className="text-sm font-medium text-foreground/75 mt-1 flex items-center gap-1.5">
+          <div className="text-sm font-medium text-foreground/75 mt-1">
             <span className="truncate">{product.supplier}</span>
-            {product.url && (
-              <a
-                href={product.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-muted-foreground hover:text-accent transition-colors shrink-0"
-                aria-label={`Site web de ${product.supplier}`}
-                title="Ouvrir le site du fournisseur"
-              >
-                <Globe className="h-3.5 w-3.5" />
-              </a>
-            )}
           </div>
         </div>
         <div className="h-10 w-10 rounded-md border border-border bg-secondary grid place-items-center text-muted-foreground shrink-0">
