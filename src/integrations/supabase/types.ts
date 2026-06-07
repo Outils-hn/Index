@@ -14,9 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
-          category: Database["public"]["Enums"]["product_category"]
+          category: string
           created_at: string
           created_by: string | null
           id: string
@@ -28,7 +49,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          category: Database["public"]["Enums"]["product_category"]
+          category: string
           created_at?: string
           created_by?: string | null
           id?: string
@@ -40,7 +61,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          category?: Database["public"]["Enums"]["product_category"]
+          category?: string
           created_at?: string
           created_by?: string | null
           id?: string
@@ -83,6 +104,27 @@ export type Database = {
         }
         Relationships: []
       }
+      suppliers: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -91,12 +133,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      product_category:
-        | "colles_mastics"
-        | "fixations_chevilles"
-        | "membranes_etancheite"
-        | "profiles_accessoires"
-        | "isolants"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -223,14 +260,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      product_category: [
-        "colles_mastics",
-        "fixations_chevilles",
-        "membranes_etancheite",
-        "profiles_accessoires",
-        "isolants",
-      ],
-    },
+    Enums: {},
   },
 } as const
