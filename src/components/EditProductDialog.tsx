@@ -227,6 +227,15 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
           </div>
 
           <div className="space-y-2">
+            <Label>Projets / Chantiers associés</Label>
+            <ProjectsMultiSelect
+              projects={projects}
+              selectedIds={selectedProjects}
+              onChange={setSelectedProjects}
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label>Fiche technique (PDF)</Label>
             {newFile ? (
               <div className="rounded-lg border border-border bg-secondary/40 p-3 flex items-center gap-3">
