@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UploadCloud, FileText, Trash2, Loader2, Plus, X } from "lucide-react";
@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/hooks/use-auth";
+import { fetchProductsWithAuthors } from "@/lib/products";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -32,22 +34,21 @@ const MAX_SIZE = 5 * 1024 * 1024;
 
 function Admin() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [name, setName] = useState("");
   const [supplier, setSupplier] = useState<string>("");
   const [category, setCategory] = useState<CategoryValue | "">("");
   const [tagsInput, setTagsInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
+  useEffect(() => {
+    if (!authLoading && !user) navigate({ to: "/auth" });
+  }, [authLoading, user, navigate]);
+
   const { data: products = [] } = useQuery({
     queryKey: ["products"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("id,name,supplier,category,tags,pdf_path,pdf_filename,updated_at")
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: fetchProductsWithAuthors,
   });
 
   const onDrop = useCallback((accepted: File[], rejected: any[]) => {
@@ -82,6 +83,7 @@ function Admin() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
+      if (!user) throw new Error("Vous devez être connecté.");
       if (!name.trim() || !supplier || !category) {
         throw new Error("Merci de remplir tous les champs requis.");
       }
@@ -106,6 +108,7 @@ function Admin() {
         tags,
         pdf_path: path,
         pdf_filename: file.name,
+        created_by: user.id,
       });
       if (error) {
         await supabase.storage.from("technical-sheets").remove([path]);
@@ -119,6 +122,10 @@ function Admin() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  if (!user) return null;
+
+  const isOwner = (createdBy: string | null) => createdBy === user.id;
 
   const deleteMutation = useMutation({
     mutationFn: async (p: { id: string; pdf_path: string | null }) => {
@@ -278,20 +285,29 @@ function Admin() {
                       <div className="font-semibold truncate">{p.name}</div>
                       <div className="text-xs text-muted-foreground">
                         {p.supplier} · {categoryLabel(p.category)}
+                        {p.author && (
+                          <> · <span className="italic">{p.author.display_name || p.author.email}</span></>
+                        )}
                       </div>
                     </div>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => {
-                        if (confirm(`Supprimer "${p.name}" ?`)) {
-                          deleteMutation.mutate({ id: p.id, pdf_path: p.pdf_path });
-                        }
-                      }}
-                      className="text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {isOwner(p.created_by) ? (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          if (confirm(`Supprimer "${p.name}" ?`)) {
+                            deleteMutation.mutate({ id: p.id, pdf_path: p.pdf_path });
+                          }
+                        }}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 px-2">
+                        autre auteur
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -1,13 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, X, SlidersHorizontal } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Search, X, SlidersHorizontal, LogIn, Eye } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
-import { ProductCard, type Product } from "@/components/ProductCard";
+import { ProductCard } from "@/components/ProductCard";
 import { CATEGORIES } from "@/lib/categories";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { fetchProductsWithAuthors } from "@/lib/products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,17 +25,11 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("id,name,supplier,category,tags,pdf_path,pdf_filename,updated_at")
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return data as Product[];
-    },
+    queryFn: fetchProductsWithAuthors,
   });
 
   const filtered = useMemo(() => {
@@ -55,12 +50,26 @@ function Index() {
       <AppHeader />
       <main className="mx-auto max-w-7xl px-6 py-10">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Bibliothèque de fiches techniques
-          </h1>
-          <p className="text-muted-foreground mt-1.5">
-            Recherchez un produit par nom, fournisseur ou mot-clé.
-          </p>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                Bibliothèque de fiches techniques
+              </h1>
+              <p className="text-muted-foreground mt-1.5">
+                Recherchez un produit par nom, fournisseur ou mot-clé.
+              </p>
+            </div>
+            {!user && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/60 border border-border rounded-md px-3 py-2">
+                <Eye className="h-3.5 w-3.5" />
+                Mode lecture seule —{" "}
+                <Link to="/auth" className="text-foreground font-medium hover:underline inline-flex items-center gap-1">
+                  <LogIn className="h-3 w-3" /> Se connecter
+                </Link>{" "}
+                pour ajouter des produits.
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="relative mb-5">
