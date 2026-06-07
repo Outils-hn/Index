@@ -273,6 +273,17 @@ function Admin() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="note">Note ou avertissement (facultatif)</Label>
+              <Textarea
+                id="note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Ex. Ne pas laisser au soleil, temps de séchage 24h…"
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label>Fiche technique (PDF, max 5 Mo) *</Label>
               {!file ? (
                 <div
