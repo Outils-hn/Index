@@ -1,9 +1,12 @@
-import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle, MapPin } from "lucide-react";
+import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle, MapPin, Check, Loader2 } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Project } from "@/lib/projects";
+import { useAuth } from "@/hooks/use-auth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export interface Product {
   id: string;
@@ -39,8 +42,37 @@ function tagClass(tag: string) {
   return TAG_PALETTE[h % TAG_PALETTE.length];
 }
 
+type Validity = "valid" | "warn" | "expired";
+
+function getValidity(updatedAt: string): Validity {
+  const months = (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24 * 30.4375);
+  if (months < 12) return "valid";
+  if (months < 24) return "warn";
+  return "expired";
+}
+
+const VALIDITY_STYLES: Record<Validity, { label: string; pill: string; dot: string }> = {
+  valid: {
+    label: "Validé",
+    pill: "bg-[oklch(0.95_0.05_150)] text-[oklch(0.38_0.12_150)] border-[oklch(0.82_0.1_150)]",
+    dot: "bg-[oklch(0.6_0.18_150)] shadow-[0_0_6px_oklch(0.65_0.2_150)]",
+  },
+  warn: {
+    label: "À vérifier",
+    pill: "bg-[oklch(0.96_0.07_75)] text-[oklch(0.42_0.13_60)] border-[oklch(0.83_0.12_75)]",
+    dot: "bg-[oklch(0.7_0.17_70)] shadow-[0_0_6px_oklch(0.75_0.18_70)]",
+  },
+  expired: {
+    label: "Expiré",
+    pill: "bg-[oklch(0.95_0.05_25)] text-[oklch(0.42_0.16_28)] border-[oklch(0.82_0.12_28)]",
+    dot: "bg-[oklch(0.6_0.2_28)] shadow-[0_0_6px_oklch(0.65_0.22_28)]",
+  },
+};
+
 export function ProductCard({ product }: { product: Product }) {
   const CategoryIcon = getCategoryIcon(product.category);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const fullName = [product.author?.first_name, product.author?.last_name]
     .filter(Boolean)
     .join(" ")
@@ -49,6 +81,26 @@ export function ProductCard({ product }: { product: Product }) {
 
   const hasPdf = !!product.pdf_path;
   const hasUrl = !!product.url;
+
+  const validity = getValidity(product.updated_at);
+  const vStyle = VALIDITY_STYLES[validity];
+
+  const revalidate = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("products")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", product.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Fiche revalidée");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+    onError: (e: unknown) => {
+      toast.error(e instanceof Error ? e.message : "Erreur lors de la validation");
+    },
+  });
 
   const handlePrimary = () => {
     if (hasPdf) {
@@ -101,13 +153,38 @@ export function ProductCard({ product }: { product: Product }) {
       )}
 
       <div className="flex items-center justify-between gap-3 pt-2 mt-auto border-t border-border">
-        <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5" />
-          {new Date(product.updated_at).toLocaleDateString("fr-FR", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })}
+        <div className="flex items-center gap-2 flex-wrap min-w-0">
+          <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5" />
+            {new Date(product.updated_at).toLocaleDateString("fr-FR", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
+          </div>
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium ${vStyle.pill}`}
+            title={`Statut: ${vStyle.label}`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${vStyle.dot}`} />
+            {vStyle.label}
+          </span>
+          {user && validity !== "valid" && (
+            <button
+              type="button"
+              onClick={() => revalidate.mutate()}
+              disabled={revalidate.isPending}
+              className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-border bg-secondary text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors disabled:opacity-50"
+              title="Marquer la fiche comme vérifiée aujourd'hui"
+              aria-label="Revalider la fiche"
+            >
+              {revalidate.isPending ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Check className="h-3 w-3" />
+              )}
+            </button>
+          )}
         </div>
         <Button
           size="sm"
