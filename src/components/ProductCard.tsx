@@ -1,4 +1,4 @@
-import { ExternalLink, FileText, Calendar, UserCircle2 } from "lucide-react";
+import { ExternalLink, FileText, Calendar, UserCircle2, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
