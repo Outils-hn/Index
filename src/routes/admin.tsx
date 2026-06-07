@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { UploadCloud, FileText, Trash2, Loader2, Plus, X } from "lucide-react";
+import { UploadCloud, FileText, Trash2, Loader2, Plus, X, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
@@ -25,6 +25,8 @@ import {
   createSupplier,
 } from "@/lib/taxonomies";
 import { QuickAddDialog } from "@/components/QuickAddDialog";
+import { EditProductDialog } from "@/components/EditProductDialog";
+import type { Product } from "@/components/ProductCard";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -50,6 +52,7 @@ function Admin() {
   const [file, setFile] = useState<File | null>(null);
   const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<Product | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/auth" });
@@ -359,6 +362,15 @@ function Admin() {
                     <Button
                         size="icon"
                         variant="ghost"
+                        onClick={() => setEditing(p)}
+                        className="text-muted-foreground hover:text-accent"
+                        aria-label="Modifier"
+                      >
+                        <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        size="icon"
+                        variant="ghost"
                         onClick={() => {
                           if (confirm(`Supprimer "${p.name}" ?`)) {
                             deleteMutation.mutate({ id: p.id, pdf_path: p.pdf_path });
@@ -403,6 +415,11 @@ function Admin() {
           return c;
         }}
         onCreated={(n) => setCategory(n)}
+      />
+      <EditProductDialog
+        product={editing}
+        open={!!editing}
+        onOpenChange={(o) => { if (!o) setEditing(null); }}
       />
     </div>
   );
