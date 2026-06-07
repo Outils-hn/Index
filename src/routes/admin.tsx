@@ -254,6 +254,18 @@ function Admin() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="url">Lien internet du produit (URL)</Label>
+              <Input
+                id="url"
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://www.fournisseur.com/produit"
+              />
+              <p className="text-xs text-muted-foreground">Optionnel.</p>
+            </div>
+
+            <div className="space-y-2">
               <Label>Fiche technique (PDF, max 5 Mo) *</Label>
               {!file ? (
                 <div
