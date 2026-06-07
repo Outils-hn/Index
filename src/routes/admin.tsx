@@ -46,6 +46,7 @@ function Admin() {
   const [supplier, setSupplier] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [tagsInput, setTagsInput] = useState("");
+  const [url, setUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -95,6 +96,7 @@ function Admin() {
     setSupplier("");
     setCategory("");
     setTagsInput("");
+    setUrl("");
     setFile(null);
   };
 
@@ -125,6 +127,7 @@ function Admin() {
         tags,
         pdf_path: path,
         pdf_filename: file.name,
+        url: url.trim() || null,
         created_by: user.id,
       });
       if (error) {
