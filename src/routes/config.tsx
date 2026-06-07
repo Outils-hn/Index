@@ -10,6 +10,7 @@ import {
   X,
   Tags,
   Building2,
+  MapPin,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
@@ -26,6 +27,13 @@ import {
 import { QuickAddDialog } from "@/components/QuickAddDialog";
 import { CategoryIconPicker } from "@/components/CategoryIconPicker";
 import { getCategoryIcon } from "@/lib/category-icons";
+import {
+  fetchProjects,
+  createProject,
+  updateProject,
+  deleteProject,
+  type Project,
+} from "@/lib/projects";
 import { useAuth } from "@/hooks/use-auth";
 import {
   fetchCategories,
@@ -99,6 +107,10 @@ function ConfigPage() {
             addLabel="Ajouter un fournisseur"
             placeholder="Ex. Sika"
           />
+        </div>
+
+        <div className="mt-8">
+          <ProjectsPanel />
         </div>
       </main>
     </div>
