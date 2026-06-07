@@ -1,8 +1,9 @@
-import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle } from "lucide-react";
+import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle, MapPin } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { Project } from "@/lib/projects";
 
 export interface Product {
   id: string;
@@ -22,6 +23,7 @@ export interface Product {
     first_name: string | null;
     last_name: string | null;
   } | null;
+  projects?: Project[];
 }
 
 const TAG_PALETTE = [
