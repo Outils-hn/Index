@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           category: Database["public"]["Enums"]["product_category"]
           created_at: string
+          created_by: string | null
           id: string
           name: string
           pdf_filename: string | null
@@ -29,6 +30,7 @@ export type Database = {
         Insert: {
           category: Database["public"]["Enums"]["product_category"]
           created_at?: string
+          created_by?: string | null
           id?: string
           name: string
           pdf_filename?: string | null
@@ -40,12 +42,37 @@ export type Database = {
         Update: {
           category?: Database["public"]["Enums"]["product_category"]
           created_at?: string
+          created_by?: string | null
           id?: string
           name?: string
           pdf_filename?: string | null
           pdf_path?: string | null
           supplier?: string
           tags?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
           updated_at?: string
         }
         Relationships: []
