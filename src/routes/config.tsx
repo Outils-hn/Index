@@ -1,12 +1,31 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Plus, Pencil, Trash2, Check, X, Tags, Building2 } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Pencil,
+  Trash2,
+  Check,
+  X,
+  Tags,
+  Building2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { QuickAddDialog } from "@/components/QuickAddDialog";
+import { CategoryIconPicker } from "@/components/CategoryIconPicker";
+import { getCategoryIcon } from "@/lib/category-icons";
 import { useAuth } from "@/hooks/use-auth";
 import {
   fetchCategories,
@@ -17,6 +36,7 @@ import {
   renameSupplier,
   deleteCategory,
   deleteSupplier,
+  updateCategoryIcon,
   type Taxonomy,
 } from "@/lib/taxonomies";
 
@@ -67,17 +87,7 @@ function ConfigPage() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          <TaxonomyPanel
-            title="Catégories"
-            icon={<Tags className="h-4 w-4" />}
-            queryKey="categories"
-            fetcher={fetchCategories}
-            creator={createCategory}
-            renamer={renameCategory}
-            remover={deleteCategory}
-            addLabel="Ajouter une catégorie"
-            placeholder="Ex. Isolants"
-          />
+          <CategoriesPanel />
           <TaxonomyPanel
             title="Fournisseurs"
             icon={<Building2 className="h-4 w-4" />}
@@ -272,5 +282,275 @@ function TaxonomyPanel({
         }}
       />
     </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Categories panel — with icon picker                                         */
+/* -------------------------------------------------------------------------- */
+
+function CategoriesPanel() {
+  const qc = useQueryClient();
+  const [addOpen, setAddOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+
+  const renameMutation = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) => renameCategory(id, name),
+    onSuccess: () => {
+      toast.success("Renommé.");
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      setEditingId(null);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const iconMutation = useMutation({
+    mutationFn: ({ id, icon }: { id: string; icon: string | null }) =>
+      updateCategoryIcon(id, icon),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteCategory(id),
+    onSuccess: () => {
+      toast.success("Supprimé.");
+      qc.invalidateQueries({ queryKey: ["categories"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const startEdit = (item: Taxonomy) => {
+    setEditingId(item.id);
+    setEditValue(item.name);
+  };
+
+  const commitEdit = () => {
+    if (!editingId) return;
+    const name = editValue.trim();
+    if (!name) {
+      toast.error("Le nom est requis.");
+      return;
+    }
+    renameMutation.mutate({ id: editingId, name });
+  };
+
+  return (
+    <section>
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border">
+          <div className="flex items-center gap-2 font-semibold">
+            <Tags className="h-4 w-4" />
+            Catégories
+            <span className="text-muted-foreground font-normal text-sm">
+              ({items.length})
+            </span>
+          </div>
+          <Button size="sm" onClick={() => setAddOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            Ajouter
+          </Button>
+        </div>
+        {isLoading ? (
+          <div className="px-5 py-10 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Chargement…
+          </div>
+        ) : items.length === 0 ? (
+          <div className="px-5 py-10 text-center text-sm text-muted-foreground">
+            Aucune catégorie pour le moment.
+          </div>
+        ) : (
+          <ul className="divide-y divide-border">
+            {items.map((it) => {
+              const Icon = getCategoryIcon(it.name, it.icon);
+              return (
+                <li
+                  key={it.id}
+                  className="flex items-center gap-2 px-5 py-3 hover:bg-secondary/40"
+                >
+                  <CategoryIconPicker
+                    value={it.icon ?? null}
+                    name={it.name}
+                    size="sm"
+                    onChange={(key) => iconMutation.mutate({ id: it.id, icon: key })}
+                  />
+                  {editingId === it.id ? (
+                    <>
+                      <Input
+                        autoFocus
+                        value={editValue}
+                        maxLength={80}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitEdit();
+                          if (e.key === "Escape") setEditingId(null);
+                        }}
+                        className="flex-1 h-9"
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={commitEdit}
+                        disabled={renameMutation.isPending}
+                        aria-label="Valider"
+                      >
+                        {renameMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Check className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setEditingId(null)}
+                        aria-label="Annuler"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex-1 truncate flex items-center gap-2">
+                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                        {it.name}
+                      </span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => startEdit(it)}
+                        aria-label="Renommer"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          if (
+                            confirm(
+                              `Supprimer "${it.name}" ? Les produits utilisant cette valeur la conserveront comme texte.`,
+                            )
+                          ) {
+                            deleteMutation.mutate(it.id);
+                          }
+                        }}
+                        aria-label="Supprimer"
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      <AddCategoryDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onCreated={() => qc.invalidateQueries({ queryKey: ["categories"] })}
+      />
+    </section>
+  );
+}
+
+function AddCategoryDialog({
+  open,
+  onOpenChange,
+  onCreated,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  onCreated: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [icon, setIcon] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const reset = () => {
+    setName("");
+    setIcon(null);
+    setLoading(false);
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (trimmed.length > 80) {
+      toast.error("Le nom doit faire moins de 80 caractères.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await createCategory(trimmed, icon);
+      toast.success("Catégorie ajoutée.");
+      onCreated();
+      reset();
+      onOpenChange(false);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erreur lors de l'ajout.";
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) reset();
+        onOpenChange(v);
+      }}
+    >
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Ajouter une catégorie</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="new-category-name">Nom</Label>
+            <div className="flex items-center gap-2">
+              <CategoryIconPicker value={icon} onChange={setIcon} name={name} />
+              <Input
+                id="new-category-name"
+                autoFocus
+                maxLength={80}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ex. Isolants"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Choisissez une icône (facultatif) — une icône neutre sera utilisée par défaut.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+              Annuler
+            </Button>
+            <Button type="submit" disabled={loading || !name.trim()}>
+              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Ajouter
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

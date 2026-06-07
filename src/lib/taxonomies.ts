@@ -3,12 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 export interface Taxonomy {
   id: string;
   name: string;
+  icon?: string | null;
 }
 
 export async function fetchCategories(): Promise<Taxonomy[]> {
   const { data, error } = await supabase
     .from("categories")
-    .select("id,name")
+    .select("id,name,icon")
     .order("name", { ascending: true });
   if (error) throw error;
   return data ?? [];
@@ -23,11 +24,11 @@ export async function fetchSuppliers(): Promise<Taxonomy[]> {
   return data ?? [];
 }
 
-export async function createCategory(name: string): Promise<Taxonomy> {
+export async function createCategory(name: string, icon?: string | null): Promise<Taxonomy> {
   const { data, error } = await supabase
     .from("categories")
-    .insert({ name: name.trim() })
-    .select("id,name")
+    .insert({ name: name.trim(), icon: icon ?? null })
+    .select("id,name,icon")
     .single();
   if (error) throw error;
   return data;
@@ -47,6 +48,14 @@ export async function renameCategory(id: string, name: string) {
   const { error } = await supabase
     .from("categories")
     .update({ name: name.trim() })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+export async function updateCategoryIcon(id: string, icon: string | null) {
+  const { error } = await supabase
+    .from("categories")
+    .update({ icon })
     .eq("id", id);
   if (error) throw error;
 }
