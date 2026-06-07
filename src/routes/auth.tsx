@@ -25,7 +25,8 @@ function AuthPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -37,12 +38,19 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
+        if (!firstName.trim() || !lastName.trim()) {
+          throw new Error("Prénom et nom sont obligatoires.");
+        }
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/admin`,
-            data: { display_name: displayName || email.split("@")[0] },
+            data: {
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+              display_name: `${firstName.trim()} ${lastName.trim()}`,
+            },
           },
         });
         if (error) throw error;
@@ -90,14 +98,29 @@ function AuthPage() {
 
             <form onSubmit={submit} className="space-y-4">
               <TabsContent value="signup" className="space-y-4 mt-0">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nom affiché</Label>
-                  <Input
-                    id="name"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Jean Dupont"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Prénom *</Label>
+                    <Input
+                      id="firstName"
+                      required={mode === "signup"}
+                      maxLength={50}
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Jean"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Nom *</Label>
+                    <Input
+                      id="lastName"
+                      required={mode === "signup"}
+                      maxLength={50}
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Dupont"
+                    />
+                  </div>
                 </div>
               </TabsContent>
 
