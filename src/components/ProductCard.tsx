@@ -1,4 +1,4 @@
-import { ExternalLink, FileText, Calendar } from "lucide-react";
+import { ExternalLink, FileText, Calendar, UserCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { categoryLabel } from "@/lib/categories";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,8 @@ export interface Product {
   pdf_path: string | null;
   pdf_filename: string | null;
   updated_at: string;
+  created_by: string | null;
+  author?: { display_name: string | null; email: string | null } | null;
 }
 
 const TAG_PALETTE = [
@@ -78,6 +80,14 @@ export function ProductCard({ product }: { product: Product }) {
           Ouvrir la fiche
           <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
         </Button>
+      </div>
+
+      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80 -mt-2">
+        <UserCircle2 className="h-3 w-3" />
+        <span className="truncate">
+          Ajouté par{" "}
+          {product.author?.display_name || product.author?.email || "Utilisateur supprimé"}
+        </span>
       </div>
     </article>
   );
