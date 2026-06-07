@@ -5,6 +5,8 @@ import { Search, X, SlidersHorizontal, LogIn, Eye } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { fetchCategories } from "@/lib/taxonomies";
+import { getCategoryIcon } from "@/lib/category-icons";
+import { LayoutGrid } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -105,18 +107,23 @@ function Index() {
             variant={category === null ? "default" : "outline"}
             onClick={() => setCategory(null)}
           >
+            <LayoutGrid className="h-3.5 w-3.5" />
             Toutes
           </Button>
-          {categories.map((c) => (
-            <Button
-              key={c.id}
-              size="sm"
-              variant={category === c.name ? "default" : "outline"}
-              onClick={() => setCategory(c.name)}
-            >
-              {c.name}
-            </Button>
-          ))}
+          {categories.map((c) => {
+            const Icon = getCategoryIcon(c.name);
+            return (
+              <Button
+                key={c.id}
+                size="sm"
+                variant={category === c.name ? "default" : "outline"}
+                onClick={() => setCategory(c.name)}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {c.name}
+              </Button>
+            );
+          })}
         </div>
 
         <div className="text-sm text-muted-foreground mb-4">

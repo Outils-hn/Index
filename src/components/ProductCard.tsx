@@ -1,4 +1,5 @@
 import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle } from "lucide-react";
+import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ function tagClass(tag: string) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
+  const CategoryIcon = getCategoryIcon(product.category);
   const fullName = [product.author?.first_name, product.author?.last_name]
     .filter(Boolean)
     .join(" ")
@@ -50,14 +52,15 @@ export function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <article className="group relative rounded-lg border border-border bg-card p-5 transition hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5 flex flex-col gap-4">
+    <article className="group relative rounded-xl border border-border bg-card p-5 shadow-sm transition hover:border-accent/40 hover:shadow-md hover:shadow-accent/10 flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-1">
+          <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-foreground/70 mb-1 flex items-center gap-1.5">
+            <CategoryIcon className="h-3 w-3" />
             {product.category}
           </div>
           <h3 className="font-bold text-foreground leading-tight text-lg">{product.name}</h3>
-          <div className="text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
+          <div className="text-sm font-medium text-foreground/75 mt-1 flex items-center gap-1.5">
             <span className="truncate">{product.supplier}</span>
             {product.url && (
               <a
@@ -65,7 +68,7 @@ export function ProductCard({ product }: { product: Product }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-muted-foreground/70 hover:text-accent transition-colors shrink-0"
+                className="text-muted-foreground hover:text-accent transition-colors shrink-0"
                 aria-label={`Site web de ${product.supplier}`}
                 title="Ouvrir le site du fournisseur"
               >
