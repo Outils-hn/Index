@@ -1,12 +1,31 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Plus, Pencil, Trash2, Check, X, Tags, Building2 } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Pencil,
+  Trash2,
+  Check,
+  X,
+  Tags,
+  Building2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { QuickAddDialog } from "@/components/QuickAddDialog";
+import { CategoryIconPicker } from "@/components/CategoryIconPicker";
+import { getCategoryIcon } from "@/lib/category-icons";
 import { useAuth } from "@/hooks/use-auth";
 import {
   fetchCategories,
@@ -17,6 +36,7 @@ import {
   renameSupplier,
   deleteCategory,
   deleteSupplier,
+  updateCategoryIcon,
   type Taxonomy,
 } from "@/lib/taxonomies";
 
@@ -67,17 +87,7 @@ function ConfigPage() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          <TaxonomyPanel
-            title="Catégories"
-            icon={<Tags className="h-4 w-4" />}
-            queryKey="categories"
-            fetcher={fetchCategories}
-            creator={createCategory}
-            renamer={renameCategory}
-            remover={deleteCategory}
-            addLabel="Ajouter une catégorie"
-            placeholder="Ex. Isolants"
-          />
+          <CategoriesPanel />
           <TaxonomyPanel
             title="Fournisseurs"
             icon={<Building2 className="h-4 w-4" />}
