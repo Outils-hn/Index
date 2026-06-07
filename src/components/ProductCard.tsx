@@ -120,21 +120,8 @@ export function ProductCard({ product }: { product: Product }) {
             {product.category}
           </div>
           <h3 className="font-bold text-foreground leading-tight text-lg">{product.name}</h3>
-          <div className="text-sm font-medium text-foreground/75 mt-1 flex items-center gap-1.5">
+          <div className="text-sm font-medium text-foreground/75 mt-1">
             <span className="truncate">{product.supplier}</span>
-            {product.url && (
-              <a
-                href={product.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-muted-foreground hover:text-accent transition-colors shrink-0"
-                aria-label={`Site web de ${product.supplier}`}
-                title="Ouvrir le site du fournisseur"
-              >
-                <Globe className="h-3.5 w-3.5" />
-              </a>
-            )}
           </div>
         </div>
         <div className="h-10 w-10 rounded-md border border-border bg-secondary grid place-items-center text-muted-foreground shrink-0">
@@ -183,19 +170,33 @@ export function ProductCard({ product }: { product: Product }) {
             </button>
           )}
         </div>
-        <Button
-          size="sm"
-          onClick={handlePrimary}
-          disabled={!hasPdf && !hasUrl}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground"
-        >
-          {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
-          {hasPdf ? (
-            <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
-          ) : (
-            <Globe className="h-3.5 w-3.5 ml-1.5" />
+        <div className="flex flex-col items-end gap-1.5">
+          <Button
+            size="sm"
+            onClick={handlePrimary}
+            disabled={!hasPdf && !hasUrl}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
+            {hasPdf ? (
+              <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+            ) : (
+              <Globe className="h-3.5 w-3.5 ml-1.5" />
+            )}
+          </Button>
+          {hasPdf && hasUrl && (
+            <a
+              href={product.url!}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
+            >
+              <Globe className="h-3 w-3" />
+              Site fournisseur
+            </a>
           )}
-        </Button>
+        </div>
       </div>
 
       <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80 -mt-2">
