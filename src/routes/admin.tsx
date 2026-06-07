@@ -6,7 +6,6 @@ import { UploadCloud, FileText, Trash2, Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
-import { CATEGORIES, SUPPLIERS, categoryLabel, type CategoryValue } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +18,13 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchProductsWithAuthors } from "@/lib/products";
+import {
+  fetchCategories,
+  fetchSuppliers,
+  createCategory,
+  createSupplier,
+} from "@/lib/taxonomies";
+import { QuickAddDialog } from "@/components/QuickAddDialog";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -38,9 +44,11 @@ function Admin() {
   const { user, loading: authLoading } = useAuth();
   const [name, setName] = useState("");
   const [supplier, setSupplier] = useState<string>("");
-  const [category, setCategory] = useState<CategoryValue | "">("");
+  const [category, setCategory] = useState<string>("");
   const [tagsInput, setTagsInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/auth" });
@@ -49,6 +57,15 @@ function Admin() {
   const { data: products = [] } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProductsWithAuthors,
+  });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+  const { data: suppliers = [] } = useQuery({
+    queryKey: ["suppliers"],
+    queryFn: fetchSuppliers,
   });
 
   const onDrop = useCallback((accepted: File[], rejected: any[]) => {
@@ -178,25 +195,47 @@ function Admin() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Fournisseur *</Label>
-                <Select value={supplier} onValueChange={setSupplier}>
-                  <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                  <SelectContent>
-                    {SUPPLIERS.map((s) => (
-                      <SelectItem key={s} value={s}>{s}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex gap-2">
+                  <Select value={supplier} onValueChange={setSupplier}>
+                    <SelectTrigger className="flex-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                    <SelectContent>
+                      {suppliers.map((s) => (
+                        <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    onClick={() => setSupplierDialogOpen(true)}
+                    aria-label="Ajouter un fournisseur"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Catégorie *</Label>
-                <Select value={category} onValueChange={(v) => setCategory(v as CategoryValue)}>
-                  <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map((c) => (
-                      <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex gap-2">
+                  <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger className="flex-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                    <SelectContent>
+                      {categories.map((c) => (
+                        <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    onClick={() => setCategoryDialogOpen(true)}
+                    aria-label="Ajouter une catégorie"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -294,7 +333,7 @@ function Admin() {
                     <div className="min-w-0 flex-1">
                       <div className="font-semibold truncate">{p.name}</div>
                       <div className="text-xs text-muted-foreground">
-                        {p.supplier} · {categoryLabel(p.category)}
+                        {p.supplier} · {p.category}
                         {p.author && (
                           <> · <span className="italic">
                             {[p.author.first_name, p.author.last_name].filter(Boolean).join(" ") || p.author.display_name}
@@ -321,6 +360,35 @@ function Admin() {
           </div>
         </section>
       </main>
+
+      <QuickAddDialog
+        open={supplierDialogOpen}
+        onOpenChange={setSupplierDialogOpen}
+        title="Nouveau fournisseur"
+        description="Ce fournisseur sera disponible dans tous les formulaires."
+        label="Nom du fournisseur"
+        placeholder="Ex. Sika"
+        onSubmit={async (n) => {
+          const c = await createSupplier(n);
+          qc.invalidateQueries({ queryKey: ["suppliers"] });
+          return c;
+        }}
+        onCreated={(n) => setSupplier(n)}
+      />
+      <QuickAddDialog
+        open={categoryDialogOpen}
+        onOpenChange={setCategoryDialogOpen}
+        title="Nouvelle catégorie"
+        description="Cette catégorie sera disponible dans tous les formulaires."
+        label="Nom de la catégorie"
+        placeholder="Ex. Isolants"
+        onSubmit={async (n) => {
+          const c = await createCategory(n);
+          qc.invalidateQueries({ queryKey: ["categories"] });
+          return c;
+        }}
+        onCreated={(n) => setCategory(n)}
+      />
     </div>
   );
 }
