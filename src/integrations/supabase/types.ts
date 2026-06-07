@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      products: {
+        Row: {
+          category: Database["public"]["Enums"]["product_category"]
+          created_at: string
+          id: string
+          name: string
+          pdf_filename: string | null
+          pdf_path: string | null
+          supplier: string
+          tags: string[]
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["product_category"]
+          created_at?: string
+          id?: string
+          name: string
+          pdf_filename?: string | null
+          pdf_path?: string | null
+          supplier: string
+          tags?: string[]
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["product_category"]
+          created_at?: string
+          id?: string
+          name?: string
+          pdf_filename?: string | null
+          pdf_path?: string | null
+          supplier?: string
+          tags?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +58,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      product_category:
+        | "colles_mastics"
+        | "fixations_chevilles"
+        | "membranes_etancheite"
+        | "profiles_accessoires"
+        | "isolants"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +190,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      product_category: [
+        "colles_mastics",
+        "fixations_chevilles",
+        "membranes_etancheite",
+        "profiles_accessoires",
+        "isolants",
+      ],
+    },
   },
 } as const
