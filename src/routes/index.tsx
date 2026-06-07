@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, X, SlidersHorizontal, LogIn, Eye } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard } from "@/components/ProductCard";
-import { CATEGORIES } from "@/lib/categories";
+import { fetchCategories } from "@/lib/taxonomies";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -30,6 +30,10 @@ function Index() {
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProductsWithAuthors,
+  });
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
   });
 
   const filtered = useMemo(() => {
@@ -103,14 +107,14 @@ function Index() {
           >
             Toutes
           </Button>
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <Button
-              key={c.value}
+              key={c.id}
               size="sm"
-              variant={category === c.value ? "default" : "outline"}
-              onClick={() => setCategory(c.value)}
+              variant={category === c.name ? "default" : "outline"}
+              onClick={() => setCategory(c.name)}
             >
-              {c.label}
+              {c.name}
             </Button>
           ))}
         </div>
