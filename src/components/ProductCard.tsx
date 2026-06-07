@@ -45,10 +45,16 @@ export function ProductCard({ product }: { product: Product }) {
     .trim();
   const authorLabel = fullName || product.author?.display_name || "Utilisateur supprimé";
 
-  const openPdf = () => {
-    if (!product.pdf_path) return;
-    const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path);
-    window.open(data.publicUrl, "_blank", "noopener,noreferrer");
+  const hasPdf = !!product.pdf_path;
+  const hasUrl = !!product.url;
+
+  const handlePrimary = () => {
+    if (hasPdf) {
+      const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path!);
+      window.open(data.publicUrl, "_blank", "noopener,noreferrer");
+    } else if (hasUrl) {
+      window.open(product.url!, "_blank", "noopener,noreferrer");
+    }
   };
 
   return (
@@ -103,12 +109,16 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
         <Button
           size="sm"
-          onClick={openPdf}
-          disabled={!product.pdf_path}
+          onClick={handlePrimary}
+          disabled={!hasPdf && !hasUrl}
           className="bg-primary hover:bg-primary/90 text-primary-foreground"
         >
-          Ouvrir la fiche
-          <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+          {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
+          {hasPdf ? (
+            <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+          ) : (
+            <Globe className="h-3.5 w-3.5 ml-1.5" />
+          )}
         </Button>
       </div>
 

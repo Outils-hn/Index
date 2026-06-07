@@ -112,14 +112,22 @@ function Admin() {
       if (!name.trim() || !supplier || !category) {
         throw new Error("Merci de remplir tous les champs requis.");
       }
-      if (!file) throw new Error("Veuillez joindre un fichier PDF.");
+      if (!file && !url.trim()) {
+        throw new Error("Ajoutez un PDF ou renseignez l'URL du produit.");
+      }
 
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${category}/${Date.now()}-${safeName}`;
-      const upload = await supabase.storage
-        .from("technical-sheets")
-        .upload(path, file, { contentType: "application/pdf", upsert: false });
-      if (upload.error) throw upload.error;
+      let pdf_path: string | null = null;
+      let pdf_filename: string | null = null;
+      if (file) {
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${category}/${Date.now()}-${safeName}`;
+        const upload = await supabase.storage
+          .from("technical-sheets")
+          .upload(path, file, { contentType: "application/pdf", upsert: false });
+        if (upload.error) throw upload.error;
+        pdf_path = path;
+        pdf_filename = file.name;
+      }
 
       const tags = tagsInput
         .split(",")
@@ -131,14 +139,14 @@ function Admin() {
         supplier,
         category,
         tags,
-        pdf_path: path,
-        pdf_filename: file.name,
+        pdf_path,
+        pdf_filename,
         url: url.trim() || null,
         note: note.trim() || null,
         created_by: user.id,
       });
       if (error) {
-        await supabase.storage.from("technical-sheets").remove([path]);
+        if (pdf_path) await supabase.storage.from("technical-sheets").remove([pdf_path]);
         throw error;
       }
     },
@@ -284,7 +292,10 @@ function Admin() {
             </div>
 
             <div className="space-y-2">
-              <Label>Fiche technique (PDF, max 5 Mo) *</Label>
+              <Label>Fiche technique (PDF, max 5 Mo)</Label>
+              <p className="text-xs text-muted-foreground -mt-1">
+                Facultatif si une URL produit est renseignée.
+              </p>
               {!file ? (
                 <div
                   {...getRootProps()}
