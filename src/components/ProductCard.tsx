@@ -137,6 +137,22 @@ export function ProductCard({ product }: { product: Product }) {
           <p className="whitespace-pre-wrap">{product.note}</p>
         </div>
       )}
+
+      {product.projects && product.projects.length > 0 && (
+        <div className="flex flex-wrap gap-1 pt-1 border-t border-border">
+          {product.projects.map((pr) => (
+            <span
+              key={pr.id}
+              className="inline-flex items-center gap-1 rounded-full bg-secondary text-foreground/70 text-[10px] px-2 py-0.5 border border-border"
+              title={`${pr.numero} — ${pr.nom}`}
+            >
+              <MapPin className="h-2.5 w-2.5" />
+              <span className="font-mono">{pr.numero}</span>
+              <span>{pr.nom}</span>
+            </span>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
