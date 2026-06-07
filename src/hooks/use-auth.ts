@@ -9,22 +9,27 @@ export function useAuth() {
 
   useEffect(() => {
     let mounted = true;
+    let initialized = false;
 
     const setAuthState = (s: Session | null) => {
       if (!mounted) return;
       setSession(s);
       setUser(s?.user ?? null);
-      setLoading(false);
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setAuthState(s);
+      if (initialized && mounted) setLoading(false);
     });
 
     supabase.auth.getSession().then(({ data }) => {
+      initialized = true;
       setAuthState(data.session);
+      if (mounted) setLoading(false);
     }).catch(() => {
+      initialized = true;
       setAuthState(null);
+      if (mounted) setLoading(false);
     });
 
     return () => {
