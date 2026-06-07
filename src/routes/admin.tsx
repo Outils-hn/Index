@@ -303,6 +303,15 @@ function Admin() {
             </div>
 
             <div className="space-y-2">
+              <Label>Projets / Chantiers associés</Label>
+              <ProjectsMultiSelect
+                projects={projects}
+                selectedIds={selectedProjects}
+                onChange={setSelectedProjects}
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label>Fiche technique (PDF, max 5 Mo)</Label>
               <p className="text-xs text-muted-foreground -mt-1">
                 Facultatif si une URL produit est renseignée.
