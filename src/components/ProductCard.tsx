@@ -139,8 +139,9 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-3 pt-2 mt-auto border-t border-border">
-        <div className="flex items-center gap-2 flex-wrap min-w-0">
+      <div className="pt-3 mt-auto border-t border-border flex flex-col gap-3">
+        {/* Date + pastille */}
+        <div className="flex items-center gap-2">
           <div className="text-xs text-muted-foreground flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5" />
             {new Date(product.updated_at).toLocaleDateString("fr-FR", {
@@ -170,12 +171,14 @@ export function ProductCard({ product }: { product: Product }) {
             </button>
           )}
         </div>
-        <div className="flex flex-col items-end gap-1.5">
+
+        {/* Boutons côte à côte */}
+        <div className="flex gap-2 w-full">
           <Button
             size="sm"
             onClick={handlePrimary}
             disabled={!hasPdf && !hasUrl}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
           >
             {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
             {hasPdf ? (
@@ -190,20 +193,21 @@ export function ProductCard({ product }: { product: Product }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
             >
-              <Globe className="h-3 w-3" />
+              <Globe className="h-3.5 w-3.5" />
               Site fournisseur
             </a>
           )}
         </div>
-      </div>
 
-      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80 -mt-2">
-        <UserCircle2 className="h-3 w-3" />
-        <span className="truncate">
-          Ajouté par {authorLabel}
-        </span>
+        {/* Auteur */}
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
+          <UserCircle2 className="h-3 w-3" />
+          <span className="truncate">
+            Ajouté par {authorLabel}
+          </span>
+        </div>
       </div>
 
       {product.note && product.note.trim() && (
