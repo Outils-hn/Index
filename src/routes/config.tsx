@@ -10,6 +10,7 @@ import {
   X,
   Tags,
   Building2,
+  MapPin,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
@@ -26,6 +27,13 @@ import {
 import { QuickAddDialog } from "@/components/QuickAddDialog";
 import { CategoryIconPicker } from "@/components/CategoryIconPicker";
 import { getCategoryIcon } from "@/lib/category-icons";
+import {
+  fetchProjects,
+  createProject,
+  updateProject,
+  deleteProject,
+  type Project,
+} from "@/lib/projects";
 import { useAuth } from "@/hooks/use-auth";
 import {
   fetchCategories,
@@ -99,6 +107,10 @@ function ConfigPage() {
             addLabel="Ajouter un fournisseur"
             placeholder="Ex. Sika"
           />
+        </div>
+
+        <div className="mt-8">
+          <ProjectsPanel />
         </div>
       </main>
     </div>
@@ -545,6 +557,263 @@ function AddCategoryDialog({
               Annuler
             </Button>
             <Button type="submit" disabled={loading || !name.trim()}>
+              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Ajouter
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+/* -------------------------------------------------------------------------- */
+/* Projects panel                                                             */
+/* -------------------------------------------------------------------------- */
+
+function ProjectsPanel() {
+  const qc = useQueryClient();
+  const [addOpen, setAddOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editNumero, setEditNumero] = useState("");
+  const [editNom, setEditNom] = useState("");
+
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["projects"],
+    queryFn: fetchProjects,
+  });
+
+  const renameMutation = useMutation({
+    mutationFn: ({ id, numero, nom }: { id: string; numero: string; nom: string }) =>
+      updateProject(id, numero, nom),
+    onSuccess: () => {
+      toast.success("Projet mis à jour.");
+      qc.invalidateQueries({ queryKey: ["projects"] });
+      setEditingId(null);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteProject(id),
+    onSuccess: () => {
+      toast.success("Projet supprimé.");
+      qc.invalidateQueries({ queryKey: ["projects"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const startEdit = (it: Project) => {
+    setEditingId(it.id);
+    setEditNumero(it.numero);
+    setEditNom(it.nom);
+  };
+
+  const commitEdit = () => {
+    if (!editingId) return;
+    if (!editNumero.trim() || !editNom.trim()) {
+      toast.error("Numéro et nom requis.");
+      return;
+    }
+    renameMutation.mutate({ id: editingId, numero: editNumero, nom: editNom });
+  };
+
+  return (
+    <section>
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border">
+          <div className="flex items-center gap-2 font-semibold">
+            <MapPin className="h-4 w-4" />
+            Projets / Chantiers
+            <span className="text-muted-foreground font-normal text-sm">
+              ({items.length})
+            </span>
+          </div>
+          <Button size="sm" onClick={() => setAddOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            Ajouter
+          </Button>
+        </div>
+        {isLoading ? (
+          <div className="px-5 py-10 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Chargement…
+          </div>
+        ) : items.length === 0 ? (
+          <div className="px-5 py-10 text-center text-sm text-muted-foreground">
+            Aucun projet pour le moment.
+          </div>
+        ) : (
+          <ul className="divide-y divide-border">
+            {items.map((it) => (
+              <li key={it.id} className="flex items-center gap-2 px-5 py-3 hover:bg-secondary/40">
+                {editingId === it.id ? (
+                  <>
+                    <Input
+                      value={editNumero}
+                      onChange={(e) => setEditNumero(e.target.value)}
+                      className="h-9 w-28 font-mono"
+                      placeholder="Numéro"
+                    />
+                    <Input
+                      autoFocus
+                      value={editNom}
+                      onChange={(e) => setEditNom(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") commitEdit();
+                        if (e.key === "Escape") setEditingId(null);
+                      }}
+                      className="flex-1 h-9"
+                      placeholder="Nom"
+                    />
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={commitEdit}
+                      disabled={renameMutation.isPending}
+                      aria-label="Valider"
+                    >
+                      {renameMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Check className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => setEditingId(null)}
+                      aria-label="Annuler"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <span className="font-mono text-xs text-muted-foreground w-20 shrink-0">
+                      {it.numero}
+                    </span>
+                    <span className="flex-1 truncate">{it.nom}</span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => startEdit(it)}
+                      aria-label="Modifier"
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        if (
+                          confirm(
+                            `Supprimer le projet "${it.numero} ${it.nom}" ? Les associations avec les produits seront retirées.`,
+                          )
+                        ) {
+                          deleteMutation.mutate(it.id);
+                        }
+                      }}
+                      aria-label="Supprimer"
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <AddProjectDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onCreated={() => qc.invalidateQueries({ queryKey: ["projects"] })}
+      />
+    </section>
+  );
+}
+
+function AddProjectDialog({
+  open,
+  onOpenChange,
+  onCreated,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  onCreated: () => void;
+}) {
+  const [numero, setNumero] = useState("");
+  const [nom, setNom] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const reset = () => {
+    setNumero("");
+    setNom("");
+    setLoading(false);
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!numero.trim() || !nom.trim()) {
+      toast.error("Numéro et nom requis.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await createProject(numero, nom);
+      toast.success("Projet ajouté.");
+      onCreated();
+      reset();
+      onOpenChange(false);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erreur lors de l'ajout.";
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) reset();
+        onOpenChange(v);
+      }}
+    >
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Nouveau projet / chantier</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="new-proj-num">Numéro de projet</Label>
+            <Input
+              id="new-proj-num"
+              autoFocus
+              value={numero}
+              onChange={(e) => setNumero(e.target.value)}
+              placeholder="Ex. 4144D"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="new-proj-nom">Nom du projet</Label>
+            <Input
+              id="new-proj-nom"
+              value={nom}
+              onChange={(e) => setNom(e.target.value)}
+              placeholder="Ex. Onyx"
+            />
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+              Annuler
+            </Button>
+            <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Ajouter
             </Button>

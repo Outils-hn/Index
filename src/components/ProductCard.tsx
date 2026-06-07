@@ -1,8 +1,9 @@
-import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle } from "lucide-react";
+import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle, MapPin } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { Project } from "@/lib/projects";
 
 export interface Product {
   id: string;
@@ -22,6 +23,7 @@ export interface Product {
     first_name: string | null;
     last_name: string | null;
   } | null;
+  projects?: Project[];
 }
 
 const TAG_PALETTE = [
@@ -133,6 +135,22 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="rounded-md border border-[oklch(0.85_0.12_85)] bg-[oklch(0.97_0.05_85)] text-[oklch(0.35_0.1_60)] px-3 py-2 flex items-start gap-2 text-xs leading-relaxed">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-[oklch(0.55_0.15_60)]" />
           <p className="whitespace-pre-wrap">{product.note}</p>
+        </div>
+      )}
+
+      {product.projects && product.projects.length > 0 && (
+        <div className="flex flex-wrap gap-1 pt-1 border-t border-border">
+          {product.projects.map((pr) => (
+            <span
+              key={pr.id}
+              className="inline-flex items-center gap-1 rounded-full bg-secondary text-foreground/70 text-[10px] px-2 py-0.5 border border-border"
+              title={`${pr.numero} — ${pr.nom}`}
+            >
+              <MapPin className="h-2.5 w-2.5" />
+              <span className="font-mono">{pr.numero}</span>
+              <span>{pr.nom}</span>
+            </span>
+          ))}
         </div>
       )}
     </article>

@@ -46,7 +46,12 @@ function Index() {
       return (
         p.name.toLowerCase().includes(q) ||
         p.supplier.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q))
+        p.tags.some((t) => t.toLowerCase().includes(q)) ||
+        (p.projects ?? []).some(
+          (pr) =>
+            pr.nom.toLowerCase().includes(q) ||
+            pr.numero.toLowerCase().includes(q),
+        )
       );
     });
   }, [products, search, category]);

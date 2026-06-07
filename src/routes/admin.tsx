@@ -27,6 +27,8 @@ import {
 } from "@/lib/taxonomies";
 import { QuickAddDialog } from "@/components/QuickAddDialog";
 import { EditProductDialog } from "@/components/EditProductDialog";
+import { ProjectsMultiSelect } from "@/components/ProjectsMultiSelect";
+import { fetchProjects, setProductProjects } from "@/lib/projects";
 import type { Product } from "@/components/ProductCard";
 
 export const Route = createFileRoute("/admin")({
@@ -55,6 +57,7 @@ function Admin() {
   const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/auth" });
@@ -72,6 +75,10 @@ function Admin() {
   const { data: suppliers = [] } = useQuery({
     queryKey: ["suppliers"],
     queryFn: fetchSuppliers,
+  });
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
+    queryFn: fetchProjects,
   });
 
   const onDrop = useCallback((accepted: File[], rejected: any[]) => {
@@ -104,6 +111,7 @@ function Admin() {
     setUrl("");
     setNote("");
     setFile(null);
+    setSelectedProjects([]);
   };
 
   const createMutation = useMutation({
@@ -134,7 +142,7 @@ function Admin() {
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const { error } = await supabase.from("products").insert({
+      const { data: inserted, error } = await supabase.from("products").insert({
         name: name.trim(),
         supplier,
         category,
@@ -144,10 +152,13 @@ function Admin() {
         url: url.trim() || null,
         note: note.trim() || null,
         created_by: user.id,
-      });
+      }).select("id").single();
       if (error) {
         if (pdf_path) await supabase.storage.from("technical-sheets").remove([pdf_path]);
         throw error;
+      }
+      if (inserted && selectedProjects.length > 0) {
+        await setProductProjects(inserted.id, selectedProjects);
       }
     },
     onSuccess: () => {
@@ -288,6 +299,15 @@ function Admin() {
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Ex. Ne pas laisser au soleil, temps de séchage 24h…"
                 rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Projets / Chantiers associés</Label>
+              <ProjectsMultiSelect
+                projects={projects}
+                selectedIds={selectedProjects}
+                onChange={setSelectedProjects}
               />
             </div>
 

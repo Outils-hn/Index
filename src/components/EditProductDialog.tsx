@@ -30,6 +30,8 @@ import {
   createSupplier,
 } from "@/lib/taxonomies";
 import { QuickAddDialog } from "@/components/QuickAddDialog";
+import { ProjectsMultiSelect } from "@/components/ProjectsMultiSelect";
+import { fetchProjects, setProductProjects } from "@/lib/projects";
 import type { Product } from "@/components/ProductCard";
 
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -51,9 +53,11 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
   const [newFile, setNewFile] = useState<File | null>(null);
   const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
 
   const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
   const { data: suppliers = [] } = useQuery({ queryKey: ["suppliers"], queryFn: fetchSuppliers });
+  const { data: projects = [] } = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
 
   useEffect(() => {
     if (product && open) {
@@ -64,6 +68,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
       setUrl(product.url ?? "");
       setNote(product.note ?? "");
       setNewFile(null);
+      setSelectedProjects((product.projects ?? []).map((p) => p.id));
     }
   }, [product, open]);
 
@@ -127,6 +132,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
         })
         .eq("id", product.id);
       if (error) throw error;
+      await setProductProjects(product.id, selectedProjects);
     },
     onSuccess: () => {
       toast.success("Produit mis à jour.");
@@ -217,6 +223,15 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
               onChange={(e) => setNote(e.target.value)}
               placeholder="Ex. Ne pas laisser au soleil, temps de séchage 24h…"
               rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Projets / Chantiers associés</Label>
+            <ProjectsMultiSelect
+              projects={projects}
+              selectedIds={selectedProjects}
+              onChange={setSelectedProjects}
             />
           </div>
 

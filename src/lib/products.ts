@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Product } from "@/components/ProductCard";
+import { fetchProductProjectsMap } from "@/lib/projects";
 
 export async function fetchProductsWithAuthors(): Promise<Product[]> {
   const { data: products, error } = await supabase
@@ -34,8 +35,11 @@ export async function fetchProductsWithAuthors(): Promise<Product[]> {
     );
   }
 
+  const projectsMap = await fetchProductProjectsMap();
+
   return (products ?? []).map((p) => ({
     ...p,
     author: p.created_by ? profileMap.get(p.created_by) ?? null : null,
+    projects: projectsMap.get(p.id) ?? [],
   })) as Product[];
 }
