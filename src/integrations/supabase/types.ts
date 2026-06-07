@@ -38,6 +38,39 @@ export type Database = {
         }
         Relationships: []
       }
+      product_projects: {
+        Row: {
+          created_at: string
+          product_id: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string
+          product_id: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string
+          product_id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_projects_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_projects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
@@ -109,6 +142,30 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          id: string
+          nom: string
+          numero: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nom: string
+          numero: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nom?: string
+          numero?: string
           updated_at?: string
         }
         Relationships: []
