@@ -3,10 +3,12 @@ import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PdfViewerModal } from "@/components/PdfViewerModal";
 import type { Project } from "@/lib/projects";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export interface Product {
   id: string;
@@ -73,6 +75,9 @@ export function ProductCard({ product }: { product: Product }) {
   const CategoryIcon = getCategoryIcon(product.category);
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState("");
+
   const fullName = [product.author?.first_name, product.author?.last_name]
     .filter(Boolean)
     .join(" ")
@@ -105,7 +110,8 @@ export function ProductCard({ product }: { product: Product }) {
   const handlePrimary = () => {
     if (hasPdf) {
       const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path!);
-      window.open(data.publicUrl, "_blank", "noopener,noreferrer");
+      setPdfUrl(data.publicUrl);
+      setPdfOpen(true);
     } else if (hasUrl) {
       window.open(product.url!, "_blank", "noopener,noreferrer");
     }
@@ -232,6 +238,14 @@ export function ProductCard({ product }: { product: Product }) {
           ))}
         </div>
       )}
+
+      <PdfViewerModal
+        open={pdfOpen}
+        onClose={() => setPdfOpen(false)}
+        productName={product.name}
+        pdfUrl={pdfUrl}
+        pdfFilename={product.pdf_filename}
+      />
     </article>
   );
 }
