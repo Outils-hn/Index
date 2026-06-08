@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function AppHeader() {
   const { user } = useAuth();
@@ -57,6 +58,7 @@ export function AppHeader() {
             </>
           )}
           <div className="ml-2 pl-3 border-l border-border flex items-center gap-2">
+            <ThemeToggle />
             {user ? (
               <>
                 <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
