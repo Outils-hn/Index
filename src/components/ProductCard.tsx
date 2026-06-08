@@ -214,16 +214,8 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        {/* Auteur */}
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
-          <UserCircle2 className="h-3 w-3" />
-          <span className="truncate">
-            Ajouté par {authorLabel}
-          </span>
-        </div>
-
         {product.projects && product.projects.length > 0 && (
-          <div className="flex flex-wrap gap-1 pt-1 border-t border-border">
+          <div className="flex flex-wrap gap-1">
             {product.projects.map((pr) => (
               <span
                 key={pr.id}
@@ -237,6 +229,14 @@ export function ProductCard({ product }: { product: Product }) {
             ))}
           </div>
         )}
+
+        {/* Auteur (toujours en bas) */}
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
+          <UserCircle2 className="h-3 w-3" />
+          <span className="truncate">
+            Ajouté par {authorLabel}
+          </span>
+        </div>
       </div>
 
       <PdfViewerModal
