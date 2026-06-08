@@ -238,6 +238,14 @@ export function ProductCard({ product }: { product: Product }) {
           ))}
         </div>
       )}
+
+      <PdfViewerModal
+        open={pdfOpen}
+        onClose={() => setPdfOpen(false)}
+        productName={product.name}
+        pdfUrl={pdfUrl}
+        pdfFilename={product.pdf_filename}
+      />
     </article>
   );
 }
