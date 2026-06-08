@@ -75,6 +75,9 @@ export function ProductCard({ product }: { product: Product }) {
   const CategoryIcon = getCategoryIcon(product.category);
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState("");
+
   const fullName = [product.author?.first_name, product.author?.last_name]
     .filter(Boolean)
     .join(" ")
@@ -107,7 +110,8 @@ export function ProductCard({ product }: { product: Product }) {
   const handlePrimary = () => {
     if (hasPdf) {
       const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path!);
-      window.open(data.publicUrl, "_blank", "noopener,noreferrer");
+      setPdfUrl(data.publicUrl);
+      setPdfOpen(true);
     } else if (hasUrl) {
       window.open(product.url!, "_blank", "noopener,noreferrer");
     }
