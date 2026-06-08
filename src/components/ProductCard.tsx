@@ -153,38 +153,6 @@ export function ProductCard({ product }: { product: Product }) {
       )}
 
       <div className="mt-auto pt-3 border-t border-border flex flex-col gap-3">
-        {/* Date + pastille */}
-        <div className="flex items-center gap-2">
-          <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5" />
-            {new Date(product.updated_at).toLocaleDateString("fr-FR", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })}
-            <span
-              className={`inline-block h-2 w-2 rounded-full ${vStyle.dot}`}
-              title={`${vStyle.label}`}
-            />
-          </div>
-          {user && validity !== "valid" && (
-            <button
-              type="button"
-              onClick={() => revalidate.mutate()}
-              disabled={revalidate.isPending}
-              className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-border bg-secondary text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors disabled:opacity-50"
-              title="Marquer la fiche comme vérifiée aujourd'hui"
-              aria-label="Revalider la fiche"
-            >
-              {revalidate.isPending ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
-              ) : (
-                <Check className="h-3 w-3" />
-              )}
-            </button>
-          )}
-        </div>
-
         {/* Boutons côte à côte */}
         <div className="flex gap-2 w-full">
           <Button
@@ -230,12 +198,41 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        {/* Auteur (toujours en bas) */}
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
-          <UserCircle2 className="h-3 w-3" />
-          <span className="truncate">
-            Ajouté par {authorLabel}
-          </span>
+        {/* Ligne fusionnée Date + Auteur tout en bas */}
+        <div className="flex items-center justify-between text-[11px] text-muted-foreground/80">
+          <div className="flex items-center gap-1.5 truncate">
+            <UserCircle2 className="h-3 w-3 shrink-0" />
+            <span className="truncate">Par {authorLabel}</span>
+            <span className="text-muted-foreground/40">•</span>
+            <Calendar className="h-3 w-3 shrink-0" />
+            <span>
+              {new Date(product.updated_at).toLocaleDateString("fr-FR", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
+            </span>
+            <span
+              className={`inline-block h-2 w-2 rounded-full ${vStyle.dot}`}
+              title={`${vStyle.label}`}
+            />
+          </div>
+          {user && validity !== "valid" && (
+            <button
+              type="button"
+              onClick={() => revalidate.mutate()}
+              disabled={revalidate.isPending}
+              className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-border bg-secondary text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors disabled:opacity-50 shrink-0 ml-2"
+              title="Marquer la fiche comme vérifiée aujourd'hui"
+              aria-label="Revalider la fiche"
+            >
+              {revalidate.isPending ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Check className="h-3 w-3" />
+              )}
+            </button>
+          )}
         </div>
       </div>
 
