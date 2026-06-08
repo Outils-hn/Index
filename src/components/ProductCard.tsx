@@ -202,7 +202,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground/80">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <UserCircle2 className="h-3 w-3 shrink-0" />
-            <span className="truncate">Par {authorLabel}</span>
+            <span className="truncate">Ajouté par {authorLabel}</span>
             <span className="text-muted-foreground/40 shrink-0">•</span>
             <Calendar className="h-3 w-3 shrink-0" />
             <span className="truncate">
