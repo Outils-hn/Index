@@ -199,13 +199,13 @@ export function ProductCard({ product }: { product: Product }) {
         )}
 
         {/* Ligne fusionnée Date + Auteur tout en bas */}
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground/80">
-          <div className="flex items-center gap-1.5 truncate">
+        <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground/80">
+          <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <UserCircle2 className="h-3 w-3 shrink-0" />
             <span className="truncate">Par {authorLabel}</span>
-            <span className="text-muted-foreground/40">•</span>
+            <span className="text-muted-foreground/40 shrink-0">•</span>
             <Calendar className="h-3 w-3 shrink-0" />
-            <span>
+            <span className="truncate">
               {new Date(product.updated_at).toLocaleDateString("fr-FR", {
                 day: "2-digit",
                 month: "short",
@@ -213,7 +213,7 @@ export function ProductCard({ product }: { product: Product }) {
               })}
             </span>
             <span
-              className={`inline-block h-2 w-2 rounded-full ${vStyle.dot}`}
+              className={`inline-block h-2 w-2 rounded-full shrink-0 ml-1 mr-0.5 ${vStyle.dot}`}
               title={`${vStyle.label}`}
             />
           </div>
