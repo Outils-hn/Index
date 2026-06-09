@@ -118,7 +118,7 @@ export function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <article className="group relative rounded-xl border border-border bg-card p-5 shadow-sm transition hover:border-accent/40 hover:shadow-md hover:shadow-accent/10 flex flex-col h-full gap-4">
+    <article className="group relative rounded-xl border border-border bg-card p-4 md:p-5 shadow-sm transition hover:border-accent/40 hover:shadow-md hover:shadow-accent/10 flex flex-col h-full gap-3 md:gap-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-foreground/70 mb-1 flex items-center gap-1.5">
