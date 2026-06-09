@@ -59,14 +59,14 @@ function Index() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <main className="mx-auto max-w-7xl px-6 py-10">
-        <div className="mb-8">
+      <main className="mx-auto max-w-7xl px-4 md:px-6 py-4 md:py-10">
+        <div className="mb-5 md:mb-8">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              <h1 className="text-xl md:text-3xl font-bold tracking-tight text-foreground">
                 Bibliothèque de fiches techniques
               </h1>
-              <p className="text-muted-foreground mt-1.5">
+              <p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-1.5">
                 Recherchez un produit par nom, fournisseur ou mot-clé.
               </p>
             </div>
@@ -102,8 +102,8 @@ function Index() {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 mb-8">
-          <div className="flex items-center gap-1.5 text-xs uppercase tracking-[0.16em] text-muted-foreground mr-2">
+        <div className="flex md:flex-wrap items-center gap-2 mb-6 md:mb-8 flex-nowrap overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible">
+          <div className="flex items-center gap-1.5 text-xs uppercase tracking-[0.16em] text-muted-foreground mr-2 shrink-0">
             <SlidersHorizontal className="h-3.5 w-3.5" />
             Catégories
           </div>
@@ -111,6 +111,7 @@ function Index() {
             size="sm"
             variant={category === null ? "default" : "outline"}
             onClick={() => setCategory(null)}
+            className="shrink-0"
           >
             <LayoutGrid className="h-3.5 w-3.5" />
             Toutes
@@ -123,6 +124,7 @@ function Index() {
                 size="sm"
                 variant={category === c.name ? "default" : "outline"}
                 onClick={() => setCategory(c.name)}
+                className="shrink-0"
               >
                 <Icon className="h-3.5 w-3.5" />
                 {c.name}
