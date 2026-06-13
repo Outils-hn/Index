@@ -193,7 +193,27 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          display_name: string | null
+          first_name: string | null
+          id: string | null
+          last_name: string | null
+        }
+        Insert: {
+          display_name?: string | null
+          first_name?: string | null
+          id?: string | null
+          last_name?: string | null
+        }
+        Update: {
+          display_name?: string | null
+          first_name?: string | null
+          id?: string | null
+          last_name?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
