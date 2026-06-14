@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Layers, LogOut, LogIn, User, BookMarked } from "lucide-react";
+import { Layers, LogOut, LogIn, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -38,17 +38,6 @@ export function AppHeader() {
             activeOptions={{ exact: true }}
           >
             Vue projeteur
-          </Link>
-          <Link
-            to="/normes"
-            className="px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition inline-flex items-center gap-1.5"
-            activeProps={{
-              className:
-                "px-3 py-2 rounded-md text-foreground bg-secondary inline-flex items-center gap-1.5",
-            }}
-          >
-            <BookMarked className="h-3.5 w-3.5" />
-            Normes & Infos
           </Link>
           {user && (
             <>

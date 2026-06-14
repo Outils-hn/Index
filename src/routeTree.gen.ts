@@ -9,17 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as NormesRouteImport } from './routes/normes'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
-const NormesRoute = NormesRouteImport.update({
-  id: '/normes',
-  path: '/normes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ConfigRoute = ConfigRouteImport.update({
   id: '/config',
   path: '/config',
@@ -46,14 +40,12 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/config': typeof ConfigRoute
-  '/normes': typeof NormesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/config': typeof ConfigRoute
-  '/normes': typeof NormesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,14 +53,13 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/config': typeof ConfigRoute
-  '/normes': typeof NormesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth' | '/config' | '/normes'
+  fullPaths: '/' | '/admin' | '/auth' | '/config'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/auth' | '/config' | '/normes'
-  id: '__root__' | '/' | '/admin' | '/auth' | '/config' | '/normes'
+  to: '/' | '/admin' | '/auth' | '/config'
+  id: '__root__' | '/' | '/admin' | '/auth' | '/config'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,18 +67,10 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   ConfigRoute: typeof ConfigRoute
-  NormesRoute: typeof NormesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/normes': {
-      id: '/normes'
-      path: '/normes'
-      fullPath: '/normes'
-      preLoaderRoute: typeof NormesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/config': {
       id: '/config'
       path: '/config'
@@ -124,7 +107,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   ConfigRoute: ConfigRoute,
-  NormesRoute: NormesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
