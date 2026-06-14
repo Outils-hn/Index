@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchProductsWithAuthors } from "@/lib/products";
+import { CompareProvider } from "@/components/CompareContext";
+import { CompareBar } from "@/components/CompareBar";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,6 +27,15 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  return (
+    <CompareProvider>
+      <IndexInner />
+      <CompareBar />
+    </CompareProvider>
+  );
+}
+
+function IndexInner() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const { user } = useAuth();
