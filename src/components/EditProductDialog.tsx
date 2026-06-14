@@ -51,6 +51,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
   const [url, setUrl] = useState("");
   const [note, setNote] = useState("");
   const [newFile, setNewFile] = useState<File | null>(null);
+  const [removePdf, setRemovePdf] = useState(false);
   const [supplierDialogOpen, setSupplierDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
@@ -68,6 +69,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
       setUrl(product.url ?? "");
       setNote(product.note ?? "");
       setNewFile(null);
+      setRemovePdf(false);
       setSelectedProjects((product.projects ?? []).map((p) => p.id));
     }
   }, [product, open]);
@@ -80,7 +82,10 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
       else toast.error("Fichier refusé.");
       return;
     }
-    if (accepted[0]) setNewFile(accepted[0]);
+    if (accepted[0]) {
+      setNewFile(accepted[0]);
+      setRemovePdf(false);
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -100,7 +105,13 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
       let pdf_path = product.pdf_path;
       let pdf_filename = product.pdf_filename;
 
-      if (newFile) {
+      if (removePdf && !newFile) {
+        if (product.pdf_path) {
+          await supabase.storage.from("technical-sheets").remove([product.pdf_path]);
+        }
+        pdf_path = null;
+        pdf_filename = null;
+      } else if (newFile) {
         const safeName = newFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const path = `${category}/${Date.now()}-${safeName}`;
         const upload = await supabase.storage
