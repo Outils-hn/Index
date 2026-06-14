@@ -11,6 +11,7 @@ import {
   Tags,
   Building2,
   MapPin,
+  BookMarked,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
@@ -47,6 +48,13 @@ import {
   updateCategoryIcon,
   type Taxonomy,
 } from "@/lib/taxonomies";
+import {
+  fetchNormCategories,
+  createNormCategory,
+  renameNormCategory,
+  deleteNormCategory,
+  updateNormCategoryIcon,
+} from "@/lib/norms";
 
 export const Route = createFileRoute("/config")({
   head: () => ({
@@ -111,6 +119,10 @@ function ConfigPage() {
 
         <div className="mt-8">
           <ProjectsPanel />
+        </div>
+
+        <div className="mt-8">
+          <NormCategoriesPanel />
         </div>
       </main>
     </div>
