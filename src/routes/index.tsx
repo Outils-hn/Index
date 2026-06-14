@@ -15,6 +15,43 @@ import { CompareProvider } from "@/components/CompareContext";
 import { CompareBar } from "@/components/CompareBar";
 import { useFavorites } from "@/hooks/use-favorites";
 
+type StatTone = "neutral" | "green" | "orange" | "terracotta";
+
+const STAT_TONES: Record<StatTone, string> = {
+  neutral:
+    "text-foreground/70 bg-secondary/60 border-border",
+  green:
+    "text-[oklch(0.4_0.13_150)] bg-[oklch(0.96_0.05_150)] border-[oklch(0.85_0.1_150)] dark:bg-[oklch(0.28_0.06_150)] dark:text-[oklch(0.82_0.14_150)] dark:border-[oklch(0.45_0.1_150)]/40",
+  orange:
+    "text-[oklch(0.45_0.15_60)] bg-[oklch(0.96_0.07_70)] border-[oklch(0.85_0.12_70)] dark:bg-[oklch(0.3_0.08_60)] dark:text-[oklch(0.82_0.15_70)] dark:border-[oklch(0.5_0.12_70)]/40",
+  terracotta:
+    "text-[oklch(0.5_0.16_40)] bg-[oklch(0.96_0.06_45)] border-[oklch(0.82_0.12_45)] dark:bg-[oklch(0.3_0.09_40)] dark:text-[oklch(0.82_0.16_45)] dark:border-[oklch(0.5_0.14_45)]/40",
+};
+
+function StatCard({
+  icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  tone: StatTone;
+}) {
+  return (
+    <div className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 ${STAT_TONES[tone]}`}>
+      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-background/60 border border-current/10">
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <div className="text-lg font-bold leading-tight tabular-nums">{value}</div>
+        <div className="text-[11px] uppercase tracking-wider opacity-80 truncate">{label}</div>
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
