@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, X, SlidersHorizontal, LogIn, Eye, Star, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Search, X, SlidersHorizontal, LogIn, Eye, Star, FileText, CheckCircle2, AlertTriangle, Dices } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { fetchCategories } from "@/lib/taxonomies";
@@ -77,6 +77,8 @@ function IndexInner() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [randomId, setRandomId] = useState<string | null>(null);
+  const [rolling, setRolling] = useState(false);
   const { user } = useAuth();
   const { isFavorite, favorites } = useFavorites();
 
@@ -103,6 +105,10 @@ function IndexInner() {
   }, [products, favorites]);
 
   const filtered = useMemo(() => {
+    if (randomId) {
+      const found = products.find((p) => p.id === randomId);
+      return found ? [found] : [];
+    }
     const q = search.trim().toLowerCase();
     return products.filter((p) => {
       if (favoritesOnly && !isFavorite(p.id)) return false;
@@ -119,7 +125,17 @@ function IndexInner() {
         )
       );
     });
-  }, [products, search, category, favoritesOnly, isFavorite]);
+  }, [products, search, category, favoritesOnly, isFavorite, randomId]);
+
+  const rollRandom = () => {
+    if (products.length === 0 || rolling) return;
+    setRolling(true);
+    window.setTimeout(() => {
+      const pick = products[Math.floor(Math.random() * products.length)];
+      setRandomId(pick.id);
+      setRolling(false);
+    }, 420);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -177,24 +193,56 @@ function IndexInner() {
           </div>
         )}
 
-        <div className="relative mb-5">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un produit, fournisseur, tag…"
-            className="pl-11 pr-11 h-12 text-base bg-card border-border focus-visible:ring-accent"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              aria-label="Effacer"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+        <div className="flex items-stretch gap-2 mb-5">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher un produit, fournisseur, tag…"
+              className="pl-11 pr-11 h-12 text-base bg-card border-border focus-visible:ring-accent"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label="Effacer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={rollRandom}
+            disabled={products.length === 0 || rolling}
+            aria-label="Fiche au hasard"
+            title="Fiche au hasard"
+            className="group shrink-0 h-12 w-12 inline-flex items-center justify-center rounded-md border border-border bg-card text-foreground/80 hover:text-white hover:bg-[oklch(0.62_0.16_40)] hover:border-[oklch(0.62_0.16_40)] transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          >
+            <Dices
+              className={`h-5 w-5 transition-transform duration-300 group-hover:rotate-12 ${
+                rolling ? "animate-spin" : ""
+              }`}
+            />
+          </button>
         </div>
+
+        {randomId && (
+          <div className="mb-4 flex items-center justify-between gap-2 rounded-md border border-[oklch(0.7_0.14_45)]/40 bg-[oklch(0.96_0.06_45)] dark:bg-[oklch(0.3_0.09_40)] px-3 py-2 text-xs text-[oklch(0.45_0.18_40)] dark:text-[oklch(0.82_0.16_45)]">
+            <span className="inline-flex items-center gap-2">
+              <Dices className="h-3.5 w-3.5" />
+              Tirage au sort — une fiche sélectionnée aléatoirement.
+            </span>
+            <button
+              type="button"
+              onClick={() => setRandomId(null)}
+              className="inline-flex items-center gap-1 font-medium hover:underline"
+            >
+              <X className="h-3 w-3" /> Voir toutes les fiches
+            </button>
+          </div>
+        )}
 
         <div className="flex md:flex-wrap items-center gap-2 mb-6 md:mb-8 flex-nowrap overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible">
           <div className="flex items-center gap-1.5 text-xs uppercase tracking-[0.16em] text-muted-foreground mr-2 shrink-0">
@@ -277,7 +325,11 @@ function IndexInner() {
             )}
           </div>
         ) : (
-          <div className="grid gap-4 auto-rows-fr sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            className={`grid gap-4 auto-rows-fr sm:grid-cols-2 lg:grid-cols-3 transition-all duration-300 ${
+              rolling ? "blur-sm opacity-60 scale-[0.99]" : "blur-0 opacity-100 scale-100"
+            }`}
+          >
             {filtered.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
