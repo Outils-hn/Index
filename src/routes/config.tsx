@@ -11,6 +11,7 @@ import {
   Tags,
   Building2,
   MapPin,
+  BookMarked,
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
@@ -47,6 +48,13 @@ import {
   updateCategoryIcon,
   type Taxonomy,
 } from "@/lib/taxonomies";
+import {
+  fetchNormCategories,
+  createNormCategory,
+  renameNormCategory,
+  deleteNormCategory,
+  updateNormCategoryIcon,
+} from "@/lib/norms";
 
 export const Route = createFileRoute("/config")({
   head: () => ({
@@ -111,6 +119,10 @@ function ConfigPage() {
 
         <div className="mt-8">
           <ProjectsPanel />
+        </div>
+
+        <div className="mt-8">
+          <NormCategoriesPanel />
         </div>
       </main>
     </div>
@@ -564,6 +576,236 @@ function AddCategoryDialog({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Norm categories panel                                                      */
+/* -------------------------------------------------------------------------- */
+
+function NormCategoriesPanel() {
+  const qc = useQueryClient();
+  const [addOpen, setAddOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newIcon, setNewIcon] = useState<string | null>(null);
+  const [addLoading, setAddLoading] = useState(false);
+
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["norm_categories"],
+    queryFn: fetchNormCategories,
+  });
+
+  const renameMutation = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) => renameNormCategory(id, name),
+    onSuccess: () => {
+      toast.success("Renommé.");
+      qc.invalidateQueries({ queryKey: ["norm_categories"] });
+      setEditingId(null);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const iconMutation = useMutation({
+    mutationFn: ({ id, icon }: { id: string; icon: string | null }) =>
+      updateNormCategoryIcon(id, icon),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["norm_categories"] }),
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteNormCategory(id),
+    onSuccess: () => {
+      toast.success("Supprimé.");
+      qc.invalidateQueries({ queryKey: ["norm_categories"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const startEdit = (item: { id: string; name: string }) => {
+    setEditingId(item.id);
+    setEditValue(item.name);
+  };
+
+  const commitEdit = () => {
+    if (!editingId) return;
+    const name = editValue.trim();
+    if (!name) {
+      toast.error("Le nom est requis.");
+      return;
+    }
+    renameMutation.mutate({ id: editingId, name });
+  };
+
+  const submitAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+    setAddLoading(true);
+    try {
+      await createNormCategory(trimmed, newIcon);
+      toast.success("Catégorie ajoutée.");
+      qc.invalidateQueries({ queryKey: ["norm_categories"] });
+      setNewName("");
+      setNewIcon(null);
+      setAddOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setAddLoading(false);
+    }
+  };
+
+  return (
+    <section>
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border">
+          <div className="flex items-center gap-2 font-semibold">
+            <BookMarked className="h-4 w-4" />
+            Catégories — Normes & Infos
+            <span className="text-muted-foreground font-normal text-sm">({items.length})</span>
+          </div>
+          <Button size="sm" onClick={() => setAddOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            Ajouter
+          </Button>
+        </div>
+        {isLoading ? (
+          <div className="px-5 py-10 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Chargement…
+          </div>
+        ) : items.length === 0 ? (
+          <div className="px-5 py-10 text-center text-sm text-muted-foreground">
+            Aucune catégorie pour le moment.
+          </div>
+        ) : (
+          <ul className="divide-y divide-border">
+            {items.map((it) => {
+              const Icon = getCategoryIcon(it.name, it.icon);
+              return (
+                <li key={it.id} className="flex items-center gap-2 px-5 py-3 hover:bg-secondary/40">
+                  <CategoryIconPicker
+                    value={it.icon ?? null}
+                    name={it.name}
+                    size="sm"
+                    onChange={(key) => iconMutation.mutate({ id: it.id, icon: key })}
+                  />
+                  {editingId === it.id ? (
+                    <>
+                      <Input
+                        autoFocus
+                        value={editValue}
+                        maxLength={80}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitEdit();
+                          if (e.key === "Escape") setEditingId(null);
+                        }}
+                        className="flex-1 h-9"
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={commitEdit}
+                        disabled={renameMutation.isPending}
+                        aria-label="Valider"
+                      >
+                        {renameMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Check className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setEditingId(null)}
+                        aria-label="Annuler"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex-1 truncate flex items-center gap-2">
+                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                        {it.name}
+                      </span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => startEdit(it)}
+                        aria-label="Renommer"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          if (confirm(`Supprimer "${it.name}" ?`)) {
+                            deleteMutation.mutate(it.id);
+                          }
+                        }}
+                        aria-label="Supprimer"
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      <Dialog
+        open={addOpen}
+        onOpenChange={(v) => {
+          setAddOpen(v);
+          if (!v) {
+            setNewName("");
+            setNewIcon(null);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ajouter une catégorie de norme</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={submitAdd} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-norm-cat">Nom</Label>
+              <div className="flex items-center gap-2">
+                <CategoryIconPicker value={newIcon} onChange={setNewIcon} name={newName} />
+                <Input
+                  id="new-norm-cat"
+                  autoFocus
+                  maxLength={80}
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="Ex. Avis techniques"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="ghost" onClick={() => setAddOpen(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={addLoading || !newName.trim()}>
+                {addLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Ajouter
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </section>
   );
 }
 /* -------------------------------------------------------------------------- */
