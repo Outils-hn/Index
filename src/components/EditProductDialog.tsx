@@ -271,10 +271,34 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
                   <FileText className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium truncate">
-                      {product?.pdf_filename ?? "Aucun PDF"}
+                      {removePdf
+                        ? "Aucun PDF (sera supprimé à l'enregistrement)"
+                        : product?.pdf_path
+                          ? product?.pdf_filename ?? "PDF actuel"
+                          : "Aucun PDF"}
                     </div>
-                    <div className="text-xs text-muted-foreground">PDF actuel</div>
+                    <div className="text-xs text-muted-foreground">
+                      {removePdf ? "Suppression en attente" : "PDF actuel"}
+                    </div>
                   </div>
+                  {product?.pdf_path && !removePdf && (
+                    <button
+                      type="button"
+                      onClick={() => setRemovePdf(true)}
+                      className="text-xs text-destructive hover:underline"
+                    >
+                      Supprimer
+                    </button>
+                  )}
+                  {removePdf && (
+                    <button
+                      type="button"
+                      onClick={() => setRemovePdf(false)}
+                      className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+                    >
+                      Annuler
+                    </button>
+                  )}
                 </div>
                 <div
                   {...getRootProps()}
@@ -287,7 +311,11 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
                   <input {...getInputProps()} />
                   <UploadCloud className="h-6 w-6 mx-auto text-muted-foreground mb-1" />
                   <div className="text-xs text-muted-foreground">
-                    {isDragActive ? "Déposez ici" : "Glisser un nouveau PDF pour remplacer"}
+                    {isDragActive
+                      ? "Déposez ici"
+                      : product?.pdf_path && !removePdf
+                        ? "Glisser un nouveau PDF pour remplacer"
+                        : "Glisser un PDF à ajouter"}
                   </div>
                 </div>
               </>
