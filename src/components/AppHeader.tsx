@@ -34,10 +34,10 @@ export function AppHeader() {
           <Link
             to="/"
             className="px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition"
-            activeProps={{ className: "px-3 py-2 rounded-md text-foreground bg-secondary" }}
+            activeProps={{ className: "px-3 py-2 rounded-md text-foreground bg-[oklch(0.62_0.16_40)] text-white" }}
             activeOptions={{ exact: true }}
           >
-            Vue projeteur
+            Bibliothèque
           </Link>
           {user && (
             <>
