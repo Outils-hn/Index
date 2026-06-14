@@ -5,7 +5,7 @@ import { fetchProductProjectsMap } from "@/lib/projects";
 export async function fetchProductsWithAuthors(): Promise<Product[]> {
   const { data: products, error } = await supabase
     .from("products")
-    .select("id,name,supplier,category,tags,pdf_path,pdf_filename,url,note,updated_at,created_by")
+    .select("id,name,supplier,category,tags,pdf_path,pdf_filename,url,note,updated_at,created_at,created_by")
     .order("updated_at", { ascending: false });
   if (error) throw error;
 
