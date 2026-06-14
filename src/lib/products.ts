@@ -18,16 +18,13 @@ export async function fetchProductsWithAuthors(): Promise<Product[]> {
     { display_name: string | null; email: string | null; first_name: string | null; last_name: string | null }
   >();
   if (ids.length > 0) {
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("id,display_name,email,first_name,last_name")
-      .in("id", ids);
+    const { data: profiles } = await supabase.rpc("get_public_profiles", { _ids: ids });
     profileMap = new Map(
       (profiles ?? []).map((p) => [
         p.id,
         {
           display_name: p.display_name,
-          email: p.email,
+          email: null,
           first_name: (p as any).first_name ?? null,
           last_name: (p as any).last_name ?? null,
         },
