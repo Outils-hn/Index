@@ -100,6 +100,41 @@ export function ProductCard({ product }: { product: Product }) {
   const vStyle = VALIDITY_STYLES[validity];
 
   const revalidate = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("products")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", product.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Fiche revalidée");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+    onError: (e: unknown) => {
+      toast.error(e instanceof Error ? e.message : "Erreur lors de la validation");
+    },
+  });
+
+  const handlePrimary = () => {
+    if (hasPdf) {
+      const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path!);
+      setPdfUrl(data.publicUrl);
+      setPdfOpen(true);
+    } else if (hasUrl) {
+      window.open(product.url!, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  return (
+    <article
+      className={`group relative rounded-xl border bg-card p-4 md:p-5 shadow-sm transition hover:shadow-md flex flex-col h-full gap-3 md:gap-4 ${
+        selected
+          ? "border-primary/60 shadow-primary/10 ring-1 ring-primary/30"
+          : "border-border hover:border-accent/40 hover:shadow-accent/10"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-foreground/70 mb-1 flex items-center gap-1.5">
             <CategoryIcon className="h-3 w-3" />
