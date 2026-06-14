@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, X, SlidersHorizontal, LogIn, Eye } from "lucide-react";
+import { Search, X, SlidersHorizontal, LogIn, Eye, Star } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { fetchCategories } from "@/lib/taxonomies";
@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { fetchProductsWithAuthors } from "@/lib/products";
 import { CompareProvider } from "@/components/CompareContext";
 import { CompareBar } from "@/components/CompareBar";
+import { useFavorites } from "@/hooks/use-favorites";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,7 +39,9 @@ function Index() {
 function IndexInner() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const { user } = useAuth();
+  const { isFavorite } = useFavorites();
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
@@ -52,6 +55,7 @@ function IndexInner() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return products.filter((p) => {
+      if (favoritesOnly && !isFavorite(p.id)) return false;
       if (category && p.category !== category) return false;
       if (!q) return true;
       return (
@@ -65,7 +69,7 @@ function IndexInner() {
         )
       );
     });
-  }, [products, search, category]);
+  }, [products, search, category, favoritesOnly, isFavorite]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -127,6 +131,20 @@ function IndexInner() {
             <LayoutGrid className="h-3.5 w-3.5" />
             Toutes
           </Button>
+          <Button
+            size="sm"
+            variant={favoritesOnly ? "default" : "outline"}
+            onClick={() => setFavoritesOnly((v) => !v)}
+            className={`shrink-0 ${
+              favoritesOnly
+                ? "bg-[oklch(0.62_0.16_40)] hover:bg-[oklch(0.58_0.17_40)] text-white border-transparent"
+                : "text-[oklch(0.5_0.16_40)] hover:text-[oklch(0.45_0.18_40)] hover:border-[oklch(0.7_0.14_45)]/50"
+            }`}
+            aria-pressed={favoritesOnly}
+          >
+            <Star className="h-3.5 w-3.5" fill={favoritesOnly ? "currentColor" : "none"} />
+            Mes Favoris
+          </Button>
           {categories.map((c) => {
             const Icon = getCategoryIcon(c.name, c.icon);
             return (
@@ -166,10 +184,18 @@ function IndexInner() {
 
         {!isLoading && filtered.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border bg-card/50 py-16 text-center">
-            <div className="text-foreground font-medium">Aucun résultat</div>
-            <div className="text-sm text-muted-foreground mt-1">
-              Essayez d'autres mots-clés ou ajoutez un produit depuis l'administration.
-            </div>
+            {favoritesOnly ? (
+              <div className="text-sm text-muted-foreground">
+                Aucun produit dans vos favoris pour le moment.
+              </div>
+            ) : (
+              <>
+                <div className="text-foreground font-medium">Aucun résultat</div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Essayez d'autres mots-clés ou ajoutez un produit depuis l'administration.
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div className="grid gap-4 auto-rows-fr sm:grid-cols-2 lg:grid-cols-3">
