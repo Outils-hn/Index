@@ -1,14 +1,16 @@
-import { ExternalLink, FileText, Calendar, UserCircle2, Globe, AlertTriangle, MapPin, Check, Loader2 } from "lucide-react";
+import { ExternalLink, Calendar, UserCircle2, Globe, AlertTriangle, MapPin, Check, Loader2 } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { PdfViewerModal } from "@/components/PdfViewerModal";
 import type { Project } from "@/lib/projects";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useCompare } from "@/components/CompareContext";
 
 export interface Product {
   id: string;
@@ -77,6 +79,8 @@ export function ProductCard({ product }: { product: Product }) {
   const queryClient = useQueryClient();
   const [pdfOpen, setPdfOpen] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
+  const { isSelected, toggle } = useCompare();
+  const selected = isSelected(product.id);
 
   const fullName = [product.author?.first_name, product.author?.last_name]
     .filter(Boolean)
@@ -118,7 +122,13 @@ export function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <article className="group relative rounded-xl border border-border bg-card p-4 md:p-5 shadow-sm transition hover:border-accent/40 hover:shadow-md hover:shadow-accent/10 flex flex-col h-full gap-3 md:gap-4">
+    <article
+      className={`group relative rounded-xl border bg-card p-4 md:p-5 shadow-sm transition hover:shadow-md flex flex-col h-full gap-3 md:gap-4 ${
+        selected
+          ? "border-primary/60 shadow-primary/10 ring-1 ring-primary/30"
+          : "border-border hover:border-accent/40 hover:shadow-accent/10"
+      }`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-foreground/70 mb-1 flex items-center gap-1.5">
@@ -130,9 +140,21 @@ export function ProductCard({ product }: { product: Product }) {
             <span className="truncate">{product.supplier}</span>
           </div>
         </div>
-        <div className="h-10 w-10 rounded-md border border-border bg-secondary grid place-items-center text-muted-foreground shrink-0">
-          <FileText className="h-5 w-5" />
-        </div>
+        <label
+          className={`shrink-0 inline-flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-[11px] font-medium cursor-pointer transition-colors ${
+            selected
+              ? "border-primary/50 bg-primary/10 text-primary"
+              : "border-border bg-secondary text-muted-foreground hover:text-foreground hover:border-accent/40"
+          }`}
+          title="Sélectionner pour comparer"
+        >
+          <Checkbox
+            checked={selected}
+            onCheckedChange={() => toggle(product)}
+            className="h-3.5 w-3.5"
+          />
+          Comparer
+        </label>
       </div>
 
       {product.tags.length > 0 && (
