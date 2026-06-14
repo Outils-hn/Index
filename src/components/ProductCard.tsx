@@ -1,4 +1,4 @@
-import { ExternalLink, Calendar, UserCircle2, Globe, AlertTriangle, MapPin, Check, Loader2 } from "lucide-react";
+import { ExternalLink, Calendar, UserCircle2, Globe, AlertTriangle, MapPin, Check, Loader2, Star } from "lucide-react";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useCompare } from "@/components/CompareContext";
+import { useFavorites } from "@/hooks/use-favorites";
 
 export interface Product {
   id: string;
@@ -81,6 +82,9 @@ export function ProductCard({ product }: { product: Product }) {
   const [pdfUrl, setPdfUrl] = useState("");
   const { isSelected, toggle } = useCompare();
   const selected = isSelected(product.id);
+  const { isFavorite, toggle: toggleFavorite } = useFavorites();
+  const favorite = isFavorite(product.id);
+  const [favPulse, setFavPulse] = useState(false);
 
   const fullName = [product.author?.first_name, product.author?.last_name]
     .filter(Boolean)
@@ -155,6 +159,28 @@ export function ProductCard({ product }: { product: Product }) {
           />
           Comparer
         </label>
+        <button
+          type="button"
+          onClick={() => {
+            toggleFavorite(product.id);
+            setFavPulse(true);
+            window.setTimeout(() => setFavPulse(false), 350);
+          }}
+          aria-pressed={favorite}
+          aria-label={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+          title={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+          className={`shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-md border transition-all duration-200 active:scale-90 ${
+            favorite
+              ? "border-[oklch(0.75_0.14_45)]/40 bg-[oklch(0.95_0.05_45)] text-[oklch(0.58_0.18_40)] dark:bg-[oklch(0.3_0.08_40)] dark:border-[oklch(0.5_0.14_45)]/40 dark:text-[oklch(0.78_0.16_45)]"
+              : "border-border bg-secondary text-muted-foreground hover:text-[oklch(0.58_0.18_40)] hover:border-[oklch(0.75_0.14_45)]/40"
+          } ${favPulse ? "scale-110" : ""}`}
+        >
+          <Star
+            className={`h-4 w-4 transition-transform duration-300 ${favPulse ? "rotate-[18deg] scale-125" : ""}`}
+            fill={favorite ? "currentColor" : "none"}
+            strokeWidth={favorite ? 1.5 : 2}
+          />
+        </button>
       </div>
 
       {product.tags.length > 0 && (
