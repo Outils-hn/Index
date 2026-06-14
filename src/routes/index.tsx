@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, X, SlidersHorizontal, LogIn, Eye, Star } from "lucide-react";
+import { Search, X, SlidersHorizontal, LogIn, Eye, Star, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { fetchCategories } from "@/lib/taxonomies";
@@ -14,6 +14,43 @@ import { fetchProductsWithAuthors } from "@/lib/products";
 import { CompareProvider } from "@/components/CompareContext";
 import { CompareBar } from "@/components/CompareBar";
 import { useFavorites } from "@/hooks/use-favorites";
+
+type StatTone = "neutral" | "green" | "orange" | "terracotta";
+
+const STAT_TONES: Record<StatTone, string> = {
+  neutral:
+    "text-foreground/70 bg-secondary/60 border-border",
+  green:
+    "text-[oklch(0.4_0.13_150)] bg-[oklch(0.96_0.05_150)] border-[oklch(0.85_0.1_150)] dark:bg-[oklch(0.28_0.06_150)] dark:text-[oklch(0.82_0.14_150)] dark:border-[oklch(0.45_0.1_150)]/40",
+  orange:
+    "text-[oklch(0.45_0.15_60)] bg-[oklch(0.96_0.07_70)] border-[oklch(0.85_0.12_70)] dark:bg-[oklch(0.3_0.08_60)] dark:text-[oklch(0.82_0.15_70)] dark:border-[oklch(0.5_0.12_70)]/40",
+  terracotta:
+    "text-[oklch(0.5_0.16_40)] bg-[oklch(0.96_0.06_45)] border-[oklch(0.82_0.12_45)] dark:bg-[oklch(0.3_0.09_40)] dark:text-[oklch(0.82_0.16_45)] dark:border-[oklch(0.5_0.14_45)]/40",
+};
+
+function StatCard({
+  icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  tone: StatTone;
+}) {
+  return (
+    <div className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 ${STAT_TONES[tone]}`}>
+      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-background/60 border border-current/10">
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <div className="text-lg font-bold leading-tight tabular-nums">{value}</div>
+        <div className="text-[11px] uppercase tracking-wider opacity-80 truncate">{label}</div>
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,7 +78,7 @@ function IndexInner() {
   const [category, setCategory] = useState<string | null>(null);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const { user } = useAuth();
-  const { isFavorite } = useFavorites();
+  const { isFavorite, favorites } = useFavorites();
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
@@ -51,6 +88,19 @@ function IndexInner() {
     queryKey: ["categories"],
     queryFn: fetchCategories,
   });
+
+  const stats = useMemo(() => {
+    let upToDate = 0;
+    let toCheck = 0;
+    const now = Date.now();
+    for (const p of products) {
+      const months = (now - new Date(p.updated_at).getTime()) / (1000 * 60 * 60 * 24 * 30.4375);
+      if (months < 12) upToDate++;
+      else toCheck++;
+    }
+    const favCount = products.filter((p) => favorites.has(p.id)).length;
+    return { total: products.length, upToDate, toCheck, favCount };
+  }, [products, favorites]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -97,6 +147,35 @@ function IndexInner() {
             )}
           </div>
         </div>
+
+        {!isLoading && products.length > 0 && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-5">
+            <StatCard
+              icon={<FileText className="h-4 w-4" />}
+              label="Total fiches"
+              value={stats.total}
+              tone="neutral"
+            />
+            <StatCard
+              icon={<CheckCircle2 className="h-4 w-4" />}
+              label="À jour"
+              value={stats.upToDate}
+              tone="green"
+            />
+            <StatCard
+              icon={<AlertTriangle className="h-4 w-4" />}
+              label="À vérifier"
+              value={stats.toCheck}
+              tone="orange"
+            />
+            <StatCard
+              icon={<Star className="h-4 w-4" fill="currentColor" />}
+              label="Favoris"
+              value={stats.favCount}
+              tone="terracotta"
+            />
+          </div>
+        )}
 
         <div className="relative mb-5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
