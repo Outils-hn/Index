@@ -1,11 +1,13 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X, ExternalLink, Globe, FileText, AlertTriangle, MapPin } from "lucide-react";
+import { X, ExternalLink, Globe, FileText, AlertTriangle, MapPin, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { PdfViewerModal } from "@/components/PdfViewerModal";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { Product } from "@/components/ProductCard";
 
 interface CompareModalProps {
@@ -44,6 +46,28 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
   const [pdfUrl, setPdfUrl] = useState("");
   const [pdfName, setPdfName] = useState("");
   const [pdfFilename, setPdfFilename] = useState<string | null>(null);
+  const isMobile = useIsMobile();
+
+  const pdfProducts = useMemo(() => products.filter((p) => !!p.pdf_path), [products]);
+  const showPdfView = pdfProducts.length >= 2;
+
+  const pdfUrls = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of pdfProducts) {
+      if (p.pdf_path) {
+        const { data } = supabase.storage.from("technical-sheets").getPublicUrl(p.pdf_path);
+        map.set(p.id, data.publicUrl);
+      }
+    }
+    return map;
+  }, [pdfProducts]);
+
+  const [activeTab, setActiveTab] = useState<string>("");
+  useEffect(() => {
+    if (showPdfView && pdfProducts.length > 0) {
+      setActiveTab((prev) => (prev && pdfProducts.some((p) => p.id === prev) ? prev : pdfProducts[0].id));
+    }
+  }, [showPdfView, pdfProducts]);
 
   const openPdf = (p: Product) => {
     if (!p.pdf_path) return;
@@ -74,7 +98,7 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
           <DialogPrimitive.Content
             className={cn(
               "fixed left-[50%] top-[50%] z-50 flex flex-col",
-              "w-[95vw] max-w-[1400px] h-[90vh] max-h-[900px]",
+              "w-[95vw] max-w-[1600px] h-[92vh] max-h-[960px]",
               "-translate-x-1/2 -translate-y-1/2",
               "border border-border bg-background shadow-2xl rounded-xl overflow-hidden",
               "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -86,7 +110,7 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
             <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card shrink-0">
               <div>
                 <DialogPrimitive.Title className="text-base font-semibold text-foreground leading-tight">
-                  Comparaison de produits
+                  {showPdfView ? "Comparaison des fiches techniques" : "Comparaison de produits"}
                 </DialogPrimitive.Title>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {products.length} produit{products.length > 1 ? "s" : ""} côte à côte
@@ -101,6 +125,81 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
               </DialogPrimitive.Close>
             </div>
 
+            {showPdfView ? (
+              isMobile ? (
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+                  <TabsList
+                    className="mx-3 mt-3 h-auto p-1 grid shrink-0"
+                    style={{ gridTemplateColumns: `repeat(${pdfProducts.length}, minmax(0, 1fr))` }}
+                  >
+                    {pdfProducts.map((p) => (
+                      <TabsTrigger key={p.id} value={p.id} className="text-xs py-1.5 truncate">
+                        {p.name}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {pdfProducts.map((p) => (
+                    <TabsContent
+                      key={p.id}
+                      value={p.id}
+                      className="flex-1 mt-2 data-[state=inactive]:hidden flex flex-col min-h-0"
+                    >
+                      <div className="flex items-center justify-between gap-2 px-3 py-2 border-y border-border bg-card shrink-0">
+                        <span className="text-sm font-medium text-foreground truncate" title={p.name}>
+                          {p.name}
+                        </span>
+                        <a
+                          href={pdfUrls.get(p.id)}
+                          download={p.pdf_filename || "fiche-technique.pdf"}
+                          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                        </a>
+                      </div>
+                      <iframe
+                        src={pdfUrls.get(p.id)}
+                        title={`PDF — ${p.name}`}
+                        className="flex-1 w-full border-0 bg-black/5 dark:bg-white/5"
+                      />
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              ) : (
+                <div
+                  className="flex-1 grid min-h-0 divide-x divide-border"
+                  style={{ gridTemplateColumns: `repeat(${pdfProducts.length}, minmax(0, 1fr))` }}
+                >
+                  {pdfProducts.map((p) => (
+                    <div key={p.id} className="flex flex-col min-h-0 min-w-0">
+                      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-border bg-card shrink-0">
+                        <div className="min-w-0">
+                          <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground truncate">
+                            {p.category}
+                          </div>
+                          <div className="text-sm font-semibold text-foreground truncate" title={p.name}>
+                            {p.name}
+                          </div>
+                        </div>
+                        <a
+                          href={pdfUrls.get(p.id)}
+                          download={p.pdf_filename || "fiche-technique.pdf"}
+                          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
+                          title="Télécharger le PDF"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          <span>Télécharger</span>
+                        </a>
+                      </div>
+                      <iframe
+                        src={pdfUrls.get(p.id)}
+                        title={`PDF — ${p.name}`}
+                        className="flex-1 w-full border-0 bg-black/5 dark:bg-white/5"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : (
             <div className="flex-1 overflow-auto">
               <table className="w-full border-collapse text-sm">
                 <thead className="sticky top-0 bg-card z-20">
@@ -270,6 +369,14 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
                   </tr>
                 </tfoot>
               </table>
+            </div>
+            )}
+
+            <div className="shrink-0 border-t border-border bg-card px-4 py-2.5 flex justify-end">
+              <Button variant="outline" size="sm" onClick={onClose}>
+                <X className="h-4 w-4 mr-1.5" />
+                Fermer le comparateur
+              </Button>
             </div>
           </DialogPrimitive.Content>
         </DialogPrimitive.Portal>
