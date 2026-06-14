@@ -99,58 +99,7 @@ export function ProductCard({ product }: { product: Product }) {
   const validity = getValidity(product.updated_at);
   const vStyle = VALIDITY_STYLES[validity];
 
-  const isNew = (() => {
-    const ref = product.created_at ?? product.updated_at;
-    if (!ref) return false;
-    const days = (Date.now() - new Date(ref).getTime()) / (1000 * 60 * 60 * 24);
-    return days >= 0 && days < 7;
-  })();
-
   const revalidate = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase
-        .from("products")
-        .update({ updated_at: new Date().toISOString() })
-        .eq("id", product.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Fiche revalidée");
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-    },
-    onError: (e: unknown) => {
-      toast.error(e instanceof Error ? e.message : "Erreur lors de la validation");
-    },
-  });
-
-  const handlePrimary = () => {
-    if (hasPdf) {
-      const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path!);
-      setPdfUrl(data.publicUrl);
-      setPdfOpen(true);
-    } else if (hasUrl) {
-      window.open(product.url!, "_blank", "noopener,noreferrer");
-    }
-  };
-
-  return (
-    <article
-      className={`group relative rounded-xl border bg-card p-4 md:p-5 shadow-sm transition hover:shadow-md flex flex-col h-full gap-3 md:gap-4 ${
-        selected
-          ? "border-primary/60 shadow-primary/10 ring-1 ring-primary/30"
-          : "border-border hover:border-accent/40 hover:shadow-accent/10"
-      }`}
-    >
-      {isNew && (
-        <span
-          className="absolute -top-2 left-3 z-10 inline-flex items-center gap-1 rounded-full border border-[oklch(0.7_0.16_45)]/40 bg-[oklch(0.95_0.06_45)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[oklch(0.45_0.18_38)] shadow-sm dark:bg-[oklch(0.3_0.09_40)] dark:text-[oklch(0.82_0.16_45)] dark:border-[oklch(0.5_0.14_45)]/50"
-          title="Ajouté il y a moins de 7 jours"
-        >
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[oklch(0.62_0.18_40)] shadow-[0_0_4px_oklch(0.7_0.2_40)]" />
-          Nouveau
-        </span>
-      )}
-      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-foreground/70 mb-1 flex items-center gap-1.5">
             <CategoryIcon className="h-3 w-3" />
