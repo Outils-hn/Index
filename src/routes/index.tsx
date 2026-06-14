@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, X, SlidersHorizontal, LogIn, Eye, Star } from "lucide-react";
+import { Search, X, SlidersHorizontal, LogIn, Eye, Star, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { fetchCategories } from "@/lib/taxonomies";
@@ -41,7 +41,7 @@ function IndexInner() {
   const [category, setCategory] = useState<string | null>(null);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const { user } = useAuth();
-  const { isFavorite } = useFavorites();
+  const { isFavorite, favorites } = useFavorites();
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
@@ -51,6 +51,19 @@ function IndexInner() {
     queryKey: ["categories"],
     queryFn: fetchCategories,
   });
+
+  const stats = useMemo(() => {
+    let upToDate = 0;
+    let toCheck = 0;
+    const now = Date.now();
+    for (const p of products) {
+      const months = (now - new Date(p.updated_at).getTime()) / (1000 * 60 * 60 * 24 * 30.4375);
+      if (months < 12) upToDate++;
+      else toCheck++;
+    }
+    const favCount = products.filter((p) => favorites.has(p.id)).length;
+    return { total: products.length, upToDate, toCheck, favCount };
+  }, [products, favorites]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -97,6 +110,35 @@ function IndexInner() {
             )}
           </div>
         </div>
+
+        {!isLoading && products.length > 0 && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-5">
+            <StatCard
+              icon={<FileText className="h-4 w-4" />}
+              label="Total fiches"
+              value={stats.total}
+              tone="neutral"
+            />
+            <StatCard
+              icon={<CheckCircle2 className="h-4 w-4" />}
+              label="À jour"
+              value={stats.upToDate}
+              tone="green"
+            />
+            <StatCard
+              icon={<AlertTriangle className="h-4 w-4" />}
+              label="À vérifier"
+              value={stats.toCheck}
+              tone="orange"
+            />
+            <StatCard
+              icon={<Star className="h-4 w-4" fill="currentColor" />}
+              label="Favoris"
+              value={stats.favCount}
+              tone="terracotta"
+            />
+          </div>
+        )}
 
         <div className="relative mb-5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
