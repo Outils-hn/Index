@@ -208,7 +208,13 @@ export function NormCard({ norm, onEdit }: { norm: Norm; onEdit?: (norm: Norm) =
         )}
       </div>
 
-      <PdfViewerModal open={pdfOpen} onOpenChange={setPdfOpen} url={pdfUrl} filename={norm.pdf_filename ?? norm.name} />
+      <PdfViewerModal
+        open={pdfOpen}
+        onClose={() => setPdfOpen(false)}
+        productName={norm.name}
+        pdfUrl={pdfUrl}
+        pdfFilename={norm.pdf_filename ?? null}
+      />
     </article>
   );
 }
