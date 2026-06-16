@@ -1,7 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, X, SlidersHorizontal, LogIn, Eye, Star, FileText, CheckCircle2, AlertTriangle, Dices } from "lucide-react";
+import {
+  Search,
+  X,
+  SlidersHorizontal,
+  LogIn,
+  Eye,
+  Star,
+  FileText,
+  CheckCircle2,
+  AlertTriangle,
+  Dices,
+} from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard } from "@/components/ProductCard";
 import { fetchCategories } from "@/lib/taxonomies";
@@ -18,8 +29,7 @@ import { useFavorites } from "@/hooks/use-favorites";
 type StatTone = "neutral" | "green" | "orange" | "terracotta";
 
 const STAT_TONES: Record<StatTone, string> = {
-  neutral:
-    "text-foreground/70 bg-secondary/60 border-border",
+  neutral: "text-foreground/70 bg-secondary/60 border-border",
   green:
     "text-[oklch(0.4_0.13_150)] bg-[oklch(0.96_0.05_150)] border-[oklch(0.85_0.1_150)] dark:bg-[oklch(0.28_0.06_150)] dark:text-[oklch(0.82_0.14_150)] dark:border-[oklch(0.45_0.1_150)]/40",
   orange:
@@ -55,7 +65,7 @@ function StatCard({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "FaçadeTech — Bibliothèque de fiches techniques" },
+      { title: "FaçadeTech — Bibliothèque" },
       { name: "description", content: "Recherche rapide de fiches techniques produits pour bureau d'études façade." },
       { property: "og:title", content: "FaçadeTech — Fiches techniques" },
       { property: "og:description", content: "Bibliothèque produits pour bureau d'études façade architecturale." },
@@ -118,11 +128,7 @@ function IndexInner() {
         p.name.toLowerCase().includes(q) ||
         p.supplier.toLowerCase().includes(q) ||
         p.tags.some((t) => t.toLowerCase().includes(q)) ||
-        (p.projects ?? []).some(
-          (pr) =>
-            pr.nom.toLowerCase().includes(q) ||
-            pr.numero.toLowerCase().includes(q),
-        )
+        (p.projects ?? []).some((pr) => pr.nom.toLowerCase().includes(q) || pr.numero.toLowerCase().includes(q))
       );
     });
   }, [products, search, category, favoritesOnly, isFavorite, randomId]);
@@ -166,18 +172,8 @@ function IndexInner() {
 
         {!isLoading && products.length > 0 && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-5">
-            <StatCard
-              icon={<FileText className="h-4 w-4" />}
-              label="Total fiches"
-              value={stats.total}
-              tone="neutral"
-            />
-            <StatCard
-              icon={<CheckCircle2 className="h-4 w-4" />}
-              label="À jour"
-              value={stats.upToDate}
-              tone="green"
-            />
+            <StatCard icon={<FileText className="h-4 w-4" />} label="Total fiches" value={stats.total} tone="neutral" />
+            <StatCard icon={<CheckCircle2 className="h-4 w-4" />} label="À jour" value={stats.upToDate} tone="green" />
             <StatCard
               icon={<AlertTriangle className="h-4 w-4" />}
               label="À vérifier"
@@ -286,7 +282,7 @@ function IndexInner() {
                 {c.name}
               </Button>
             );
-          })}          
+          })}
         </div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground/70 mt-3 mb-6">
           <span className="uppercase tracking-wider text-[10px] font-medium text-muted-foreground/50">Validité :</span>
@@ -304,17 +300,13 @@ function IndexInner() {
           </span>
         </div>
         <div className="text-sm text-muted-foreground mb-4">
-          {isLoading
-            ? "Chargement…"
-            : `${filtered.length} produit${filtered.length > 1 ? "s" : ""}`}
+          {isLoading ? "Chargement…" : `${filtered.length} produit${filtered.length > 1 ? "s" : ""}`}
         </div>
 
         {!isLoading && filtered.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border bg-card/50 py-16 text-center">
             {favoritesOnly ? (
-              <div className="text-sm text-muted-foreground">
-                Aucun produit dans vos favoris pour le moment.
-              </div>
+              <div className="text-sm text-muted-foreground">Aucun produit dans vos favoris pour le moment.</div>
             ) : (
               <>
                 <div className="text-foreground font-medium">Aucun résultat</div>
