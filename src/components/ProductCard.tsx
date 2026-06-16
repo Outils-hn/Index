@@ -201,36 +201,7 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       )}
 
-      <div className="mt-auto pt-3 border-t border-border flex flex-col gap-3">
-        {/* Boutons côte à côte */}
-        <div className="flex gap-2 w-full">
-          <Button
-            size="sm"
-            onClick={handlePrimary}
-            disabled={!hasPdf && !hasUrl}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
-          >
-            {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
-            {hasPdf ? (
-              <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
-            ) : (
-              <Globe className="h-3.5 w-3.5 ml-1.5" />
-            )}
-          </Button>
-          {hasPdf && hasUrl && (
-            <a
-              href={product.url!}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              Site fournisseur
-            </a>
-          )}
-        </div>
-
+      <div className="mt-auto flex flex-col gap-3">
         {product.projects && product.projects.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {product.projects.map((pr) => (
@@ -247,41 +218,72 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        {/* Ligne fusionnée Date + Auteur tout en bas */}
-        <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground/80">
-          <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            <UserCircle2 className="h-3 w-3 shrink-0" />
-            <span className="truncate">Ajouté par {authorLabel}</span>
-            <span className="text-muted-foreground/40 shrink-0">•</span>
-            <Calendar className="h-3 w-3 shrink-0" />
-            <span className="truncate">
-              {new Date(product.updated_at).toLocaleDateString("fr-FR", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })}
-            </span>
-            <span
-              className={`inline-block h-2 w-2 rounded-full shrink-0 ml-1 mr-0.5 ${vStyle.dot}`}
-              title={`${vStyle.label}`}
-            />
-          </div>
-          {user && validity !== "valid" && (
-            <button
-              type="button"
-              onClick={() => revalidate.mutate()}
-              disabled={revalidate.isPending}
-              className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-border bg-secondary text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors disabled:opacity-50 shrink-0 ml-2"
-              title="Marquer la fiche comme vérifiée aujourd'hui"
-              aria-label="Revalider la fiche"
+        <div className="pt-3 border-t border-border flex flex-col gap-3">
+          {/* Boutons côte à côte */}
+          <div className="flex gap-2 w-full">
+            <Button
+              size="sm"
+              onClick={handlePrimary}
+              disabled={!hasPdf && !hasUrl}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
             >
-              {revalidate.isPending ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
+              {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
+              {hasPdf ? (
+                <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
               ) : (
-                <Check className="h-3 w-3" />
+                <Globe className="h-3.5 w-3.5 ml-1.5" />
               )}
-            </button>
-          )}
+            </Button>
+            {hasPdf && hasUrl && (
+              <a
+                href={product.url!}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
+              >
+                <Globe className="h-3.5 w-3.5" />
+                Site fournisseur
+              </a>
+            )}
+          </div>
+
+          {/* Ligne fusionnée Date + Auteur tout en bas */}
+          <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground/80">
+            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+              <UserCircle2 className="h-3 w-3 shrink-0" />
+              <span className="truncate">Ajouté par {authorLabel}</span>
+              <span className="text-muted-foreground/40 shrink-0">•</span>
+              <Calendar className="h-3 w-3 shrink-0" />
+              <span className="truncate">
+                {new Date(product.updated_at).toLocaleDateString("fr-FR", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
+              <span
+                className={`inline-block h-2 w-2 rounded-full shrink-0 ml-1 mr-0.5 ${vStyle.dot}`}
+                title={`${vStyle.label}`}
+              />
+            </div>
+            {user && validity !== "valid" && (
+              <button
+                type="button"
+                onClick={() => revalidate.mutate()}
+                disabled={revalidate.isPending}
+                className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-border bg-secondary text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors disabled:opacity-50 shrink-0 ml-2"
+                title="Marquer la fiche comme vérifiée aujourd'hui"
+                aria-label="Revalider la fiche"
+              >
+                {revalidate.isPending ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Check className="h-3 w-3" />
+                )}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
