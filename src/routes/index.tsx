@@ -65,7 +65,7 @@ function StatCard({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "FaçadeTech — Bibliothèque" },
+      { title: "Index ·" },
       { name: "description", content: "Recherche rapide de fiches techniques produits pour bureau d'études façade." },
       { property: "og:title", content: "FaçadeTech — Fiches techniques" },
       { property: "og:description", content: "Bibliothèque produits pour bureau d'études façade architecturale." },
