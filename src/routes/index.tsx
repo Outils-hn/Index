@@ -65,9 +65,9 @@ function StatCard({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Index ·" },
-      { name: "description", content: "Recherche rapide de fiches techniques produits pour bureau d'études façade." },
-      { property: "og:title", content: "FaçadeTech — Fiches techniques" },
+      { title: "INDEX · Fiches techniques" },
+      { name: "description", content: "INDEX — bibliothèque technique pour bureau d'études façade." },
+      { property: "og:title", content: "INDEX — Fiches techniques" },
       { property: "og:description", content: "Bibliothèque produits pour bureau d'études façade architecturale." },
     ],
   }),
@@ -150,8 +150,8 @@ function IndexInner() {
         <div className="mb-5 md:mb-8">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="text-xl md:text-3xl font-bold tracking-tight text-foreground">
-                Bibliothèque de fiches techniques
+              <h1 className="font-display text-xl md:text-3xl font-bold tracking-[0.12em] uppercase text-foreground">
+                Bibliothèque technique
               </h1>
               <p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-1.5">
                 Recherchez un produit par nom, fournisseur ou mot-clé.
