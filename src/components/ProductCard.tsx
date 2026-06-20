@@ -128,10 +128,8 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <article
-      className={`group relative rounded-xl border bg-card p-4 md:p-5 shadow-sm transition hover:shadow-md flex flex-col h-full gap-3 md:gap-4 ${
-        selected
-          ? "border-primary/60 shadow-primary/10 ring-1 ring-primary/30"
-          : "border-border hover:border-accent/40 hover:shadow-accent/10"
+      className={`group relative rounded-xl p-4 md:p-5 flex flex-col h-full gap-3 md:gap-4 neo-card ${
+        selected ? "ring-1 ring-primary/40" : ""
       }`}
     >
       <div className="flex items-start justify-between gap-3">
