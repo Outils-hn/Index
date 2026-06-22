@@ -77,7 +77,7 @@ const VALIDITY_STYLES: Record<Validity, { label: string; pill: string; dot: stri
 };
 
 export function ProductCard({ product }: { product: Product }) {
-  const CategoryIcon = getCategoryIcon(product.category);
+  const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [pdfOpen, setPdfOpen] = useState(false);
