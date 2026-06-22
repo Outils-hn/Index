@@ -18,6 +18,7 @@ export interface Product {
   name: string;
   supplier: string;
   category: string;
+  category_icon?: string | null;
   tags: string[];
   pdf_path: string | null;
   pdf_filename: string | null;
@@ -76,7 +77,7 @@ const VALIDITY_STYLES: Record<Validity, { label: string; pill: string; dot: stri
 };
 
 export function ProductCard({ product }: { product: Product }) {
-  const CategoryIcon = getCategoryIcon(product.category);
+  const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [pdfOpen, setPdfOpen] = useState(false);

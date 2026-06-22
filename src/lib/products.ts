@@ -34,9 +34,13 @@ export async function fetchProductsWithAuthors(): Promise<Product[]> {
 
   const projectsMap = await fetchProductProjectsMap();
 
+  const { data: categories } = await supabase.from("categories").select("name,icon");
+  const categoryIconMap = new Map((categories ?? []).map((c) => [c.name, c.icon]));
+
   return (products ?? []).map((p) => ({
     ...p,
     author: p.created_by ? profileMap.get(p.created_by) ?? null : null,
     projects: projectsMap.get(p.id) ?? [],
+    category_icon: categoryIconMap.get(p.category) ?? null,
   })) as Product[];
 }
