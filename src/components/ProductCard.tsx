@@ -18,6 +18,7 @@ export interface Product {
   name: string;
   supplier: string;
   category: string;
+  category_icon?: string | null;
   tags: string[];
   pdf_path: string | null;
   pdf_filename: string | null;
