@@ -78,14 +78,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Index ·" },
+      { name: "description", content: "INDEX — bibliothèque technique pour bureau d'études façade." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Index ·" },
+      { property: "og:description", content: "INDEX — bibliothèque technique pour bureau d'études façade." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Index ·" },
+      { name: "twitter:description", content: "INDEX — bibliothèque technique pour bureau d'études façade." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/58bf014b-9847-46ea-91db-16405b90e2c8/id-preview-cbb25161--3678acde-4b5f-4c7d-b5a2-8ddd3dfdf9d0.lovable.app-1782285918541.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/58bf014b-9847-46ea-91db-16405b90e2c8/id-preview-cbb25161--3678acde-4b5f-4c7d-b5a2-8ddd3dfdf9d0.lovable.app-1782285918541.png" },
     ],
     links: [
       {
