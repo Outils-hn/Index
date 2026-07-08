@@ -419,9 +419,13 @@ function Admin() {
               <div className="py-16 text-center text-sm text-muted-foreground">
                 Aucun produit pour le moment.
               </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="py-16 text-center text-sm text-muted-foreground">
+                Aucun résultat pour « {search} ».
+              </div>
             ) : (
               <ul className="divide-y divide-border">
-                {products.map((p) => (
+                {filteredProducts.map((p) => (
                   <li key={p.id} className="flex items-center gap-4 p-4 hover:bg-secondary/40">
                     <div className="h-10 w-10 rounded-md bg-secondary grid place-items-center text-muted-foreground shrink-0">
                       <FileText className="h-5 w-5" />
