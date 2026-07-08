@@ -146,7 +146,7 @@ function IndexInner() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <main className="px-4 md:px-8 lg:px-10 py-4 md:py-10">
+      <main className="mx-auto max-w-7xl px-4 md:px-6 py-4 md:py-10">
         <div className="mb-5 md:mb-8">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
@@ -318,7 +318,7 @@ function IndexInner() {
           </div>
         ) : (
           <div
-            className={`grid gap-4 auto-rows-fr sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 transition-all duration-300 ${
+            className={`grid gap-4 auto-rows-fr sm:grid-cols-2 lg:grid-cols-3 transition-all duration-300 ${
               rolling ? "blur-sm opacity-60 scale-[0.99]" : "blur-0 opacity-100 scale-100"
             }`}
           >

@@ -21,8 +21,7 @@ export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename
         <DialogPrimitive.Content
           className={cn(
             "fixed left-[50%] top-[50%] z-50 flex flex-col",
-            "w-[96vw] max-w-[1800px] xl:max-w-[2200px] 2xl:max-w-[2600px]",
-            "h-[92vh] max-h-[1000px] xl:max-h-[1200px] 2xl:max-h-[1400px]",
+            "w-[95vw] max-w-[1400px] h-[90vh] max-h-[900px]",
             "-translate-x-1/2 -translate-y-1/2",
             "border border-border bg-background shadow-2xl rounded-xl overflow-hidden",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
