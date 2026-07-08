@@ -59,6 +59,8 @@ function Admin() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
 
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/auth" });
   }, [authLoading, user, navigate]);
@@ -67,6 +69,17 @@ function Admin() {
     queryKey: ["products"],
     queryFn: fetchProductsWithAuthors,
   });
+
+  const filteredProducts = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return products;
+    return products.filter((p) =>
+      p.name.toLowerCase().includes(q) ||
+      p.supplier.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      p.tags.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [products, search]);
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
