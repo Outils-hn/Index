@@ -18,7 +18,7 @@ export function AppHeader() {
 
   return (
     <header className="border-b border-border/60 bg-background/80 backdrop-blur sticky top-0 z-30">
-      <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <div className="px-6 lg:px-10 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group">
           <div className="h-10 w-10 grid place-items-center neo-surface rounded-md text-foreground/80">
             <Hexagon className="h-5 w-5" strokeWidth={1.5} />
