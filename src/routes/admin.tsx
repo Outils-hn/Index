@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { UploadCloud, FileText, Trash2, Loader2, Plus, X, Pencil } from "lucide-react";
+import { UploadCloud, FileText, Trash2, Loader2, Plus, X, Pencil, Search } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
@@ -59,6 +59,8 @@ function Admin() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
 
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/auth" });
   }, [authLoading, user, navigate]);
@@ -67,6 +69,17 @@ function Admin() {
     queryKey: ["products"],
     queryFn: fetchProductsWithAuthors,
   });
+
+  const filteredProducts = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return products;
+    return products.filter((p) =>
+      p.name.toLowerCase().includes(q) ||
+      p.supplier.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      p.tags.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [products, search]);
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
@@ -377,9 +390,28 @@ function Admin() {
             <h2 className="text-2xl font-bold tracking-tight">
               Produits enregistrés
               <span className="text-muted-foreground font-normal text-base ml-2">
-                ({products.length})
+                ({filteredProducts.length})
               </span>
             </h2>
+          </div>
+
+          <div className="relative mb-5">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Filtrer par nom, fournisseur, catégorie ou tag…"
+              className="pl-11 pr-11 h-12 text-base bg-card border-border focus-visible:ring-accent"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label="Effacer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           <div className="rounded-lg border border-border bg-card overflow-hidden">
@@ -387,9 +419,13 @@ function Admin() {
               <div className="py-16 text-center text-sm text-muted-foreground">
                 Aucun produit pour le moment.
               </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="py-16 text-center text-sm text-muted-foreground">
+                Aucun résultat pour « {search} ».
+              </div>
             ) : (
               <ul className="divide-y divide-border">
-                {products.map((p) => (
+                {filteredProducts.map((p) => (
                   <li key={p.id} className="flex items-center gap-4 p-4 hover:bg-secondary/40">
                     <div className="h-10 w-10 rounded-md bg-secondary grid place-items-center text-muted-foreground shrink-0">
                       <FileText className="h-5 w-5" />
