@@ -390,9 +390,28 @@ function Admin() {
             <h2 className="text-2xl font-bold tracking-tight">
               Produits enregistrés
               <span className="text-muted-foreground font-normal text-base ml-2">
-                ({products.length})
+                ({filteredProducts.length})
               </span>
             </h2>
+          </div>
+
+          <div className="relative mb-5">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Filtrer par nom, fournisseur, catégorie ou tag…"
+              className="pl-11 pr-11 h-12 text-base bg-card border-border focus-visible:ring-accent"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label="Effacer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           <div className="rounded-lg border border-border bg-card overflow-hidden">
