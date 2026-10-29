@@ -60,7 +60,7 @@ function NouveauMotDePasse() {
           {pret === "invalide" && (
             <p className="text-sm text-muted-foreground">
               Ce lien n'est plus valable (déjà utilisé ou expiré).{" "}
-              <Link to="/auth" className="text-foreground underline-offset-2 hover:underline">Redemander un lien</Link>
+              <Link to="/auth" className="text-foreground underline underline-offset-2">Redemander un lien</Link>
             </p>
           )}
           {pret === "ok" && (

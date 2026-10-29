@@ -123,7 +123,7 @@ function IndexInner() {
           {!user && (
             <p className="text-xs text-muted-foreground">
               Lecture seule ·{" "}
-              <Link to="/auth" className="text-foreground underline-offset-2 hover:underline">Se connecter</Link>{" "}
+              <Link to="/auth" className="text-foreground underline underline-offset-2">Se connecter</Link>{" "}
               pour ajouter des fiches
             </p>
           )}
