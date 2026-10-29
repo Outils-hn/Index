@@ -238,7 +238,7 @@ function Admin() {
       <main className="mx-auto max-w-6xl px-6 py-10 grid lg:grid-cols-[1fr_1.2fr] gap-10">
         <section>
           <div className="mb-6">
-            <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-1">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--app-ink)] mb-1">
               Nouveau produit
             </div>
             <h1 className="text-2xl font-bold tracking-tight">Ajouter une fiche technique</h1>
@@ -405,7 +405,7 @@ function Admin() {
 
         <section>
           <div className="mb-6">
-            <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-1">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--app-ink)] mb-1">
               Catalogue
             </div>
             <h2 className="text-2xl font-bold tracking-tight">

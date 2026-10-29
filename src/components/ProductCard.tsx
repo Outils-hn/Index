@@ -103,7 +103,7 @@ export const ProductCard = memo(function ProductCard({
     <article className={`flex h-full flex-col gap-3 rounded-lg border bg-card p-4 transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          <div className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--app-ink)]">
             <CategoryIcon className="h-3 w-3" aria-hidden="true" />
             {product.category}
           </div>
