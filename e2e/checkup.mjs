@@ -151,6 +151,8 @@ await step("Lien vers une fiche", async () => {
   verif("Lien vers une fiche disparue : message clair", await page.getByText(/n'existe plus dans Index/).isVisible());
   await page.getByRole("button", { name: "Voir toutes les fiches" }).click(); await page.waitForTimeout(400);
   verif("« Voir toutes les fiches » revient à la bibliothèque", (await page.locator("article").count()) === 9);
+  await aller(page, "?q=chevilles");
+  verif("Lien ?q= : recherche pré-remplie (3 fiches)", (await page.getByLabel("Rechercher une fiche").inputValue()) === "chevilles" && (await cartes(page)) === 3, `${await cartes(page)}`);
   await c.close();
 });
 
