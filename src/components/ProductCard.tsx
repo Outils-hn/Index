@@ -1,5 +1,5 @@
 import { ExternalLink, Globe, MapPin, Check, Loader2, Star, TriangleAlert } from "lucide-react";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getCategoryIcon } from "@/lib/category-icons";
@@ -48,12 +48,14 @@ export const fmtDate = (d: string) =>
  * que les cartes qui changent.
  */
 export const ProductCard = memo(function ProductCard({
-  product, loggedIn, favorite, onToggleFavorite,
+  product, loggedIn, favorite, onToggleFavorite, autoOpen = false,
 }: {
   product: Product;
   loggedIn: boolean;
   favorite: boolean;
   onToggleFavorite: (id: string) => void;
+  /** Ouvre la fiche (PDF) des l'affichage : lien venant d'une autre appli. */
+  autoOpen?: boolean;
 }) {
   const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const queryClient = useQueryClient();
@@ -93,6 +95,9 @@ export const ProductCard = memo(function ProductCard({
       window.open(product.url!, "_blank", "noopener,noreferrer");
     }
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (autoOpen && product.pdf_path) open(); }, [autoOpen, product.id]);
 
   return (
     <article className={`flex h-full flex-col gap-3 rounded-lg border bg-card p-4 transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>

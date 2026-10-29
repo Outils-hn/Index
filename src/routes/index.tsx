@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, X, Star } from "lucide-react";
@@ -21,6 +21,8 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Bibliothèque des fiches techniques du bureau d'études façade." },
     ],
   }),
+  // ?fiche=<id> : lien venant d'une autre appli (Masse, Strate, Format, Linear) vers une fiche precise
+  validateSearch: (s: Record<string, unknown>): { fiche?: string } => (typeof s.fiche === "string" && s.fiche ? { fiche: s.fiche } : {}),
   component: Index,
 });
 
@@ -50,6 +52,8 @@ function IndexInner() {
   const searchRef = useRef<HTMLInputElement>(null);
   // Recherche differee : la saisie reste fluide meme avec des centaines de fiches
   const q = useDeferredValue(search);
+  const { fiche } = Route.useSearch();
+  const navigate = useNavigate();
 
   // « / » place le curseur dans la recherche, comme sur la plupart des sites
   useEffect(() => {
@@ -69,9 +73,10 @@ function IndexInner() {
   const toCheck = useMemo(() => products.filter(({ p }) => validity(p) !== "valid").length, [products]);
   const favCount = useMemo(() => products.filter(({ p }) => favorites.has(p.id)).length, [products, favorites]);
 
+  const ficheLiee = useMemo(() => (fiche ? products.find(({ p }) => p.id === fiche)?.p ?? null : null), [fiche, products]);
   const filtered = useMemo(
     () =>
-      products
+      fiche ? (ficheLiee ? [ficheLiee] : []) : products
         .filter(({ p, hay }) => {
           if (filtre.kind === "fav" && !favorites.has(p.id)) return false;
           if (filtre.kind === "check" && validity(p) === "valid") return false;
@@ -79,7 +84,7 @@ function IndexInner() {
           return matches(p, q, hay);
         })
         .map(({ p }) => p),
-    [products, q, filtre, favorites],
+    [products, q, filtre, favorites, fiche, ficheLiee],
   );
 
   // Affichage par paquets de 60 : au-dela, « Afficher plus » (la recherche reste instantanee)
@@ -171,6 +176,20 @@ function IndexInner() {
               Vérifiez la connexion internet. Aucune copie locale n'est encore disponible sur cet ordinateur : elle sera créée à la prochaine ouverture réussie.
             </p>
             <button className="mt-4 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted" onClick={() => refetch()}>Réessayer</button>
+          </div>
+        ) : fiche ? (
+          <div className="space-y-3">
+            <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              {ficheLiee ? "Fiche ouverte depuis une autre appli." : "Cette fiche n'existe plus dans Index (supprimée ou mise à la corbeille)."}
+              <button type="button" onClick={() => navigate({ to: "/", search: {} })} className="text-foreground underline-offset-2 hover:underline">
+                Voir toutes les fiches
+              </button>
+            </p>
+            {ficheLiee && (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <ProductCard product={ficheLiee} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
+              </div>
+            )}
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border py-14 text-center">
