@@ -1,0 +1,38 @@
+OK     Curseur dans la recherche a l'ouverture
+OK     Selecteur : 7 applis dans l'ordre (Access, Format, Index, Linear, Masse, Strate, Trame)
+OK     Pied de page (Index v2.0 · Conçu par Hugo N. · 2026 · Sauvegarde)
+OK     Plus de de « fiche au hasard » ni de tuiles
+OK     Recherche « etancheite » : 2 fiche(s) (2)
+OK     Recherche « hft 140 » : 1 fiche(s) (1)
+OK     Recherche « chevilles » : 3 fiche(s) (3)
+OK     Recherche « 24-118 » : 1 fiche(s) (1)
+OK     Recherche « poser » : 1 fiche(s) (1)
+OK     Filtre « À vérifier » : 6 fiches (6)
+OK     Accessibilite bibliotheque : aucun defaut grave
+OK     Sauvegarde JSON telechargee (index-sauvegarde-2026-10-29.json)
+OK     Aucune fenetre native du navigateur (0)
+OK     Hors ligne : copie locale affichee (6120 ms)
+OK     Lien ?fiche= : seule la fiche demandée, PDF ouvert
+OK     Lien vers une fiche disparue : message clair
+OK     « Voir toutes les fiches » revient à la bibliothèque
+OK     Lien ?q= : recherche pré-remplie (3 fiches) (3)
+OK     Hors ligne sans copie : message et Réessayer
+OK     Inscription : prénom, nom, email, mot de passe
+OK     Mot de passe oublié : lien envoyé
+OK     Page nouveau mot de passe sans lien : message clair
+OK     Accessibilite connexion : aucun defaut grave
+OK     Accessibilite admin : aucun defaut grave
+OK     Supprimer : fenetre Épure
+OK     Fiche mise a la corbeille (pas supprimee) (PATCH products)
+OK     Corbeille affichee avec Restaurer
+OK     Restauration
+OK     Aucune fenetre native (admin) (0)
+OK     Accessibilite config : aucun defaut grave
+OK     Comptes : 1 en attente avec bouton Valider
+OK     Validation d'un compte
+OK     Nommer un administrateur
+OK     Non-admin : Configuration sans la section Comptes
+OK     Compte non validé : écran d'attente, pas d'administration
+OK     Compte non validé : pas de bouton « Vérifiée » sur les fiches
+OK     400 fiches : saisie fluide (< 300 ms par frappe) (32 / 34 / 41 ms)
+OK     Mode sombre retenu
