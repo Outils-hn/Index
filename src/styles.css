@@ -60,91 +60,84 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: "Geist", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* Violet encre : couleur propre a Index (Format orange, Linear cobalt, Masse brique, Strate jaune, Trame emeraude). */
+  --color-index: var(--index);
+  --color-index-soft: var(--index-soft);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
 }
 
 :root {
   --radius: 0.625rem;
-  /* INDEX — Industrial neomorphic palette (slate / zinc) */
-  --background: oklch(0.93 0.005 250);
-  --foreground: oklch(0.24 0.015 250);
-  --card: oklch(0.945 0.004 250);
-  --card-foreground: oklch(0.24 0.015 250);
-  --popover: oklch(0.96 0.004 250);
-  --popover-foreground: oklch(0.24 0.015 250);
-  --primary: oklch(0.62 0.16 40);
-  --primary-foreground: oklch(0.98 0.005 70);
-  --secondary: oklch(0.9 0.006 250);
-  --secondary-foreground: oklch(0.3 0.015 250);
-  --muted: oklch(0.9 0.006 250);
-  --muted-foreground: oklch(0.46 0.012 250);
-  --accent: oklch(0.62 0.16 40);
-  --accent-foreground: oklch(0.98 0.005 70);
-  --accent-orange: oklch(0.62 0.16 40);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.86 0.006 250);
-  --input: oklch(0.88 0.006 250);
-  --ring: oklch(0.62 0.16 40);
-  /* Neomorphic shadow tones */
-  --neo-light: oklch(1 0 0 / 0.9);
-  --neo-dark: oklch(0.55 0.012 250 / 0.28);
-  --neo-grid: oklch(0.35 0.01 250 / 0.05);
+  /* Style « Epure » commun a la famille : blanc casse, encre presque noire, une seule couleur d'accent. */
+  --background: oklch(0.985 0.002 100);
+  --foreground: oklch(0.19 0.004 265);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.19 0.004 265);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.19 0.004 265);
+  --primary: oklch(0.19 0.004 265);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.955 0.002 100);
+  --secondary-foreground: oklch(0.19 0.004 265);
+  --muted: oklch(0.955 0.002 100);
+  --muted-foreground: oklch(0.5 0.008 265);
+  --accent: oklch(0.955 0.002 100);
+  --accent-foreground: oklch(0.19 0.004 265);
+  --accent-orange: var(--index);
+  --destructive: #b42318;
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.915 0.003 100);
+  --input: oklch(0.88 0.004 100);
+  --ring: oklch(0.19 0.004 265);
+  --index: #6D4AFF;
+  --index-soft: #F1EDFF;
+  --ok: #0E7A4F;
+  --warn: #A15C00;
+  --bad: #B42318;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
 }
 
 .dark {
-  /* INDEX dark — deep slate / graphite */
-  --background: oklch(0.21 0.01 250);
-  --foreground: oklch(0.94 0.005 250);
-  --card: oklch(0.245 0.012 250);
-  --card-foreground: oklch(0.94 0.005 250);
-  --popover: oklch(0.245 0.012 250);
-  --popover-foreground: oklch(0.94 0.005 250);
-  --primary: oklch(0.68 0.17 42);
-  --primary-foreground: oklch(0.16 0.01 250);
-  --secondary: oklch(0.28 0.012 250);
-  --secondary-foreground: oklch(0.94 0.005 250);
-  --muted: oklch(0.28 0.012 250);
-  --muted-foreground: oklch(0.7 0.012 250);
-  --accent: oklch(0.68 0.17 42);
-  --accent-foreground: oklch(0.16 0.01 250);
-  --accent-orange: oklch(0.68 0.17 42);
-  --destructive: oklch(0.62 0.22 27);
-  --destructive-foreground: oklch(0.98 0.003 247);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.68 0.17 42);
-  --neo-light: oklch(1 0 0 / 0.05);
-  --neo-dark: oklch(0 0 0 / 0.55);
-  --neo-grid: oklch(0.9 0.005 250 / 0.04);
+  --background: oklch(0.17 0.004 265);
+  --foreground: oklch(0.94 0.003 100);
+  --card: oklch(0.205 0.005 265);
+  --card-foreground: oklch(0.94 0.003 100);
+  --popover: oklch(0.205 0.005 265);
+  --popover-foreground: oklch(0.94 0.003 100);
+  --primary: oklch(0.94 0.003 100);
+  --primary-foreground: oklch(0.17 0.004 265);
+  --secondary: oklch(0.255 0.005 265);
+  --secondary-foreground: oklch(0.94 0.003 100);
+  --muted: oklch(0.255 0.005 265);
+  --muted-foreground: oklch(0.7 0.008 265);
+  --accent: oklch(0.255 0.005 265);
+  --accent-foreground: oklch(0.94 0.003 100);
+  --accent-orange: var(--index);
+  --destructive: #f97066;
+  --destructive-foreground: oklch(0.17 0.004 265);
+  --border: oklch(0.29 0.005 265);
+  --input: oklch(0.34 0.006 265);
+  --ring: oklch(0.94 0.003 100);
+  /* Violet eclairci pour rester lisible sur fond sombre */
+  --index: #A58FFF;
+  --index-soft: #2a2442;
+  --ok: #4ACB8E;
+  --warn: #F2B544;
+  --bad: #F97066;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
 @layer base {
@@ -156,18 +149,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    background-image:
-      linear-gradient(to right, var(--neo-grid) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--neo-grid) 1px, transparent 1px),
-      linear-gradient(to right, color-mix(in oklab, var(--neo-grid) 60%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in oklab, var(--neo-grid) 60%, transparent) 1px, transparent 1px);
-    background-size:
-      120px 120px,
-      120px 120px,
-      24px 24px,
-      24px 24px;
-    background-position: 0 0, 0 0, 0 0, 0 0;
-    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
   }
 
   html,
@@ -175,40 +157,30 @@
     transition: background-color 0.25s ease, color 0.25s ease;
   }
 
+  /* Ancien titrage « display » : ramene a la police de la famille */
   .font-display {
-    font-family: var(--font-display);
-    letter-spacing: 0.02em;
+    font-family: var(--font-sans);
   }
 }
 
+/* Anciennes surfaces « en relief » : desormais plates, comme les cartes des autres applis */
 @utility neo-surface {
   background-color: var(--color-card);
-  box-shadow:
-    -6px -6px 14px var(--neo-light),
-    6px 6px 16px var(--neo-dark),
-    inset 0 0 0 1px color-mix(in oklab, var(--color-border) 70%, transparent);
-  transition: box-shadow 220ms ease, transform 220ms ease;
+  border: 1px solid var(--color-border);
 }
 
 @utility neo-card {
   background-color: var(--color-card);
-  box-shadow:
-    -6px -6px 14px var(--neo-light),
-    6px 6px 16px var(--neo-dark),
-    inset 0 0 0 1px color-mix(in oklab, var(--color-border) 70%, transparent);
-  transition: box-shadow 220ms ease, transform 220ms ease;
-  &:hover {
-    box-shadow:
-      inset -3px -3px 8px var(--neo-light),
-      inset 4px 4px 10px var(--neo-dark),
-      inset 0 0 0 1px color-mix(in oklab, var(--color-border) 70%, transparent);
-    transform: translateY(1px);
-  }
+  border: 1px solid var(--color-border);
+  transition: border-color 150ms ease;
+  &:hover { border-color: color-mix(in oklab, var(--color-foreground) 25%, var(--color-border)); }
 }
 
 @utility neo-inset {
-  background-color: var(--color-card);
-  box-shadow:
-    inset -3px -3px 7px var(--neo-light),
-    inset 4px 4px 9px var(--neo-dark);
+  background-color: var(--color-muted);
+}
+
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }

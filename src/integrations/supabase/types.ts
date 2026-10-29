@@ -148,6 +148,7 @@ export type Database = {
           category: string
           created_at: string
           created_by: string | null
+          deleted_at: string | null
           id: string
           name: string
           note: string | null
@@ -157,11 +158,13 @@ export type Database = {
           tags: string[]
           updated_at: string
           url: string | null
+          verified_at: string | null
         }
         Insert: {
           category: string
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           id?: string
           name: string
           note?: string | null
@@ -171,11 +174,13 @@ export type Database = {
           tags?: string[]
           updated_at?: string
           url?: string | null
+          verified_at?: string | null
         }
         Update: {
           category?: string
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           id?: string
           name?: string
           note?: string | null
@@ -185,6 +190,7 @@ export type Database = {
           tags?: string[]
           updated_at?: string
           url?: string | null
+          verified_at?: string | null
         }
         Relationships: []
       }

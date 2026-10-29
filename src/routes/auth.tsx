@@ -1,32 +1,33 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Layers } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
+import { IndexMark } from "@/components/famille/IndexMark";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Connexion — FaçadeTech" },
+      { title: "Connexion — Index" },
       { name: "description", content: "Connectez-vous pour gérer les fiches techniques." },
     ],
   }),
   component: AuthPage,
 });
 
+/**
+ * Connexion des collegues. L'inscription libre est fermee cote serveur :
+ * les comptes sont crees par l'administrateur, d'ou l'absence d'onglet « Créer un compte ».
+ */
 function AuthPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -37,131 +38,46 @@ function AuthPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (mode === "signup") {
-        if (!firstName.trim() || !lastName.trim()) {
-          throw new Error("Prénom et nom sont obligatoires.");
-        }
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin`,
-            data: {
-              first_name: firstName.trim(),
-              last_name: lastName.trim(),
-              display_name: `${firstName.trim()} ${lastName.trim()}`,
-            },
-          },
-        });
-        if (error) throw error;
-        if (data.session) {
-          toast.success("Compte créé. Vous êtes connecté.");
-          navigate({ to: "/admin" });
-        } else {
-          toast.success("Compte créé. Vérifiez votre email pour confirmer.");
-          setMode("signin");
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Connexion réussie.");
-        navigate({ to: "/admin" });
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Connexion réussie.");
+      navigate({ to: "/admin" });
     } catch (err: any) {
-      toast.error(err.message ?? "Erreur d'authentification.");
+      toast.error(/invalid/i.test(err?.message ?? "") ? "Email ou mot de passe incorrect." : err?.message ?? "Erreur de connexion.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background grid place-items-center px-4">
-      <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-3 mb-8">
-          <div className="h-10 w-10 rounded-md bg-primary text-primary-foreground grid place-items-center">
-            <Layers className="h-5 w-5" />
-          </div>
-          <div className="leading-tight">
-            <div className="font-semibold tracking-tight">FaçadeTech</div>
-            <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              Bureau d'études · Façade
-            </div>
-          </div>
+    <main className="grid min-h-[80vh] place-items-center bg-background px-4">
+      <div className="w-full max-w-sm">
+        <Link to="/" className="mb-8 flex items-center justify-center gap-2.5">
+          <IndexMark size={26} />
+          <span className="text-xl font-semibold tracking-tight text-foreground">Index</span>
         </Link>
-
         <div className="rounded-lg border border-border bg-card p-6">
-          <Tabs value={mode} onValueChange={(v) => setMode(v as "signin" | "signup")}>
-            <TabsList className="grid grid-cols-2 w-full mb-6">
-              <TabsTrigger value="signin">Connexion</TabsTrigger>
-              <TabsTrigger value="signup">Créer un compte</TabsTrigger>
-            </TabsList>
-
-            <form onSubmit={submit} className="space-y-4">
-              <TabsContent value="signup" className="space-y-4 mt-0">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">Prénom *</Label>
-                    <Input
-                      id="firstName"
-                      required={mode === "signup"}
-                      maxLength={50}
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Jean"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Nom *</Label>
-                    <Input
-                      id="lastName"
-                      required={mode === "signup"}
-                      maxLength={50}
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Dupont"
-                    />
-                  </div>
-                </div>
-              </TabsContent>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="vous@bureau.fr"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Mot de passe</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                />
-              </div>
-
-              <Button type="submit" disabled={loading} className="w-full h-11">
-                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                {mode === "signin" ? "Se connecter" : "Créer le compte"}
-              </Button>
-            </form>
-          </Tabs>
-
-          <div className="mt-6 text-center text-xs text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition">
-              ← Retour à la bibliothèque
-            </Link>
-          </div>
+          <h1 className="mb-1 text-base font-semibold">Connexion</h1>
+          <p className="mb-5 text-sm text-muted-foreground">Pour ajouter et modifier des fiches. Pas de compte ? Demandez un accès à l'administrateur.</p>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" autoComplete="email" required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vous@bureau.ch" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Mot de passe</Label>
+              <Input id="password" type="password" autoComplete="current-password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+            <Button type="submit" disabled={loading} className="h-10 w-full">
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Se connecter
+            </Button>
+          </form>
         </div>
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          <Link to="/" className="transition hover:text-foreground">← Retour à la bibliothèque</Link>
+        </p>
       </div>
-    </div>
+    </main>
   );
 }

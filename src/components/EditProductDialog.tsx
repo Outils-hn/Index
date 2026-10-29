@@ -128,25 +128,30 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
 
       const tags = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
 
-      const { error } = await supabase
+      const fields = {
+        name: name.trim(),
+        supplier,
+        category,
+        tags,
+        url: url.trim() || null,
+        note: note.trim() || null,
+        pdf_path,
+        pdf_filename,
+        updated_at: new Date().toISOString(),
+      };
+      // Nouveau PDF = fiche verifiee aujourd'hui (si la base a deja la colonne de la 2.0)
+      let { error } = await supabase
         .from("products")
-        .update({
-          name: name.trim(),
-          supplier,
-          category,
-          tags,
-          url: url.trim() || null,
-          note: note.trim() || null,
-          pdf_path,
-          pdf_filename,
-          updated_at: new Date().toISOString(),
-        })
+        .update(newFile ? { ...fields, verified_at: fields.updated_at } : fields)
         .eq("id", product.id);
+      if (error && newFile && /verified_at/.test(error.message)) {
+        ({ error } = await supabase.from("products").update(fields).eq("id", product.id));
+      }
       if (error) throw error;
       await setProductProjects(product.id, selectedProjects);
     },
     onSuccess: () => {
-      toast.success("Produit mis à jour.");
+      toast.success("Fiche mise à jour.");
       qc.invalidateQueries({ queryKey: ["products"] });
       onOpenChange(false);
     },
@@ -157,7 +162,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Modifier le produit</DialogTitle>
+          <DialogTitle>Modifier la fiche</DialogTitle>
           <DialogDescription>
             Mettez à jour les informations puis enregistrez.
           </DialogDescription>
@@ -174,7 +179,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
               <Label>Fournisseur *</Label>
               <div className="flex gap-2">
                 <Select value={supplier} onValueChange={setSupplier}>
-                  <SelectTrigger className="flex-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                  <SelectTrigger className="flex-1" aria-label="Fournisseur"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                   <SelectContent>
                     {suppliers.map((s) => (
                       <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
@@ -190,7 +195,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
               <Label>Catégorie *</Label>
               <div className="flex gap-2">
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="flex-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                  <SelectTrigger className="flex-1" aria-label="Catégorie"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (
                       <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>

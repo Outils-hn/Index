@@ -1,4 +1,5 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { validity, checkedAt, VALIDITY_LABEL } from "@/lib/search";
 import { X, ExternalLink, Globe, FileText, AlertTriangle, MapPin, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -17,28 +18,10 @@ interface CompareModalProps {
 }
 
 type Validity = "valid" | "warn" | "expired";
-function getValidity(updatedAt: string): Validity {
-  const months = (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24 * 30.4375);
-  if (months < 12) return "valid";
-  if (months < 24) return "warn";
-  return "expired";
-}
 const VALIDITY: Record<Validity, { label: string; dot: string; pill: string }> = {
-  valid: {
-    label: "À jour",
-    dot: "bg-[oklch(0.6_0.18_150)] shadow-[0_0_6px_oklch(0.65_0.2_150)]",
-    pill: "bg-[oklch(0.95_0.05_150)] text-[oklch(0.38_0.12_150)] border-[oklch(0.82_0.1_150)]",
-  },
-  warn: {
-    label: "À vérifier",
-    dot: "bg-[oklch(0.7_0.17_70)] shadow-[0_0_6px_oklch(0.75_0.18_70)]",
-    pill: "bg-[oklch(0.96_0.07_75)] text-[oklch(0.42_0.13_60)] border-[oklch(0.83_0.12_75)]",
-  },
-  expired: {
-    label: "Expiré",
-    dot: "bg-[oklch(0.6_0.2_28)] shadow-[0_0_6px_oklch(0.65_0.22_28)]",
-    pill: "bg-[oklch(0.95_0.05_25)] text-[oklch(0.42_0.16_28)] border-[oklch(0.82_0.12_28)]",
-  },
+  valid: { label: VALIDITY_LABEL.valid, dot: "bg-ok", pill: "border-border text-muted-foreground" },
+  warn: { label: VALIDITY_LABEL.warn, dot: "bg-warn", pill: "border-warn/40 text-warn" },
+  expired: { label: VALIDITY_LABEL.expired, dot: "bg-bad", pill: "border-bad/40 text-bad" },
 };
 
 export function CompareModal({ open, onClose, products }: CompareModalProps) {
@@ -210,7 +193,7 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
                         key={p.id}
                         className="text-left p-4 min-w-[260px] border-r border-border last:border-r-0"
                       >
-                        <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-foreground/70 mb-1">
+                        <div className="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground/70 mb-1">
                           {p.category}
                         </div>
                         <h3 className="font-bold text-foreground leading-tight text-base">
@@ -256,8 +239,8 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
                     {products.map((p) => (
                       <td key={p.id} className="p-3 border-r border-border last:border-r-0">
                         {p.note && p.note.trim() ? (
-                          <div className="rounded-md border border-[oklch(0.85_0.12_85)] bg-[oklch(0.97_0.05_85)] text-[oklch(0.35_0.1_60)] px-2.5 py-2 flex items-start gap-2 text-xs leading-relaxed">
-                            <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-[oklch(0.55_0.15_60)]" />
+                          <div className="border-l-2 border-warn pl-2 py-1 text-foreground flex items-start gap-2 text-xs leading-relaxed">
+                            <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-warn" />
                             <p className="whitespace-pre-wrap">{p.note}</p>
                           </div>
                         ) : (
@@ -268,7 +251,7 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
                   </Row>
                   <Row label="Validité">
                     {products.map((p) => {
-                      const v = getValidity(p.updated_at);
+                      const v = validity(p);
                       const s = VALIDITY[v];
                       return (
                         <td key={p.id} className="p-3 border-r border-border last:border-r-0">
@@ -282,8 +265,8 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
                             {s.label}
                           </span>
                           <div className="text-[11px] text-muted-foreground mt-1">
-                            Mis à jour le{" "}
-                            {new Date(p.updated_at).toLocaleDateString("fr-FR", {
+                            Vérifiée le{" "}
+                            {new Date(checkedAt(p)).toLocaleDateString("fr-CH", {
                               day: "2-digit",
                               month: "short",
                               year: "numeric",
