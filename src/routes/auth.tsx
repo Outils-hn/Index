@@ -20,30 +20,55 @@ export const Route = createFileRoute("/auth")({
 });
 
 /**
- * Connexion des collegues. L'inscription libre est fermee cote serveur :
- * les comptes sont crees par l'administrateur, d'ou l'absence d'onglet « Créer un compte ».
+ * Connexion et inscription des collegues. Un nouveau compte peut seulement consulter
+ * tant qu'un collegue deja valide ne l'a pas valide (Configuration > Comptes).
  */
 function AuthPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user) navigate({ to: "/admin" });
-  }, [authLoading, user, navigate]);
+    if (!authLoading && user && mode === "signin") navigate({ to: "/admin" });
+  }, [authLoading, user, navigate, mode]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      if (mode === "signup") {
+        const fn = firstName.trim(), ln = lastName.trim();
+        if (!fn || !ln) throw new Error("Prénom et nom sont obligatoires.");
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: { first_name: fn, last_name: ln, display_name: `${fn} ${ln}` },
+          },
+        });
+        if (error) throw error;
+        if (data.session) {
+          toast.success("Compte créé. Un collègue doit le valider avant que vous puissiez modifier des fiches.");
+          navigate({ to: "/" });
+        } else {
+          toast.success("Compte créé : confirmez votre email, puis attendez la validation d'un collègue.");
+          setMode("signin");
+        }
+        return;
+      }
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast.success("Connexion réussie.");
       navigate({ to: "/admin" });
     } catch (err: any) {
-      toast.error(/invalid/i.test(err?.message ?? "") ? "Email ou mot de passe incorrect." : err?.message ?? "Erreur de connexion.");
+      const m = err?.message ?? "";
+      toast.error(/invalid login/i.test(m) ? "Email ou mot de passe incorrect." : /already registered/i.test(m) ? "Un compte existe déjà avec cet email." : /signups? not allowed|disabled/i.test(m) ? "Les inscriptions sont fermées pour le moment." : m || "Erreur de connexion.");
     } finally {
       setLoading(false);
     }
@@ -57,20 +82,50 @@ function AuthPage() {
           <span className="text-xl font-semibold tracking-tight text-foreground">Index</span>
         </Link>
         <div className="rounded-lg border border-border bg-card p-6">
-          <h1 className="mb-1 text-base font-semibold">Connexion</h1>
-          <p className="mb-5 text-sm text-muted-foreground">Pour ajouter et modifier des fiches. Pas de compte ? Demandez un accès à l'administrateur.</p>
+          <div className="mb-5 grid grid-cols-2 rounded-md bg-muted p-1 text-sm" role="tablist">
+            {(["signin", "signup"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="tab"
+                aria-selected={mode === m}
+                onClick={() => setMode(m)}
+                className={`rounded px-3 py-1.5 transition-colors ${mode === m ? "bg-card font-medium text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                {m === "signin" ? "Connexion" : "Créer un compte"}
+              </button>
+            ))}
+          </div>
+          <h1 className="sr-only">{mode === "signin" ? "Connexion" : "Créer un compte"}</h1>
+          <p className="mb-5 text-sm text-muted-foreground">
+            {mode === "signin"
+              ? "Pour ajouter et modifier des fiches."
+              : "Un collègue validera votre compte ; en attendant, vous pouvez consulter la bibliothèque."}
+          </p>
           <form onSubmit={submit} className="space-y-4">
+            {mode === "signup" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">Prénom</Label>
+                  <Input id="firstName" required maxLength={50} autoComplete="given-name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Nom</Label>
+                  <Input id="lastName" required maxLength={50} autoComplete="family-name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" autoComplete="email" required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vous@bureau.ch" />
+              <Input id="email" type="email" autoComplete="email" required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder="prenom.nom@bureau.ch" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
-              <Input id="password" type="password" autoComplete="current-password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input id="password" type="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <Button type="submit" disabled={loading} className="h-10 w-full">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Se connecter
+              {mode === "signin" ? "Se connecter" : "Créer le compte"}
             </Button>
           </form>
         </div>
