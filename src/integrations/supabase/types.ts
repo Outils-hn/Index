@@ -196,6 +196,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          approved: boolean
           created_at: string
           display_name: string | null
           email: string | null
@@ -205,6 +206,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approved?: boolean
           created_at?: string
           display_name?: string | null
           email?: string | null
@@ -214,6 +216,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approved?: boolean
           created_at?: string
           display_name?: string | null
           email?: string | null
@@ -282,6 +285,21 @@ export type Database = {
           id: string
           last_name: string
         }[]
+      }
+      is_approved: { Args: never; Returns: boolean }
+      list_accounts: {
+        Args: never
+        Returns: {
+          approved: boolean
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+        }[]
+      }
+      set_account_approved: {
+        Args: { _approved: boolean; _id: string }
+        Returns: undefined
       }
     }
     Enums: {
