@@ -38,7 +38,7 @@ function Index() {
 type Filtre = { kind: "all" } | { kind: "fav" } | { kind: "check" } | { kind: "cat"; name: string };
 
 const CHIP = "inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors";
-const CHIP_ON = `${CHIP} border-foreground bg-foreground text-background`;
+const CHIP_ON = `${CHIP} border-[var(--app-fill)] bg-[var(--app-fill)] text-[var(--app-on)]`;
 const CHIP_OFF = `${CHIP} border-border text-muted-foreground hover:text-foreground`;
 
 function IndexInner() {

@@ -98,7 +98,7 @@ function ConfigPage() {
       <AppHeader />
       <main className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8">
-          <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-1">
+          <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--app-ink)] mb-1">
             Configuration
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Catégories, fournisseurs{admin ? " et comptes" : ""}</h1>

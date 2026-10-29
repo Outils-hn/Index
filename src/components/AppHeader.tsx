@@ -8,7 +8,7 @@ import { SelecteurApplis } from "@/components/famille/SelecteurApplis";
 import { IndexMark } from "@/components/famille/IndexMark";
 
 const NAV_LINK = "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground";
-const NAV_ACTIVE = "rounded-md bg-muted px-3 py-1.5 text-sm font-medium text-foreground";
+const NAV_ACTIVE = "rounded-md bg-muted px-3 py-1.5 text-sm font-medium text-foreground shadow-[inset_0_-2px_0_var(--app)]";
 
 /** En-tete commun a la famille : logo + nom avec selecteur d'applis, onglets sobres, theme et compte a droite. */
 export function AppHeader() {
