@@ -157,6 +157,14 @@ await step("Connexion", async () => {
   await page.getByRole("tab", { name: "Créer un compte" }).click(); await page.waitForTimeout(200);
   verif("Inscription : prénom, nom, email, mot de passe", (await page.getByLabel("Prénom").isVisible()) && (await page.getByLabel("Nom", { exact: true }).isVisible()));
   await shot(page, "06b-inscription", false);
+  await page.getByRole("tab", { name: "Connexion" }).click();
+  await page.getByRole("button", { name: "Mot de passe oublié ?" }).click();
+  await page.getByLabel("Email").fill("test@bureau.ch");
+  await page.getByRole("button", { name: "Envoyer le lien" }).click(); await page.waitForTimeout(600);
+  verif("Mot de passe oublié : lien envoyé", /lien vient d'être envoyé/.test((await page.locator("[data-sonner-toast]").allInnerTexts()).join(" ")));
+  await aller(page, "nouveau-mot-de-passe"); await page.waitForTimeout(4500);
+  verif("Page nouveau mot de passe sans lien : message clair", await page.getByText(/n'est plus valable/).isVisible());
+  await shot(page, "06c-nouveau-mdp", false);
   await axe(page, "connexion");
   await c.close();
 });
