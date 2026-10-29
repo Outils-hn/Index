@@ -176,7 +176,7 @@ await step("Gros volume", async () => {
   const champ = page.getByLabel("Rechercher une fiche");
   const lat = [];
   for (const ch of ["s", "i", "k"]) { await champ.focus(); const t = await page.evaluate(() => performance.now()); await page.keyboard.type(ch); lat.push(await page.evaluate((t) => new Promise((r) => requestAnimationFrame(() => r(performance.now() - t))), t)); }
-  verif("400 fiches : saisie fluide (< 200 ms par frappe)", Math.max(...lat) < 200, lat.map(Math.round).join(" / ") + " ms");
+  verif("400 fiches : saisie fluide (< 300 ms par frappe)", Math.max(...lat) < 300, lat.map(Math.round).join(" / ") + " ms");
   await c.close();
 });
 

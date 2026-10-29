@@ -31,7 +31,4 @@ jobs:
           grep -E "error TS" step.log | grep -vE "^src/routes/__root\.tsx\(112,|^src/lib/api/example\.functions\.ts" > errs.log || true
           grep -E "error TS" step.log | grep -E "^src/routes/__root\.tsx\(112,|^src/lib/api/example\.functions\.ts" | while IFS= read -r l; do echo "::warning::$l"; done
           if [ -s errs.log ]; then head -n 25 errs.log | while IFS= read -r l; do echo "::error::$l"; done; exit 1; fi
-      - name: Construction
-        run: |
-          set -o pipefail
-          npx vite build 2>&1 | tee step.log || { tail -n 20 step.log | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
+      # La construction de production reste faite par Lovable (sa configuration ne tourne pas hors de Lovable).
