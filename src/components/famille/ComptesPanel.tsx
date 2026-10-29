@@ -7,8 +7,9 @@ import { ask } from "@/lib/confirm";
 import { fmtDate } from "@/components/ProductCard";
 
 /**
- * Configuration > Comptes : les nouveaux comptes attendent ici qu'un collegue valide les accepte.
+ * Configuration > Comptes (administrateurs seulement) : les nouveaux comptes attendent ici.
  * Valider = pouvoir ajouter, modifier, supprimer des fiches et voir les chantiers.
+ * Administrateur = peut en plus valider des comptes et nommer d'autres administrateurs.
  */
 export function ComptesPanel() {
   const qc = useQueryClient();
@@ -30,6 +31,18 @@ export function ComptesPanel() {
     },
     onSuccess: (ok) => {
       toast.success(ok ? "Compte validé." : "Accès retiré : le compte peut seulement consulter.");
+      qc.invalidateQueries({ queryKey: ["accounts"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const role = useMutation({
+    mutationFn: async ({ id, admin }: { id: string; admin: boolean }) => {
+      const { error } = await supabase.rpc("set_account_admin", { _id: id, _admin: admin });
+      if (error) throw error;
+      return admin;
+    },
+    onSuccess: (admin) => {
+      toast.success(admin ? "Administrateur ajouté." : "Rôle d'administrateur retiré.");
       qc.invalidateQueries({ queryKey: ["accounts"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -57,18 +70,36 @@ export function ComptesPanel() {
               </div>
               {c.approved ? (
                 <>
-                  <span className="text-xs text-muted-foreground">Validé</span>
+                  {c.is_admin ? (
+                    <span className="rounded-full border border-border px-2 py-0.5 text-xs">Administrateur</span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Validé</span>
+                  )}
                   {c.id !== user?.id && (
-                    <button
-                      className="rounded-md px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10"
-                      onClick={async () => {
-                        if (await ask({ title: `Retirer l'accès de ${c.display_name || c.email} ?`, message: "Le compte pourra encore consulter la bibliothèque, mais plus rien modifier.", confirm: "Retirer l'accès", danger: true })) {
-                          set.mutate({ id: c.id, ok: false });
-                        }
-                      }}
-                    >
-                      Retirer
-                    </button>
+                    <>
+                      <button
+                        className="rounded-md border border-border px-2.5 py-1 text-xs hover:bg-muted"
+                        onClick={async () => {
+                          if (c.is_admin) {
+                            if (await ask({ title: `Retirer le rôle d'administrateur de ${c.display_name || c.email} ?`, message: "Le compte reste validé : il pourra toujours modifier des fiches.", confirm: "Retirer le rôle", danger: true })) role.mutate({ id: c.id, admin: false });
+                          } else if (await ask({ title: `Nommer ${c.display_name || c.email} administrateur ?`, message: "Il pourra valider des comptes, retirer des accès et nommer d'autres administrateurs.", confirm: "Nommer administrateur" })) {
+                            role.mutate({ id: c.id, admin: true });
+                          }
+                        }}
+                      >
+                        {c.is_admin ? "Retirer admin" : "Nommer admin"}
+                      </button>
+                      <button
+                        className="rounded-md px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10"
+                        onClick={async () => {
+                          if (await ask({ title: `Retirer l'accès de ${c.display_name || c.email} ?`, message: "Le compte pourra encore consulter la bibliothèque, mais plus rien modifier.", confirm: "Retirer l'accès", danger: true })) {
+                            set.mutate({ id: c.id, ok: false });
+                          }
+                        }}
+                      >
+                        Retirer l'accès
+                      </button>
+                    </>
                   )}
                 </>
               ) : (

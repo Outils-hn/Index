@@ -35,7 +35,7 @@ import {
   deleteProject,
   type Project,
 } from "@/lib/projects";
-import { useAuth, useApproval } from "@/hooks/use-auth";
+import { useAuth, useApproval, useAdmin } from "@/hooks/use-auth";
 import { CompteEnAttente } from "@/components/famille/CompteEnAttente";
 import { ComptesPanel } from "@/components/famille/ComptesPanel";
 import {
@@ -65,6 +65,7 @@ function ConfigPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { approved, checking } = useApproval(user);
+  const admin = useAdmin(user);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/auth" });
@@ -100,7 +101,7 @@ function ConfigPage() {
           <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-1">
             Configuration
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Catégories, fournisseurs et comptes</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Catégories, fournisseurs{admin ? " et comptes" : ""}</h1>
           <p className="text-muted-foreground mt-1.5 text-sm">
             Gérez les listes utilisées dans toute l'application.
           </p>
@@ -125,9 +126,11 @@ function ConfigPage() {
           <ProjectsPanel />
         </div>
 
-        <div className="mt-8">
-          <ComptesPanel />
-        </div>
+        {admin && (
+          <div className="mt-8">
+            <ComptesPanel />
+          </div>
+        )}
       </main>
     </div>
   );

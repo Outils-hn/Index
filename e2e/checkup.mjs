@@ -36,7 +36,7 @@ function donnees({ gros = false } = {}) {
   return { categories, suppliers, projects, products, product_projects: [{ product_id: products[0].id, project_id: projects[0].id }] };
 }
 
-async function ctx({ gros = false, connecte = false, dark = false, valide = true } = {}) {
+async function ctx({ gros = false, connecte = false, dark = false, valide = true, admin = true } = {}) {
   const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
   if (dark) await c.addInitScript(() => localStorage.setItem("theme", "dark"));
   const db = donnees({ gros });
@@ -60,9 +60,12 @@ async function ctx({ gros = false, connecte = false, dark = false, valide = true
     if (!m) return route.fulfill({ json: {} });
     if (m[1]) {
       if (m[2] === "is_approved") return route.fulfill({ json: valide });
+      if (m[2] === "is_admin") return route.fulfill({ json: valide && admin });
+      if (m[2] === "set_account_admin") { etat.ecritures.push("rpc set_account_admin"); return route.fulfill({ status: 204, body: "" }); }
       if (m[2] === "list_accounts") return route.fulfill({ json: [
-        { id: USER.id, email: USER.email, display_name: "Test Audit", approved: true, created_at: now },
-        { id: uid(), email: "nouveau@bureau.ch", display_name: "Nouveau Collègue", approved: false, created_at: now },
+        { id: USER.id, email: USER.email, display_name: "Test Audit", approved: true, is_admin: true, created_at: now },
+        { id: uid(), email: "collegue@bureau.ch", display_name: "Collègue Validé", approved: true, is_admin: false, created_at: now },
+        { id: uid(), email: "nouveau@bureau.ch", display_name: "Nouveau Collègue", approved: false, is_admin: false, created_at: now },
       ] });
       if (m[2] === "set_account_approved") { etat.ecritures.push("rpc set_account_approved"); return route.fulfill({ status: 204, body: "" }); }
       return route.fulfill({ json: [] });
@@ -180,6 +183,17 @@ await step("Administration", async () => {
   verif("Comptes : 1 en attente avec bouton Valider", (await page.getByText("1 en attente").isVisible()) && (await page.getByRole("button", { name: "Valider" }).isVisible()));
   await page.getByRole("button", { name: "Valider" }).click(); await page.waitForTimeout(500);
   verif("Validation d'un compte", etat.ecritures.includes("rpc set_account_approved"));
+  await page.getByRole("button", { name: "Nommer admin" }).click(); await page.waitForTimeout(300);
+  await page.getByRole("alertdialog").getByRole("button", { name: "Nommer administrateur" }).click(); await page.waitForTimeout(500);
+  verif("Nommer un administrateur", etat.ecritures.includes("rpc set_account_admin"));
+  await shot(page, "13-comptes", false);
+  await c.close();
+});
+
+await step("Compte valide non administrateur", async () => {
+  const { c, page } = await ctx({ connecte: true, admin: false });
+  await aller(page, "config");
+  verif("Non-admin : Configuration sans la section Comptes", (await page.getByText("Fournisseurs").first().isVisible()) && !(await page.getByRole("heading", { name: "Comptes" }).count()));
   await c.close();
 });
 
