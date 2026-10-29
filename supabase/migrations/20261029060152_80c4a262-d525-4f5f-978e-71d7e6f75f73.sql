@@ -1,0 +1,1 @@
+ALTER FUNCTION public.protect_approved() SET search_path = public;
