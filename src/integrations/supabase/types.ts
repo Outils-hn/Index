@@ -287,6 +287,8 @@ export type Database = {
         }[]
       }
       is_approved: { Args: never; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
+      set_account_admin: { Args: { _id: string; _admin: boolean }; Returns: undefined }
       list_accounts: {
         Args: never
         Returns: {
@@ -295,6 +297,7 @@ export type Database = {
           display_name: string
           email: string
           id: string
+          is_admin: boolean
         }[]
       }
       set_account_approved: {

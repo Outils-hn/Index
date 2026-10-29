@@ -10,7 +10,7 @@ export function CompteEnAttente({ email }: { email: string | undefined }) {
           <h1 className="text-base font-semibold text-foreground">Compte en attente de validation</h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          Le compte <span className="text-foreground">{email}</span> est bien créé. Un collègue doit le valider
+          Le compte <span className="text-foreground">{email}</span> est bien créé. Un administrateur doit le valider
           (Configuration → Comptes) avant que vous puissiez ajouter ou modifier des fiches. En attendant, la
           bibliothèque reste consultable.
         </p>

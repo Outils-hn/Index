@@ -54,7 +54,7 @@ function AuthPage() {
         });
         if (error) throw error;
         if (data.session) {
-          toast.success("Compte créé. Un collègue doit le valider avant que vous puissiez modifier des fiches.");
+          toast.success("Compte créé. Un administrateur doit le valider avant que vous puissiez modifier des fiches.");
           navigate({ to: "/" });
         } else {
           toast.success("Compte créé : confirmez votre email, puis attendez la validation d'un collègue.");
@@ -100,7 +100,7 @@ function AuthPage() {
           <p className="mb-5 text-sm text-muted-foreground">
             {mode === "signin"
               ? "Pour ajouter et modifier des fiches."
-              : "Un collègue validera votre compte ; en attendant, vous pouvez consulter la bibliothèque."}
+              : "Un administrateur validera votre compte ; en attendant, vous pouvez consulter la bibliothèque."}
           </p>
           <form onSubmit={submit} className="space-y-4">
             {mode === "signup" && (

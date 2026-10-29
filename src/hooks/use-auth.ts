@@ -59,3 +59,17 @@ export function useApproval(user: User | null) {
   });
   return { approved: !!user && q.data === true, checking: !!user && q.isLoading };
 }
+
+/** Administrateur : seul a voir Configuration > Comptes (validation, roles). */
+export function useAdmin(user: User | null) {
+  const q = useQuery({
+    queryKey: ["admin", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("is_admin");
+      return !error && data === true;
+    },
+  });
+  return !!user && q.data === true;
+}

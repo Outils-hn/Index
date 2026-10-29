@@ -49,7 +49,7 @@ export function AppHeader() {
           {user ? (
             <>
               {!approved && (
-                <span className="rounded-full border border-index/40 px-2 py-0.5 text-index" title="Un collègue doit valider ce compte avant qu'il puisse modifier des fiches">
+                <span className="rounded-full border border-index/40 px-2 py-0.5 text-index" title="Un administrateur doit valider ce compte avant qu'il puisse modifier des fiches">
                   En attente de validation
                 </span>
               )}
