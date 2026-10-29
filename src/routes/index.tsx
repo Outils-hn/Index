@@ -5,7 +5,7 @@ import { Search, X, Star } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard, fmtDate } from "@/components/ProductCard";
 import { fetchCategories } from "@/lib/taxonomies";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, useApproval } from "@/hooks/use-auth";
 import { useProducts } from "@/lib/products";
 import { CompareProvider } from "@/components/CompareContext";
 import { CompareBar } from "@/components/CompareBar";
@@ -43,6 +43,7 @@ function IndexInner() {
   const [search, setSearch] = useState("");
   const [filtre, setFiltre] = useState<Filtre>({ kind: "all" });
   const { user } = useAuth();
+  const { approved } = useApproval(user);
   const { favorites, toggle: toggleFavorite } = useFavorites();
   const { products: all, isLoading, error, offlineSince, refetch } = useProducts();
   const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: fetchCategories, retry: 0 });
@@ -185,7 +186,7 @@ function IndexInner() {
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {shown.map((p) => (
-                <ProductCard key={p.id} product={p} loggedIn={!!user} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} />
+                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} />
               ))}
             </div>
             {filtered.length > shown.length && (

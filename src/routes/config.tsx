@@ -35,7 +35,9 @@ import {
   deleteProject,
   type Project,
 } from "@/lib/projects";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, useApproval } from "@/hooks/use-auth";
+import { CompteEnAttente } from "@/components/famille/CompteEnAttente";
+import { ComptesPanel } from "@/components/famille/ComptesPanel";
 import {
   fetchCategories,
   fetchSuppliers,
@@ -62,12 +64,13 @@ export const Route = createFileRoute("/config")({
 function ConfigPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { approved, checking } = useApproval(user);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/auth" });
   }, [authLoading, user, navigate]);
 
-  if (authLoading) {
+  if (authLoading || checking) {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
@@ -80,6 +83,14 @@ function ConfigPage() {
   }
 
   if (!user) return null;
+  if (!approved) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppHeader />
+        <CompteEnAttente email={user.email} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,7 +100,7 @@ function ConfigPage() {
           <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-1">
             Configuration
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Catégories & Fournisseurs</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Catégories, fournisseurs et comptes</h1>
           <p className="text-muted-foreground mt-1.5 text-sm">
             Gérez les listes utilisées dans toute l'application.
           </p>
@@ -112,6 +123,10 @@ function ConfigPage() {
 
         <div className="mt-8">
           <ProjectsPanel />
+        </div>
+
+        <div className="mt-8">
+          <ComptesPanel />
         </div>
       </main>
     </div>

@@ -36,7 +36,7 @@ function donnees({ gros = false } = {}) {
   return { categories, suppliers, projects, products, product_projects: [{ product_id: products[0].id, project_id: projects[0].id }] };
 }
 
-async function ctx({ gros = false, connecte = false, dark = false } = {}) {
+async function ctx({ gros = false, connecte = false, dark = false, valide = true } = {}) {
   const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
   if (dark) await c.addInitScript(() => localStorage.setItem("theme", "dark"));
   const db = donnees({ gros });
@@ -58,7 +58,15 @@ async function ctx({ gros = false, connecte = false, dark = false } = {}) {
     if (url.pathname.startsWith("/storage/v1/")) { etat.ecritures.push("storage " + req.method()); return route.fulfill({ json: [{}] }); }
     const m = url.pathname.match(/\/rest\/v1\/(rpc\/)?([a-z_]+)/);
     if (!m) return route.fulfill({ json: {} });
-    if (m[1]) return route.fulfill({ json: [] });
+    if (m[1]) {
+      if (m[2] === "is_approved") return route.fulfill({ json: valide });
+      if (m[2] === "list_accounts") return route.fulfill({ json: [
+        { id: USER.id, email: USER.email, display_name: "Test Audit", approved: true, created_at: now },
+        { id: uid(), email: "nouveau@bureau.ch", display_name: "Nouveau Collègue", approved: false, created_at: now },
+      ] });
+      if (m[2] === "set_account_approved") { etat.ecritures.push("rpc set_account_approved"); return route.fulfill({ status: 204, body: "" }); }
+      return route.fulfill({ json: [] });
+    }
     const t = m[2];
     if (req.method() === "GET") {
       let rows = db[t] ?? [];
@@ -143,7 +151,9 @@ await step("Connexion", async () => {
   const { c, page } = await ctx();
   await aller(page, "auth");
   await shot(page, "06-connexion", false);
-  verif("Connexion : plus d'onglet « Créer un compte »", !(await page.getByText("Créer un compte").count()));
+  await page.getByRole("tab", { name: "Créer un compte" }).click(); await page.waitForTimeout(200);
+  verif("Inscription : prénom, nom, email, mot de passe", (await page.getByLabel("Prénom").isVisible()) && (await page.getByLabel("Nom", { exact: true }).isVisible()));
+  await shot(page, "06b-inscription", false);
   await axe(page, "connexion");
   await c.close();
 });
@@ -167,6 +177,19 @@ await step("Administration", async () => {
   await aller(page, "config");
   await shot(page, "10-config");
   await axe(page, "config");
+  verif("Comptes : 1 en attente avec bouton Valider", (await page.getByText("1 en attente").isVisible()) && (await page.getByRole("button", { name: "Valider" }).isVisible()));
+  await page.getByRole("button", { name: "Valider" }).click(); await page.waitForTimeout(500);
+  verif("Validation d'un compte", etat.ecritures.includes("rpc set_account_approved"));
+  await c.close();
+});
+
+await step("Compte en attente", async () => {
+  const { c, page } = await ctx({ connecte: true, valide: false });
+  await aller(page, "admin");
+  verif("Compte non validé : écran d'attente, pas d'administration", (await page.getByText("Compte en attente de validation").first().isVisible()) && !(await page.getByRole("link", { name: "Administration" }).count()));
+  await shot(page, "12-compte-en-attente", false);
+  await aller(page);
+  verif("Compte non validé : pas de bouton « Vérifiée » sur les fiches", !(await page.getByRole("button", { name: "Vérifiée" }).count()));
   await c.close();
 });
 

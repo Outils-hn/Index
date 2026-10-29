@@ -17,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, useApproval } from "@/hooks/use-auth";
+import { CompteEnAttente } from "@/components/famille/CompteEnAttente";
 import { fetchProductsWithAuthors } from "@/lib/products";
 import {
   fetchCategories,
@@ -50,6 +51,7 @@ function Admin() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { approved, checking } = useApproval(user);
   const [name, setName] = useState("");
   const [supplier, setSupplier] = useState<string>("");
   const [category, setCategory] = useState<string>("");
@@ -208,7 +210,7 @@ function Admin() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (authLoading) {
+  if (authLoading || checking) {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
@@ -221,6 +223,14 @@ function Admin() {
   }
 
   if (!user) return null;
+  if (!approved) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppHeader />
+        <CompteEnAttente email={user.email} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

@@ -283,6 +283,12 @@ export type Database = {
           last_name: string
         }[]
       }
+      is_approved: { Args: never; Returns: boolean }
+      list_accounts: {
+        Args: never
+        Returns: { id: string; email: string | null; display_name: string | null; approved: boolean; created_at: string }[]
+      }
+      set_account_approved: { Args: { _id: string; _approved: boolean }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
