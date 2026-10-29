@@ -105,7 +105,7 @@ await step("Bibliotheque", async () => {
   verif("Curseur dans la recherche a l'ouverture", await page.evaluate(() => document.activeElement?.getAttribute("aria-label") === "Rechercher une fiche"));
   await page.getByRole("button", { name: "Changer d'application" }).click(); await page.waitForTimeout(200);
   const applis = await page.getByRole("menuitem").allInnerTexts();
-  verif("Selecteur : 6 applis dans l'ordre", ["Format", "Index", "Linear", "Masse", "Strate", "Trame"].every((a, i) => applis[i]?.startsWith(a)), applis.map((t) => t.split(/\s/)[0]).join(", "));
+  verif("Selecteur : 7 applis dans l'ordre", ["Access", "Format", "Index", "Linear", "Masse", "Strate", "Trame"].every((a, i) => applis[i]?.startsWith(a)), applis.map((t) => t.split(/\s/)[0]).join(", "));
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
