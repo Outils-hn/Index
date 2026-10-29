@@ -30,11 +30,14 @@ import { EditProductDialog } from "@/components/EditProductDialog";
 import { ProjectsMultiSelect } from "@/components/ProjectsMultiSelect";
 import { fetchProjects, setProductProjects } from "@/lib/projects";
 import type { Product } from "@/components/ProductCard";
+import { fmtDate } from "@/components/ProductCard";
+import { ask } from "@/lib/confirm";
+import { matches } from "@/lib/search";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Administration — FaçadeTech" },
+      { title: "Administration — Index" },
       { name: "description", content: "Ajouter et gérer les fiches techniques produits." },
     ],
   }),
@@ -70,16 +73,9 @@ function Admin() {
     queryFn: fetchProductsWithAuthors,
   });
 
-  const filteredProducts = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return products;
-    return products.filter((p) =>
-      p.name.toLowerCase().includes(q) ||
-      p.supplier.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q) ||
-      p.tags.some((t) => t.toLowerCase().includes(q))
-    );
-  }, [products, search]);
+  const active = useMemo(() => products.filter((p) => !p.deleted_at), [products]);
+  const trashed = useMemo(() => products.filter((p) => p.deleted_at).sort((a, b) => b.deleted_at!.localeCompare(a.deleted_at!)), [products]);
+  const filteredProducts = useMemo(() => active.filter((p) => matches(p, search)), [active, search]);
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
@@ -182,16 +178,31 @@ function Admin() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (p: { id: string; pdf_path: string | null }) => {
-      if (p.pdf_path) {
-        await supabase.storage.from("technical-sheets").remove([p.pdf_path]);
+  // Suppression en deux temps : corbeille (30 jours, restaurable), puis suppression definitive
+  // qui efface aussi le PDF du stockage
+  const trashMutation = useMutation({
+    mutationFn: async ({ id, back }: { id: string; back?: boolean }) => {
+      const { error } = await supabase.from("products").update({ deleted_at: back ? null : new Date().toISOString() }).eq("id", id);
+      if (error) {
+        if (/deleted_at/.test(error.message)) throw new Error("La base n'a pas encore la corbeille : appliquez la mise à jour de la base (voir la demande de fusion).");
+        throw error;
       }
+      return back;
+    },
+    onSuccess: (back) => {
+      toast.success(back ? "Fiche restaurée." : "Fiche mise à la corbeille (restaurable 30 jours).");
+      qc.invalidateQueries({ queryKey: ["products"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const purgeMutation = useMutation({
+    mutationFn: async (p: { id: string; pdf_path: string | null }) => {
+      if (p.pdf_path) await supabase.storage.from("technical-sheets").remove([p.pdf_path]);
       const { error } = await supabase.from("products").delete().eq("id", p.id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Produit supprimé.");
+      toast.success("Fiche supprimée définitivement.");
       qc.invalidateQueries({ queryKey: ["products"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -217,7 +228,7 @@ function Admin() {
       <main className="mx-auto max-w-6xl px-6 py-10 grid lg:grid-cols-[1fr_1.2fr] gap-10">
         <section>
           <div className="mb-6">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-1">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-1">
               Nouveau produit
             </div>
             <h1 className="text-2xl font-bold tracking-tight">Ajouter une fiche technique</h1>
@@ -239,7 +250,7 @@ function Admin() {
                 <Label>Fournisseur *</Label>
                 <div className="flex gap-2">
                   <Select value={supplier} onValueChange={setSupplier}>
-                    <SelectTrigger className="flex-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                    <SelectTrigger className="flex-1" aria-label="Fournisseur"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                     <SelectContent>
                       {suppliers.map((s) => (
                         <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
@@ -261,7 +272,7 @@ function Admin() {
                 <Label>Catégorie *</Label>
                 <div className="flex gap-2">
                   <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="flex-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                    <SelectTrigger className="flex-1" aria-label="Catégorie"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                     <SelectContent>
                       {categories.map((c) => (
                         <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
@@ -334,11 +345,11 @@ function Admin() {
                   {...getRootProps()}
                   className={`rounded-lg border-2 border-dashed transition cursor-pointer p-8 text-center ${
                     isDragActive
-                      ? "border-accent bg-accent/5"
-                      : "border-border hover:border-accent/60 hover:bg-secondary/50"
+                      ? "border-index bg-index-soft"
+                      : "border-border hover:border-foreground/40 hover:bg-muted/50"
                   }`}
                 >
-                  <input {...getInputProps()} />
+                  <input {...getInputProps()} aria-label="Choisir le PDF de la fiche" />
                   <UploadCloud className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                   <div className="font-medium text-sm">
                     {isDragActive ? "Déposez le fichier ici" : "Glissez-déposez le PDF ici"}
@@ -349,7 +360,7 @@ function Admin() {
                 </div>
               ) : (
                 <div className="rounded-lg border border-border bg-secondary/40 p-4 flex items-center gap-3">
-                  <FileText className="h-6 w-6 text-accent shrink-0" />
+                  <FileText className="h-6 w-6 text-index shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium truncate">{file.name}</div>
                     <div className="text-xs text-muted-foreground">
@@ -359,7 +370,7 @@ function Admin() {
                   <button
                     onClick={() => setFile(null)}
                     className="text-muted-foreground hover:text-foreground"
-                    aria-label="Retirer"
+                    aria-label="Retirer le PDF"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -384,13 +395,13 @@ function Admin() {
 
         <section>
           <div className="mb-6">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-1">
+            <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-1">
               Catalogue
             </div>
             <h2 className="text-2xl font-bold tracking-tight">
               Produits enregistrés
               <span className="text-muted-foreground font-normal text-base ml-2">
-                ({filteredProducts.length})
+                ({active.length})
               </span>
             </h2>
           </div>
@@ -401,13 +412,14 @@ function Admin() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Filtrer par nom, fournisseur, catégorie ou tag…"
+              aria-label="Filtrer les fiches"
               className="pl-11 pr-11 h-12 text-base bg-card border-border focus-visible:ring-accent"
             />
             {search && (
               <button
                 onClick={() => setSearch("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                aria-label="Effacer"
+                aria-label="Effacer le filtre"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -445,20 +457,21 @@ function Admin() {
                         size="icon"
                         variant="ghost"
                         onClick={() => setEditing(p)}
-                        className="text-muted-foreground hover:text-accent"
-                        aria-label="Modifier"
+                        className="text-muted-foreground hover:text-foreground"
+                        aria-label={`Modifier ${p.name}`}
                       >
                         <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                         size="icon"
                         variant="ghost"
-                        onClick={() => {
-                          if (confirm(`Supprimer "${p.name}" ?`)) {
-                            deleteMutation.mutate({ id: p.id, pdf_path: p.pdf_path });
+                        onClick={async () => {
+                          if (await ask({ title: `Mettre « ${p.name} » à la corbeille ?`, message: "Vous pourrez la restaurer pendant 30 jours, PDF compris.", confirm: "Mettre à la corbeille", danger: true })) {
+                            trashMutation.mutate({ id: p.id });
                           }
                         }}
                         className="text-muted-foreground hover:text-destructive"
+                        aria-label={`Supprimer ${p.name}`}
                       >
                         <Trash2 className="h-4 w-4" />
                     </Button>
@@ -467,6 +480,37 @@ function Admin() {
               </ul>
             )}
           </div>
+
+          {trashed.length > 0 && (
+            <div className="mt-8">
+              <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                Corbeille ({trashed.length})
+              </h2>
+              <ul className="divide-y divide-border rounded-lg border border-border bg-card">
+                {trashed.map((p) => (
+                  <li key={p.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate">{p.name}</div>
+                      <div className="text-xs text-muted-foreground">{p.supplier} · supprimée le <span className="num">{fmtDate(p.deleted_at!)}</span></div>
+                    </div>
+                    <button className="rounded-md border border-border px-2.5 py-1 text-xs hover:bg-muted" onClick={() => trashMutation.mutate({ id: p.id, back: true })}>
+                      Restaurer
+                    </button>
+                    <button
+                      className="rounded-md px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10"
+                      onClick={async () => {
+                        if (await ask({ title: `Supprimer définitivement « ${p.name} » ?`, message: "La fiche et son PDF seront effacés. Impossible de revenir en arrière.", confirm: "Supprimer définitivement", danger: true })) {
+                          purgeMutation.mutate({ id: p.id, pdf_path: p.pdf_path });
+                        }
+                      }}
+                    >
+                      Supprimer définitivement
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       </main>
 

@@ -1,11 +1,16 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Hexagon, LogOut, LogIn, User } from "lucide-react";
+import { LogOut, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SelecteurApplis } from "@/components/famille/SelecteurApplis";
+import { IndexMark } from "@/components/famille/IndexMark";
 
+const NAV_LINK = "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground";
+const NAV_ACTIVE = "rounded-md bg-muted px-3 py-1.5 text-sm font-medium text-foreground";
+
+/** En-tete commun a la famille : logo + nom avec selecteur d'applis, onglets sobres, theme et compte a droite. */
 export function AppHeader() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -17,71 +22,45 @@ export function AppHeader() {
   };
 
   return (
-    <header className="border-b border-border/60 bg-background/80 backdrop-blur sticky top-0 z-30">
-      <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="h-10 w-10 grid place-items-center neo-surface rounded-md text-foreground/80">
-            <Hexagon className="h-5 w-5" strokeWidth={1.5} />
-          </div>
-          <div className="leading-tight">
-            <div className="font-display font-bold text-[1.35rem] tracking-[0.18em] text-foreground">
-              INDEX
-            </div>
-            <div className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground font-display">
-              Fiches techniques · Bureau d'études
-            </div>
-          </div>
-        </Link>
-        <nav className="flex items-center gap-1 text-sm">
-          <Link
-            to="/"
-            className="px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition font-display uppercase tracking-[0.18em] text-[11px]"
-            activeProps={{ className: "px-3 py-2 rounded-md bg-[oklch(0.62_0.16_40)] text-white font-display uppercase tracking-[0.18em] text-[11px] shadow-[inset_0_0_0_1px_oklch(0.62_0.16_40)]" }}
-            activeOptions={{ exact: true }}
-          >
+    <header className="border-b border-border bg-background">
+      <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-3">
+        <div className="flex items-center gap-2.5">
+          <IndexMark />
+          <SelecteurApplis />
+          <span className="sr-only">Fiches techniques</span>
+        </div>
+        <nav aria-label="Sections" className="flex items-center gap-1">
+          <Link to="/" className={NAV_LINK} activeProps={{ className: NAV_ACTIVE }} activeOptions={{ exact: true }}>
             Bibliothèque
           </Link>
           {user && (
             <>
-              <Link
-                to="/admin"
-                className="px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition"
-                activeProps={{ className: "px-3 py-2 rounded-md text-foreground bg-secondary" }}
-              >
+              <Link to="/admin" className={NAV_LINK} activeProps={{ className: NAV_ACTIVE }}>
                 Administration
               </Link>
-              <Link
-                to="/config"
-                className="px-3 py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition"
-                activeProps={{ className: "px-3 py-2 rounded-md text-foreground bg-secondary" }}
-              >
+              <Link to="/config" className={NAV_LINK} activeProps={{ className: NAV_ACTIVE }}>
                 Configuration
               </Link>
             </>
           )}
-          <div className="ml-2 pl-3 border-l border-border flex items-center gap-2">
-            <ThemeToggle />
-            {user ? (
-              <>
-                <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
-                  <User className="h-3.5 w-3.5" />
-                  <span className="max-w-[180px] truncate">{user.email}</span>
-                </div>
-                <Button size="sm" variant="ghost" onClick={logout}>
-                  <LogOut className="h-4 w-4 sm:mr-1.5" />
-                  <span className="hidden sm:inline">Déconnexion</span>
-                </Button>
-              </>
-            ) : (
-              <Button size="sm" asChild>
-                <Link to="/auth">
-                  <LogIn className="h-4 w-4 mr-1.5" />
-                  Connexion
-                </Link>
-              </Button>
-            )}
-          </div>
         </nav>
+        <div className="ml-auto flex items-center gap-2 text-xs">
+          {user ? (
+            <>
+              <span className="max-w-[200px] truncate text-muted-foreground" title={user.email ?? ""}>{user.email}</span>
+              <button onClick={logout} className="inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                <LogOut className="h-3.5 w-3.5" />
+                Déconnexion
+              </button>
+            </>
+          ) : (
+            <Link to="/auth" className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-foreground transition-colors hover:bg-muted">
+              <LogIn className="h-3.5 w-3.5" />
+              Connexion
+            </Link>
+          )}
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

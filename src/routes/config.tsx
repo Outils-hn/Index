@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
+import { ask } from "@/lib/confirm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,7 +52,7 @@ import {
 export const Route = createFileRoute("/config")({
   head: () => ({
     meta: [
-      { title: "Configuration — FaçadeTech" },
+      { title: "Configuration — Index" },
       { name: "description", content: "Gérer les catégories et fournisseurs." },
     ],
   }),
@@ -85,7 +86,7 @@ function ConfigPage() {
       <AppHeader />
       <main className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8">
-          <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-1">
+          <div className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-1">
             Configuration
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Catégories & Fournisseurs</h1>
@@ -263,12 +264,12 @@ function TaxonomyPanel({
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={() => {
-                        if (confirm(`Supprimer "${it.name}" ? Les produits utilisant cette valeur la conserveront comme texte.`)) {
+                      onClick={async () => {
+                        if (await ask({ title: `Supprimer « ${it.name} » ?`, message: "Les fiches qui utilisent cette valeur la conserveront comme texte.", confirm: "Supprimer", danger: true })) {
                           deleteMutation.mutate(it.id);
                         }
                       }}
-                      aria-label="Supprimer"
+                      aria-label={`Supprimer ${it.name}`}
                       className="text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -448,16 +449,12 @@ function CategoriesPanel() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              `Supprimer "${it.name}" ? Les produits utilisant cette valeur la conserveront comme texte.`,
-                            )
-                          ) {
+                        onClick={async () => {
+                          if (await ask({ title: `Supprimer « ${it.name} » ?`, message: "Les fiches qui utilisent cette valeur la conserveront comme texte.", confirm: "Supprimer", danger: true })) {
                             deleteMutation.mutate(it.id);
                           }
                         }}
-                        aria-label="Supprimer"
+                        aria-label={`Supprimer ${it.name}`}
                         className="text-muted-foreground hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -706,16 +703,12 @@ function ProjectsPanel() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={() => {
-                        if (
-                          confirm(
-                            `Supprimer le projet "${it.numero} ${it.nom}" ? Les associations avec les produits seront retirées.`,
-                          )
-                        ) {
+                      onClick={async () => {
+                        if (await ask({ title: `Supprimer le chantier « ${it.numero} ${it.nom} » ?`, message: "Les fiches associées perdront ce lien.", confirm: "Supprimer", danger: true })) {
                           deleteMutation.mutate(it.id);
                         }
                       }}
-                      aria-label="Supprimer"
+                      aria-label={`Supprimer ${it.numero} ${it.nom}`}
                       className="text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />

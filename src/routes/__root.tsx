@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { AppFooter } from "@/components/famille/AppFooter";
+import { ConfirmHost } from "@/lib/confirm";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
@@ -18,16 +20,16 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Page introuvable</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          Cette page n'existe pas ou a été déplacée.
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
+            Retour à la bibliothèque
           </Link>
         </div>
       </div>
@@ -46,10 +48,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          La page n'a pas pu s'afficher
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Un problème est survenu. Vous pouvez réessayer ou revenir à la bibliothèque.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -59,13 +61,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            Réessayer
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            Retour à la bibliothèque
           </a>
         </div>
       </div>
@@ -78,16 +80,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Index ·" },
-      { name: "description", content: "INDEX — bibliothèque technique pour bureau d'études façade." },
+      { title: "Index — fiches techniques" },
+      { name: "description", content: "Index — bibliothèque des fiches techniques du bureau d'études façade." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Index ·" },
-      { property: "og:description", content: "INDEX — bibliothèque technique pour bureau d'études façade." },
+      { property: "og:title", content: "Index — fiches techniques" },
+      { property: "og:description", content: "Index — bibliothèque des fiches techniques du bureau d'études façade." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Index ·" },
-      { name: "twitter:description", content: "INDEX — bibliothèque technique pour bureau d'études façade." },
+      { name: "twitter:title", content: "Index — fiches techniques" },
+      { name: "twitter:description", content: "Index — bibliothèque des fiches techniques du bureau d'études façade." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/58bf014b-9847-46ea-91db-16405b90e2c8/id-preview-cbb25161--3678acde-4b5f-4c7d-b5a2-8ddd3dfdf9d0.lovable.app-1782285918541.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/58bf014b-9847-46ea-91db-16405b90e2c8/id-preview-cbb25161--3678acde-4b5f-4c7d-b5a2-8ddd3dfdf9d0.lovable.app-1782285918541.png" },
     ],
@@ -100,7 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap",
       },
     ],
   }),
@@ -112,7 +114,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="fr" suppressHydrationWarning>
       <head>
         <HeadContent />
         <script
@@ -136,7 +138,9 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <Toaster position="top-right" richColors />
+      <AppFooter />
+      <ConfirmHost />
+      <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
 }
