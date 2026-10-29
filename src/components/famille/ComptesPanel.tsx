@@ -41,7 +41,7 @@ export function ComptesPanel() {
       <div className="flex items-center gap-2 border-b border-border px-5 py-4">
         <Users className="h-4 w-4" aria-hidden="true" />
         <h2 className="font-semibold">Comptes</h2>
-        {enAttente > 0 && <span className="rounded-full bg-index-soft px-2 py-0.5 text-xs text-index">{enAttente} en attente</span>}
+        {enAttente > 0 && <span className="rounded-full bg-index px-2 py-0.5 text-xs font-medium text-white dark:text-background">{enAttente} en attente</span>}
       </div>
       {error ? (
         <p className="px-5 py-4 text-sm text-muted-foreground">
