@@ -81,6 +81,11 @@ function IndexInner() {
     [products, q, filtre, favorites],
   );
 
+  // Affichage par paquets de 60 : au-dela, « Afficher plus » (la recherche reste instantanee)
+  const [limit, setLimit] = useState(60);
+  useEffect(() => setLimit(60), [q, filtre]);
+  const shown = filtered.slice(0, limit);
+
   const is = (f: Filtre) => filtre.kind === f.kind && (f.kind !== "cat" || (filtre.kind === "cat" && filtre.name === f.name));
 
   return (
@@ -179,10 +184,17 @@ function IndexInner() {
               <span className="num">{num(filtered.length)}</span> fiche{filtered.length > 1 ? "s" : ""}
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((p) => (
+              {shown.map((p) => (
                 <ProductCard key={p.id} product={p} loggedIn={!!user} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} />
               ))}
             </div>
+            {filtered.length > shown.length && (
+              <div className="mt-6 text-center">
+                <button type="button" onClick={() => setLimit((l) => l + 60)} className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted">
+                  Afficher plus ({num(filtered.length - shown.length)} restantes)
+                </button>
+              </div>
+            )}
           </>
         )}
       </main>

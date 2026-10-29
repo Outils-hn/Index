@@ -199,7 +199,8 @@ export const ProductCard = memo(function ProductCard({
         </div>
       </div>
 
-      <PdfViewerModal open={pdfOpen} onClose={() => setPdfOpen(false)} productName={product.name} pdfUrl={pdfUrl} pdfFilename={product.pdf_filename} />
+      {/* Lecteur monte seulement a l'ouverture : 400 cartes ne portent pas 400 fenetres fermees */}
+      {pdfOpen && <PdfViewerModal open onClose={() => setPdfOpen(false)} productName={product.name} pdfUrl={pdfUrl} pdfFilename={product.pdf_filename} />}
     </article>
   );
 });

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 /** Au-dela de ce delai sans reponse, la base est consideree injoignable. */
-const TIMEOUT_MS = 6000;
+const TIMEOUT_MS = 5000;
 const withTimeout = <T,>(p: PromiseLike<T>) =>
   Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej(new Error("Délai dépassé")), TIMEOUT_MS))]);
 
