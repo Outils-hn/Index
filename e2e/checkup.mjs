@@ -85,7 +85,7 @@ async function ctx({ gros = false, connecte = false, dark = false, valide = true
   const page = await c.newPage();
   page.on("pageerror", (e) => verif("Aucune erreur JavaScript", false, e.message.slice(0, 150)));
   page.on("dialog", (d) => { etat.natifs++; d.accept(); });
-  return { c, page, etat };
+  return { c, page, etat, db };
 }
 const aller = async (page, chemin = "") => { await page.goto(BASE + chemin, { waitUntil: "networkidle" }); await page.waitForTimeout(600); };
 const shot = (page, f, full = true) => page.screenshot({ path: `${OUT}/${f}.png`, fullPage: full });
@@ -138,6 +138,19 @@ await step("Bibliotheque", async () => {
   const vu = await page.getByText(/copie locale du/).waitFor({ timeout: 20000 }).then(() => true, () => false);
   verif("Hors ligne : copie locale affichee", vu && (await cartes(page)) === 9, `${Date.now() - t0} ms`);
   await shot(page, "05-hors-ligne-copie", false);
+  await c.close();
+});
+
+await step("Lien vers une fiche", async () => {
+  const { c, page, db } = await ctx();
+  const f = db.products[1];
+  await aller(page, `?fiche=${f.id}`);
+  verif("Lien ?fiche= : seule la fiche demandée, PDF ouvert", (await page.locator("article").count()) === 1 && (await page.getByText("Fiche ouverte depuis une autre appli.").isVisible()) && (await page.getByRole("dialog").isVisible()));
+  await shot(page, "14-lien-fiche", false);
+  await aller(page, "?fiche=inconnue");
+  verif("Lien vers une fiche disparue : message clair", await page.getByText(/n'existe plus dans Index/).isVisible());
+  await page.getByRole("button", { name: "Voir toutes les fiches" }).click(); await page.waitForTimeout(400);
+  verif("« Voir toutes les fiches » revient à la bibliothèque", (await page.locator("article").count()) === 9);
   await c.close();
 });
 
