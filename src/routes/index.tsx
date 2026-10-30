@@ -23,7 +23,11 @@ export const Route = createFileRoute("/")({
     ],
   }),
   // ?fiche=<id> : lien venant d'une autre appli (Masse, Strate, Format, Linear) vers une fiche precise
-  validateSearch: (s: Record<string, unknown>): { fiche?: string } => (typeof s.fiche === "string" && s.fiche ? { fiche: s.fiche } : {}),
+  // ?q=<texte> : recherche pre-remplie (ex. Access ouvre les fiches d'un fournisseur)
+  validateSearch: (s: Record<string, unknown>): { fiche?: string; q?: string } => ({
+    ...(typeof s.fiche === "string" && s.fiche ? { fiche: s.fiche } : {}),
+    ...(typeof s.q === "string" && s.q.trim() ? { q: s.q.trim().slice(0, 100) } : {}),
+  }),
   component: Index,
 });
 
@@ -53,7 +57,9 @@ function IndexInner() {
   const searchRef = useRef<HTMLInputElement>(null);
   // Recherche differee : la saisie reste fluide meme avec des centaines de fiches
   const q = useDeferredValue(search);
-  const { fiche } = Route.useSearch();
+  const { fiche, q: qLien } = Route.useSearch();
+  // Recherche venue d'un lien : recopiee une fois dans la barre de recherche, modifiable ensuite
+  useEffect(() => { if (qLien) setSearch(qLien); }, [qLien]);
   const navigate = useNavigate();
 
   // « / » place le curseur dans la recherche, comme sur la plupart des sites
