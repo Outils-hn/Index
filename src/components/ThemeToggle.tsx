@@ -12,7 +12,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={isDark ? "Activer le mode clair" : "Activer le mode sombre"}
       title={isDark ? "Mode clair" : "Mode sombre"}
-      className="h-9 w-9 p-0"
+      className="bandeau-icone"
     >
       {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </Button>

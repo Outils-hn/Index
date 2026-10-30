@@ -102,7 +102,7 @@ function IndexInner() {
           Base de données injoignable : copie locale du {fmtDate(offlineSince)}, en lecture seule. Les PDF ne s'ouvriront peut-être pas.
         </div>
       )}
-      <main className="mx-auto max-w-7xl px-6 py-8">
+      <main className="page py-8">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">Fiches techniques</h1>

@@ -214,7 +214,7 @@ function Admin() {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
-        <main className="mx-auto max-w-6xl px-6 py-16 flex items-center gap-3 text-muted-foreground">
+        <main className="page py-16 flex items-center gap-3 text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
           Chargement de la session…
         </main>
@@ -235,7 +235,7 @@ function Admin() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <main className="mx-auto max-w-6xl px-6 py-10 grid lg:grid-cols-[1fr_1.2fr] gap-10">
+      <main className="page py-10 grid lg:grid-cols-[1fr_1.2fr] gap-10">
         <section>
           <div className="mb-6">
             <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--app-ink)] mb-1">
