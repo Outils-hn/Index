@@ -105,11 +105,11 @@ await step("Bibliotheque", async () => {
   verif("Curseur dans la recherche a l'ouverture", await page.evaluate(() => document.activeElement?.getAttribute("aria-label") === "Rechercher une fiche"));
   await page.getByRole("button", { name: "Changer d'application" }).click(); await page.waitForTimeout(200);
   const applis = await page.getByRole("menuitem").allInnerTexts();
-  verif("Selecteur : 7 applis dans l'ordre", ["Access", "Format", "Index", "Linear", "Masse", "Strate", "Trame"].every((a, i) => applis[i]?.startsWith(a)), applis.map((t) => t.split(/\s/)[0]).join(", "));
+  verif("Selecteur : Accueil + 8 applis dans l'ordre", ["Accueil", "Access", "Check", "Format", "Index", "Linear", "Masse", "Strate", "Trame"].every((a, i) => applis[i]?.startsWith(a)), applis.map((t) => t.split(/\s/)[0]).join(", "));
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.0 · Conçu par Hugo N. · 2026 · Sauvegarde", pied);
+  verif("Pied de page", pied === "Index v2.0 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
