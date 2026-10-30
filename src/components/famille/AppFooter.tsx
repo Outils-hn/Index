@@ -1,3 +1,4 @@
+import { LienRetour } from "./LienRetour";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -25,7 +26,8 @@ export function AppFooter() {
         · {APP_YEAR} ·{" "}
         <button type="button" onClick={save} className="underline-offset-2 transition-colors hover:text-foreground hover:underline">
           Sauvegarde
-        </button>
+        </button>{" "}
+        · <LienRetour app="Index" version={APP_VERSION} />
       </p>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-sm text-left">
