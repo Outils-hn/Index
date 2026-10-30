@@ -10,6 +10,7 @@ import { useProducts } from "@/lib/products";
 import { CompareProvider } from "@/components/CompareContext";
 import { CompareBar } from "@/components/CompareBar";
 import { useFavorites } from "@/hooks/use-favorites";
+import { FichesARelire } from "@/components/famille/FichesARelire";
 import { haystack, matches, num, validity } from "@/lib/search";
 
 export const Route = createFileRoute("/")({
@@ -120,6 +121,7 @@ function IndexInner() {
               </p>
             )}
           </div>
+          {approved && !isLoading && !error && <FichesARelire products={all} />}
           {!user && (
             <p className="text-xs text-muted-foreground">
               Lecture seule ·{" "}

@@ -141,6 +141,19 @@ await step("Bibliotheque", async () => {
   await c.close();
 });
 
+await step("Fiches a relire du mois", async () => {
+  const { c, page, etat } = await ctx({ connecte: true });
+  await aller(page);
+  await page.getByRole("button", { name: /Fiches à relire du mois/ }).click(); await page.waitForTimeout(300);
+  const d = page.getByRole("dialog");
+  const n = await d.getByRole("button", { name: "Toujours valable" }).count();
+  verif("Fiches à relire : 5 fiches proposées, les plus anciennes", n === 5 && /il y a 2 ans/.test(await d.innerText()), `${n}`);
+  await shot(page, "15-fiches-a-relire", false);
+  await d.getByRole("button", { name: "Toujours valable" }).first().click(); await page.waitForTimeout(600);
+  verif("« Toujours valable » enregistre la vérification", etat.ecritures.includes("PATCH products"));
+  await c.close();
+});
+
 await step("Lien vers une fiche", async () => {
   const { c, page, db } = await ctx();
   const f = db.products[1];
