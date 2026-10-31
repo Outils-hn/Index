@@ -43,7 +43,7 @@ function AuthPage() {
     try {
       if (mode === "reset") {
         // Lien envoye par email ; il ouvre la page « Nouveau mot de passe »
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/nouveau-mot-de-passe` });
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}nouveau-mot-de-passe` });
         if (error) throw error;
         toast.success("Si un compte existe pour cet email, un lien vient d'être envoyé.");
         setMode("signin");
@@ -56,7 +56,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
             data: { first_name: fn, last_name: ln, display_name: `${fn} ${ln}` },
           },
         });
