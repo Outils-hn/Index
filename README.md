@@ -20,7 +20,7 @@ Donne à l'application un design moderne, pro et technique (tons gris foncé, bl
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://index-hn.lovable.app
+**Live app**: https://outils-hn.github.io/Index/
 
 ## Build with Lovable
 

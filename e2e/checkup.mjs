@@ -109,7 +109,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.2 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.3 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
