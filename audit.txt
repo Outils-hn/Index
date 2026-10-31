@@ -1,0 +1,295 @@
+# Constats
+
+# Erreurs navigateur
+aucune
+
+# Metriques
+{
+  "mesures:visiteur": {
+    "titre": "Bibliothèque — Index",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 0,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 1,
+    "champsSansEtiquette": [],
+    "interactifs": 47,
+    "sansNom": [],
+    "cibles_sous_24px": 6,
+    "taillesTexte": {
+      "11": 47,
+      "12": 20,
+      "13": 1,
+      "14": 26,
+      "16": 10,
+      "17": 1,
+      "24": 1
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 890813,
+    "octetsJS": 796125,
+    "nbRequetes": 13,
+    "domContentLoaded": 112,
+    "load": 159,
+    "chargement_ms": 1373
+  },
+  "axe:visiteur": [
+    {
+      "regle": "heading-order",
+      "impact": "moderate",
+      "aide": "Heading levels should only increase by one",
+      "occurrences": 1,
+      "exemple": "<h3 class=\"text-base font-semibold leading-snug text-foreground\">Sikaflex-11 FC+</h3>",
+      "cible": "article:nth-child(1) > .items-start.gap-3.flex > .min-w-0.flex-1 > h3"
+    },
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "serious",
+      "aide": "Elements must have their visible text as part of their accessible name",
+      "occurrences": 1,
+      "exemple": "<button type=\"button\" id=\"radix-_r_0_\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-state=\"closed\" class=\"flex items-center gap-1 rounded",
+      "cible": "#radix-_r_0_"
+    }
+  ],
+  "visiteur:texte": "Index Fiches techniques Bibliothèque Lecture seule Se connecter Fiches techniques 9 fiches · 6 à vérifier Lecture seule · Se connecter pour ajouter des fiches Toutes Favoris 0 À vérifier 6 Colles & Mastics Fixations & Chevilles Membranes & Étanchéité Profilés & Accessoires Isolants 9 fiches COLLES & MASTICS Sikaflex-11 FC+ Sika Comparer extérieur 24-118 Résidence Les Tilleuls Aucune fiche À jour · vérifiée le 31.10.2026 FIXATIONS & CHEVILLES Cheville HFT 8x140 HFT Comparer extérieur Ouvrir la fiche Site À vérifier · vérifiée le 31.08.2025 ISOLANTS ISORESIST 1000 031 F Isover Comparer extérieur",
+  "focus": {
+    "total": 25,
+    "sansIndicateur": 0,
+    "exemples": []
+  },
+  "tabs-jusqu-a-recherche": 22,
+  "mesures:connecte": {
+    "titre": "Bibliothèque — Index",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 0,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 1,
+    "champsSansEtiquette": [],
+    "interactifs": 47,
+    "sansNom": [],
+    "cibles_sous_24px": 6,
+    "taillesTexte": {
+      "11": 47,
+      "12": 20,
+      "13": 1,
+      "14": 26,
+      "16": 10,
+      "17": 1,
+      "24": 1
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 890813,
+    "octetsJS": 796125,
+    "nbRequetes": 13,
+    "domContentLoaded": 77,
+    "load": 204,
+    "chargement_ms": 1350
+  },
+  "axe:connecte": [
+    {
+      "regle": "heading-order",
+      "impact": "moderate",
+      "aide": "Heading levels should only increase by one",
+      "occurrences": 1,
+      "exemple": "<h3 class=\"text-base font-semibold leading-snug text-foreground\">Sikaflex-11 FC+</h3>",
+      "cible": "article:nth-child(1) > .items-start.gap-3.flex > .min-w-0.flex-1 > h3"
+    },
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "serious",
+      "aide": "Elements must have their visible text as part of their accessible name",
+      "occurrences": 1,
+      "exemple": "<button type=\"button\" id=\"radix-_r_0_\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-state=\"closed\" class=\"flex items-center gap-1 rounded",
+      "cible": "#radix-_r_0_"
+    }
+  ],
+  "connecte:texte": "Index Fiches techniques Bibliothèque Lecture seule Se connecter Fiches techniques 9 fiches · 6 à vérifier Lecture seule · Se connecter pour ajouter des fiches Toutes Favoris 0 À vérifier 6 Colles & Mastics Fixations & Chevilles Membranes & Étanchéité Profilés & Accessoires Isolants 9 fiches COLLES & MASTICS Sikaflex-11 FC+ Sika Comparer extérieur 24-118 Résidence Les Tilleuls Aucune fiche À jour · vérifiée le 31.10.2026 FIXATIONS & CHEVILLES Cheville HFT 8x140 HFT Comparer extérieur Ouvrir la fiche Site À vérifier · vérifiée le 31.08.2025 ISOLANTS ISORESIST 1000 031 F Isover Comparer extérieur Ne pas poser sous 5 °C. Ouvrir la fiche Probablement périmée · vérifiée le 01.05.2024 FIXATIONS & C",
+  "boutons": "Index | 6 à vérifier | Toutes | Favoris\n0 | À vérifier\n6 | Colles & Mastics | Fixations & Chevilles | Membranes & Étanchéité | Profilés & Accessoires | Isolants | Comparer | Aucune fiche | Comparer | Ouvrir la fiche | Comparer | Ouvrir la fiche | Comparer | Voir sur le site | Comparer | Ouvrir la fiche | Comparer | Ouvrir la fiche | Comparer | Aucune fiche | Comparer | Ouvrir la fiche | Comparer | Ouvrir la fiche | Conçu par Hugo N. | Sauvegarde",
+  "recherche:accent": {
+    "fiches": 0,
+    "texte": " des fiches Toutes Favoris 0 À vérifier 6 Colles & Mastics Fixations & Chevilles Membranes & Étanchéité Profilés & Accessoires Isolants Aucune fiche trouvée Essayez un autre mot, ou retirez le filtre."
+  },
+  "recherche:partiel": {
+    "fiches": 3,
+    "texte": "ot SDK2 Ejot Comparer extérieur Voir sur le site À jour · vérifiée le 31.10.2026 FIXATIONS & CHEVILLES Spirale Drall-Fix HFT Comparer extérieur Ouvrir la fiche Site À vérifier · vérifiée le 31.08.2025"
+  },
+  "recherche:rien": {
+    "fiches": 0,
+    "texte": " des fiches Toutes Favoris 0 À vérifier 6 Colles & Mastics Fixations & Chevilles Membranes & Étanchéité Profilés & Accessoires Isolants Aucune fiche trouvée Essayez un autre mot, ou retirez le filtre."
+  },
+  "recherche:balise": {
+    "fiches": 0,
+    "texte": " des fiches Toutes Favoris 0 À vérifier 6 Colles & Mastics Fixations & Chevilles Membranes & Étanchéité Profilés & Accessoires Isolants Aucune fiche trouvée Essayez un autre mot, ou retirez le filtre."
+  },
+  "recherche:long": {
+    "fiches": 0,
+    "texte": " des fiches Toutes Favoris 0 À vérifier 6 Colles & Mastics Fixations & Chevilles Membranes & Étanchéité Profilés & Accessoires Isolants Aucune fiche trouvée Essayez un autre mot, ou retirez le filtre."
+  },
+  "recherche:espaces": {
+    "fiches": 9,
+    "texte": "FT Comparer extérieur Ouvrir la fiche Site À vérifier · vérifiée le 31.08.2025 MEMBRANES & ÉTANCHÉITÉ Bande butyle Sika Comparer extérieur Ouvrir la fiche Probablement périmée · vérifiée le 01.05.2024"
+  },
+  "recherche:reference": {
+    "fiches": 1,
+    "texte": "ions & Chevilles Membranes & Étanchéité Profilés & Accessoires Isolants 1 fiche FIXATIONS & CHEVILLES Cheville HFT 8x140 HFT Comparer extérieur Ouvrir la fiche Site À vérifier · vérifiée le 31.08.2025"
+  },
+  "fiche:texte": "COLLES & MASTICS Sikaflex-11 FC+ Sika Comparer extérieur 24-118 Résidence Les Tilleuls Aucune fiche À jour · vérifiée le 31.10.2026",
+  "volume:400-fiches": {
+    "chargement_ms": 1331,
+    "cartes": 60
+  },
+  "volume:recherche-ms": 319,
+  "mesures:volume": {
+    "titre": "Bibliothèque — Index",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 0,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 1,
+    "champsSansEtiquette": [],
+    "interactifs": 31,
+    "sansNom": [],
+    "cibles_sous_24px": 7,
+    "taillesTexte": {
+      "11": 20,
+      "12": 19,
+      "13": 1,
+      "14": 14,
+      "16": 5,
+      "17": 1,
+      "24": 1
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 890813,
+    "octetsJS": 796125,
+    "nbRequetes": 13,
+    "domContentLoaded": 78,
+    "load": 124,
+    "chargement_ms": 1331
+  },
+  "hors-ligne:texte": "Index Fiches techniques Bibliothèque Lecture seule Se connecter Fiches techniques Lecture seule · Se connecter pour ajouter des fiches Toutes Favoris 0 À vérifier 0 Chargement… Index v2.3 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug",
+  "mesures:auth": {
+    "titre": "Connexion — Index",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 0,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 2,
+    "champsSansEtiquette": [],
+    "interactifs": 9,
+    "sansNom": [],
+    "cibles_sous_24px": 5,
+    "taillesTexte": {
+      "12": 6,
+      "14": 6,
+      "16": 1,
+      "20": 1
+    },
+    "tailleMin": 12,
+    "octetsTransferes": 897600,
+    "octetsJS": 802912,
+    "nbRequetes": 10,
+    "domContentLoaded": 78,
+    "load": 125,
+    "chargement_ms": 1265
+  },
+  "axe:auth": [],
+  "auth:vide": "Index Connexion Créer un compte Connexion Pour ajouter et modifier des fiches. Email Mot de passe Mot de passe oublié ?Se connecter ← Retour à la bibliothèque Index v2.3 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug",
+  "admin:texte": "Index Connexion Créer un compte Connexion Pour ajouter et modifier des fiches. Email Mot de passe Mot de passe oublié ?Se connecter ← Retour à la bibliothèque Index v2.3 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug",
+  "axe:admin": [],
+  "config:texte": "Index Connexion Créer un compte Connexion Pour ajouter et modifier des fiches. Email Mot de passe Mot de passe oublié ?Se connecter ← Retour à la bibliothèque Index v2.3 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug",
+  "axe:config": [],
+  "mesures:mobile": {
+    "titre": "Bibliothèque — Index",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 0,
+    "debordementHorizontal": true,
+    "largeurDoc": 458,
+    "largeurFenetre": 390,
+    "champs": 1,
+    "champsSansEtiquette": [],
+    "interactifs": 47,
+    "sansNom": [],
+    "cibles_sous_24px": 5,
+    "taillesTexte": {
+      "11": 47,
+      "12": 20,
+      "13": 1,
+      "14": 26,
+      "16": 10,
+      "17": 1,
+      "24": 1
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 890813,
+    "octetsJS": 796125,
+    "nbRequetes": 13,
+    "domContentLoaded": 81,
+    "load": 130,
+    "chargement_ms": 1333
+  },
+  "mesures:tablette": {
+    "titre": "Bibliothèque — Index",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 0,
+    "debordementHorizontal": false,
+    "largeurDoc": 768,
+    "largeurFenetre": 768,
+    "champs": 1,
+    "champsSansEtiquette": [],
+    "interactifs": 47,
+    "sansNom": [],
+    "cibles_sous_24px": 6,
+    "taillesTexte": {
+      "11": 47,
+      "12": 20,
+      "13": 1,
+      "14": 26,
+      "16": 10,
+      "17": 1,
+      "24": 1
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 890813,
+    "octetsJS": 796125,
+    "nbRequetes": 13,
+    "domContentLoaded": 82,
+    "load": 131,
+    "chargement_ms": 1339
+  },
+  "axe:sombre": [
+    {
+      "regle": "heading-order",
+      "impact": "moderate",
+      "aide": "Heading levels should only increase by one",
+      "occurrences": 1,
+      "exemple": "<h3 class=\"text-base font-semibold leading-snug text-foreground\">Sikaflex-11 FC+</h3>",
+      "cible": "article:nth-child(1) > .items-start.gap-3.flex > .min-w-0.flex-1 > h3"
+    },
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "serious",
+      "aide": "Elements must have their visible text as part of their accessible name",
+      "occurrences": 1,
+      "exemple": "<button type=\"button\" id=\"radix-_r_0_\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-state=\"closed\" class=\"flex items-center gap-1 rounded",
+      "cible": "#radix-_r_0_"
+    }
+  ]
+}
