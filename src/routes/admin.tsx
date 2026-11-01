@@ -235,8 +235,8 @@ function Admin() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <main className="page py-10 grid lg:grid-cols-[1fr_1.2fr] gap-10">
-        <section>
+      <main className="page py-10 grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-10">
+        <section className="min-w-0">
           <div className="mb-6">
             <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--app-ink)] mb-1">
               Nouveau produit
@@ -403,7 +403,7 @@ function Admin() {
           </div>
         </section>
 
-        <section>
+        <section className="min-w-0">
           <div className="mb-6">
             <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--app-ink)] mb-1">
               Catalogue
