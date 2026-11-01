@@ -109,7 +109,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.5 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.6 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -161,6 +161,55 @@ await step("Telephone", async () => {
   verif("Copie du lien d'une fiche", await page.getByText("Lien copié").isVisible());
   await page.locator("article").first().getByRole("button", { name: /vérifiée le/ }).click();
   verif("Explication de la mention de fraicheur", await page.getByText("vérifiée il y a moins de 12 mois").first().isVisible());
+  await c.close();
+});
+
+await step("Telephone : fenetres avec noms longs", async () => {
+  const { c, page, db } = await ctx({ largeur: 390, connecte: true });
+  const LONG = "Mastic polyuréthane monocomposant haute performance pour joints de façade rideau et vitrages structurels collés";
+  db.products.forEach((p, i) => { if (i < 3) { p.name = `${LONG} ${i}`; p.supplier = "Fabrique Suisse de Produits Chimiques pour la Construction SA"; p.pdf_filename = `${LONG.replace(/ /g, "_")}.pdf`; p.pdf_path = "fiches/x.pdf"; p.verified_at = old(30); } });
+  await aller(page);
+  const fenetre = async (nom, sel = "[role=dialog],[role=alertdialog]") => {
+    await page.waitForTimeout(600);
+    const r = await page.evaluate((sel) => {
+      const d = document.querySelector(sel);
+      if (!d) return null;
+      const b = d.getBoundingClientRect();
+      const hors = [...d.querySelectorAll("*")].filter((e) => { const x = e.getBoundingClientRect(); return x.width > 0 && (x.right > b.right + 1 || x.left < b.left - 1); }).slice(0, 4).map((e) => `${e.tagName}.${String(e.className).slice(0, 40)}`);
+      return { sw: d.scrollWidth - d.clientWidth, hors, page: document.documentElement.scrollWidth - window.innerWidth, large: [...document.querySelectorAll("body *")].filter((x) => x.getBoundingClientRect().right > window.innerWidth + 1 && x.offsetParent && !d.contains(x)).slice(0, 4).map((x) => `${x.tagName}.${String(x.className).slice(0, 50)}`) };
+    }, sel);
+    verif(`Telephone : fenetre « ${nom} » sans debordement`, !!r && r.sw <= 0 && r.hors.length === 0 && r.page <= 0, r ? `${r.sw} px ; ${r.hors.join(", ")} ; page ${r.page} ${r.large.join(" ; ")}` : "fenetre introuvable");
+    await shot(page, `16-${nom.replace(/\W+/g, "-")}`, false);
+  };
+  await page.getByRole("button", { name: "Ouvrir la fiche" }).first().click();
+  await fenetre("Apercu PDF");
+  await page.keyboard.press("Escape"); await page.waitForTimeout(500);
+  await page.locator("article").nth(0).getByRole("button", { name: "Comparer" }).click();
+  await page.locator("article").nth(1).getByRole("button", { name: "Comparer" }).click(); await page.waitForTimeout(400);
+  await shot(page, "16-barre-comparer", false);
+  const barre = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  verif("Telephone : barre de comparaison avec noms longs sans debordement de page", barre <= 0, `${barre} px`);
+  const cmp = page.getByRole("button", { name: /^Comparer \(?\d|Voir la comparaison|Comparer les/ }).first();
+  if (await cmp.count()) { await cmp.click(); await fenetre("Comparaison"); await page.keyboard.press("Escape"); await page.waitForTimeout(500); }
+  await page.getByRole("button", { name: /Fiches à relire du mois/ }).click();
+  await fenetre("Fiches a relire");
+  await page.keyboard.press("Escape"); await page.waitForTimeout(500);
+  await aller(page, "admin");
+  await page.getByRole("button", { name: new RegExp("^Supprimer " + LONG.slice(0, 20)) }).first().click();
+  await fenetre("Supprimer fiche nom long");
+  await c.close();
+});
+
+await step("Telephone : page Administration", async () => {
+  const { c, page, db } = await ctx({ largeur: 390, connecte: true });
+  db.products[0].name = "Mastic polyuréthane monocomposant haute performance pour joints de façade rideau et vitrages structurels collés";
+  await aller(page, "admin");
+  await shot(page, "17-admin-telephone");
+  const m = await page.evaluate(() => ({
+    debord: document.documentElement.scrollWidth - window.innerWidth,
+    larges: [...document.querySelectorAll("body *")].filter((x) => x.getBoundingClientRect().width > window.innerWidth + 1 && x.offsetParent).slice(0, 6).map((x) => `${x.tagName}.${String(x.className).slice(0, 50)} ${Math.round(x.getBoundingClientRect().width)}`),
+  }));
+  verif("Telephone : page Administration sans debordement horizontal", m.debord <= 0, `${m.debord} px ${m.larges.join(" ; ")}`);
   await c.close();
 });
 
