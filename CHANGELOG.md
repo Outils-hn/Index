@@ -4,6 +4,11 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.6 — 1er novembre 2026
+
+- Nouveauté : sur téléphone, la fenêtre « Fiches à relire du mois » et la page Administration ne débordent plus quand un nom de fiche est très long.
+- Le check-up automatique mesure maintenant les fenêtres (aperçu, comparaison, relecture, suppression) avec des noms très longs.
+
 ## 2.5 — 1er novembre 2026
 
 - Nouveauté : sur téléphone, la bibliothèque s'affiche sans déborder, et on peut copier le lien d'une fiche en un clic.
