@@ -44,7 +44,7 @@ export function FichesARelire({ products }: { products: Product[] }) {
         <span className="num text-muted-foreground">{Math.min(faites, DOSE_DU_MOIS)}/{DOSE_DU_MOIS}</span>
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="max-w-xl [&>*]:min-w-0">
           <DialogHeader>
             <DialogTitle>Fiches à relire du mois</DialogTitle>
             <DialogDescription>
@@ -58,8 +58,8 @@ export function FichesARelire({ products }: { products: Product[] }) {
           {liste.length ? (
             <ul className="divide-y divide-border rounded-lg border border-border">
               {liste.map((p) => (
-                <li key={p.id} className="flex items-center gap-3 px-3 py-2.5 text-sm">
-                  <div className="min-w-0 flex-1">
+                <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2.5 text-sm">
+                  <div className="min-w-0 basis-full sm:basis-0 sm:flex-1">
                     <div className="truncate font-medium">{p.name}</div>
                     <div className="truncate text-xs text-muted-foreground">{p.supplier} · vérifiée {depuis(checkedAt(p))}</div>
                   </div>

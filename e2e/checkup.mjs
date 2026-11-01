@@ -176,9 +176,9 @@ await step("Telephone : fenetres avec noms longs", async () => {
       if (!d) return null;
       const b = d.getBoundingClientRect();
       const hors = [...d.querySelectorAll("*")].filter((e) => { const x = e.getBoundingClientRect(); return x.width > 0 && (x.right > b.right + 1 || x.left < b.left - 1); }).slice(0, 4).map((e) => `${e.tagName}.${String(e.className).slice(0, 40)}`);
-      return { sw: d.scrollWidth - d.clientWidth, hors, page: document.documentElement.scrollWidth - window.innerWidth };
+      return { sw: d.scrollWidth - d.clientWidth, hors, page: document.documentElement.scrollWidth - window.innerWidth, large: [...document.querySelectorAll("body *")].filter((x) => x.getBoundingClientRect().right > window.innerWidth + 1 && x.offsetParent && !d.contains(x)).slice(0, 4).map((x) => `${x.tagName}.${String(x.className).slice(0, 50)}`) };
     }, sel);
-    verif(`Telephone : fenetre « ${nom} » sans debordement`, !!r && r.sw <= 0 && r.hors.length === 0 && r.page <= 0, r ? `${r.sw} px ; ${r.hors.join(", ")} ; page ${r.page}` : "fenetre introuvable");
+    verif(`Telephone : fenetre « ${nom} » sans debordement`, !!r && r.sw <= 0 && r.hors.length === 0 && r.page <= 0, r ? `${r.sw} px ; ${r.hors.join(", ")} ; page ${r.page} ${r.large.join(" ; ")}` : "fenetre introuvable");
     await shot(page, `16-${nom.replace(/\W+/g, "-")}`, false);
   };
   await page.getByRole("button", { name: "Ouvrir la fiche" }).first().click();
