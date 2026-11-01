@@ -4,6 +4,15 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.5 — 1er novembre 2026
+
+- Nouveauté : sur téléphone, la bibliothèque s'affiche sans déborder, et on peut copier le lien d'une fiche en un clic.
+- Chaque fiche a un bouton « Copier le lien » ; un clic sur « À jour · vérifiée le… » explique comment la mention est calculée.
+- Boutons et filtres plus grands sur téléphone (40 à 44 px), bandeau resserré.
+- Un lien « Aller à la recherche » apparaît au premier appui sur Tab.
+- Les noms de fiches sont des titres de niveau 2 (ordre des titres corrigé).
+- La fenêtre de comparaison et le lecteur de PDF ne se chargent qu'à leur première ouverture (démarrage plus léger).
+
 ## 2.4 — 1er novembre 2026
 
 - Nouveauté : le mode clair ou sombre que tu choisis dans une appli est repris dans toutes les autres.

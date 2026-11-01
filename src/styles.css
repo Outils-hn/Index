@@ -231,6 +231,12 @@ body { border-top: 3px solid var(--app); }
 .bandeau-icone { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 0; border-radius: 6px; background: none; color: var(--muted-foreground); cursor: pointer; }
 .bandeau-icone:hover { background: var(--muted); color: var(--foreground); }
 .bandeau-icone svg { width: 16px; height: 16px; }
+@media (max-width: 640px) {
+  .bandeau-in { padding: 0 12px; gap: 8px; }
+  .bandeau-statut { display: none; }
+  .bandeau-btn { height: 40px; }
+  .bandeau-icone { width: 40px; height: 40px; }
+}
 .bandeau-statut { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border: 1px solid var(--border); border-radius: 999px; font-size: 12px; color: var(--muted-foreground); white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
 .bandeau-statut.ouvert { border-color: var(--app); color: var(--app-ink); }
 .bandeau-marque > svg:first-child { width: 22px; height: 22px; }

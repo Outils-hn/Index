@@ -42,7 +42,7 @@ function Index() {
 
 type Filtre = { kind: "all" } | { kind: "fav" } | { kind: "check" } | { kind: "cat"; name: string };
 
-const CHIP = "inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors";
+const CHIP = "inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-2 text-xs transition-colors sm:py-1";
 const CHIP_ON = `${CHIP} border-[var(--app-fill)] bg-[var(--app-fill)] text-[var(--app-on)]`;
 const CHIP_OFF = `${CHIP} border-border text-muted-foreground hover:text-foreground`;
 
@@ -103,6 +103,8 @@ function IndexInner() {
 
   return (
     <div className="min-h-screen bg-background">
+      <a href="#recherche" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:shadow-md"
+        onClick={(e) => { e.preventDefault(); searchRef.current?.focus(); }}>Aller à la recherche</a>
       <AppHeader />
       {offlineSince && (
         <div role="status" className="border-b border-border bg-muted px-4 py-2 text-center text-xs text-foreground">
@@ -140,6 +142,7 @@ function IndexInner() {
         <div className="relative mb-4">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input
+            id="recherche"
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}

@@ -36,8 +36,8 @@ function donnees({ gros = false } = {}) {
   return { categories, suppliers, projects, products, product_projects: [{ product_id: products[0].id, project_id: projects[0].id }] };
 }
 
-async function ctx({ gros = false, connecte = false, dark = false, valide = true, admin = true } = {}) {
-  const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
+async function ctx({ gros = false, connecte = false, dark = false, valide = true, admin = true, largeur = 1440 } = {}) {
+  const c = await browser.newContext({ viewport: { width: largeur, height: largeur < 600 ? 800 : 900 }, acceptDownloads: true, permissions: ["clipboard-read", "clipboard-write"] });
   if (dark) await c.addInitScript(() => localStorage.setItem("theme", "dark"));
   const db = donnees({ gros });
   const etat = { horsLigne: false, natifs: 0, ecritures: [] };
@@ -109,7 +109,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.4 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.5 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -138,6 +138,29 @@ await step("Bibliotheque", async () => {
   const vu = await page.getByText(/copie locale du/).waitFor({ timeout: 20000 }).then(() => true, () => false);
   verif("Hors ligne : copie locale affichee", vu && (await cartes(page)) === 9, `${Date.now() - t0} ms`);
   await shot(page, "05-hors-ligne-copie", false);
+  await c.close();
+});
+
+await step("Telephone", async () => {
+  const { c, page } = await ctx({ largeur: 390 });
+  await aller(page);
+  await shot(page, "07-telephone");
+  const m = await page.evaluate(() => ({
+    debord: document.documentElement.scrollWidth - window.innerWidth,
+    large: [...document.querySelectorAll("body *")].filter((x) => x.getBoundingClientRect().right > window.innerWidth + 1 && x.offsetParent).slice(0, 4).map((x) => `${x.tagName}.${String(x.className).slice(0, 40)}`),
+    petits: [...document.querySelectorAll("main button, main a, header button, header a")].filter((x) => x.offsetParent && x.getBoundingClientRect().height > 0 && (x.getBoundingClientRect().height < 36 || x.getBoundingClientRect().width < 36)).map((x) => (x.getAttribute("aria-label") || x.textContent || "").trim().slice(0, 25)),
+  }));
+  verif("Telephone : aucun debordement horizontal", m.debord <= 0, `${m.debord} px ${m.large.join(" ; ")}`);
+  verif("Telephone : cibles tactiles assez grandes", m.petits.length === 0, m.petits.slice(0, 6).join(", "));
+  const r = await new AxeBuilder({ page }).analyze();
+  verif("Accessibilite telephone : aucun defaut", !r.violations.length, r.violations.map((v) => `${v.id} (${v.impact}) ${v.nodes.length} : ${v.nodes.slice(0, 2).map((x) => x.target.join(" ")).join(" ; ")}`).join(" | "));
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.keyboard.press("Tab");
+  verif("Lien d'evitement « Aller a la recherche » au premier Tab", await page.evaluate(() => document.activeElement?.textContent === "Aller à la recherche"));
+  await page.locator("article").first().getByRole("button", { name: /Copier le lien/ }).click(); await page.waitForTimeout(300);
+  verif("Copie du lien d'une fiche", await page.getByText("Lien copié").isVisible());
+  await page.locator("article").first().getByRole("button", { name: /vérifiée le/ }).click();
+  verif("Explication de la mention de fraicheur", await page.getByText("vérifiée il y a moins de 12 mois").first().isVisible());
   await c.close();
 });
 
