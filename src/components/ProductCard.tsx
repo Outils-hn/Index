@@ -124,7 +124,7 @@ export const ProductCard = memo(function ProductCard({
             onClick={() => toggle(product)}
             aria-pressed={selected}
             title="Ajouter à la comparaison"
-            className={`rounded-md border px-2.5 py-2 text-[11px] font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-border text-muted-foreground hover:text-foreground"}`}
+            className={`rounded-md border px-2.5 py-2.5 text-[11px] font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-border text-muted-foreground hover:text-foreground"}`}
           >
             {selected ? "Comparée" : "Comparer"}
           </button>
@@ -203,7 +203,7 @@ export const ProductCard = memo(function ProductCard({
 
         <div className="flex items-center gap-2 text-[11px]">
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${DOT[v]}`} aria-hidden="true" />
-          <button type="button" onClick={() => setAide((a) => !a)} aria-expanded={aide} className={`py-2 text-left underline decoration-dotted underline-offset-2 sm:py-0 ${TXT[v]}`} title="Comment est calculée cette mention ?">
+          <button type="button" onClick={() => setAide((a) => !a)} aria-expanded={aide} className={`py-2.5 text-left underline decoration-dotted underline-offset-2 sm:py-0 ${TXT[v]}`} title="Comment est calculée cette mention ?">
             {VALIDITY_LABEL[v]} · vérifiée le <span className="num">{fmtDate(checkedAt(product))}</span>
           </button>
           {loggedIn && v !== "valid" && (
