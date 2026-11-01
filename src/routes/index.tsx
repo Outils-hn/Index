@@ -42,7 +42,7 @@ function Index() {
 
 type Filtre = { kind: "all" } | { kind: "fav" } | { kind: "check" } | { kind: "cat"; name: string };
 
-const CHIP = "inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-2 text-xs transition-colors sm:py-1";
+const CHIP = "inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-2.5 text-xs transition-colors sm:py-1";
 const CHIP_ON = `${CHIP} border-[var(--app-fill)] bg-[var(--app-fill)] text-[var(--app-on)]`;
 const CHIP_OFF = `${CHIP} border-border text-muted-foreground hover:text-foreground`;
 
@@ -121,7 +121,7 @@ function IndexInner() {
                 {toCheck > 0 && (
                   <>
                     {" · "}
-                    <button type="button" onClick={() => setFiltre({ kind: "check" })} className="text-warn underline-offset-2 hover:underline">
+                    <button type="button" onClick={() => setFiltre({ kind: "check" })} className="inline-flex min-h-10 items-center text-warn underline-offset-2 hover:underline sm:min-h-0">
                       <span className="num">{num(toCheck)}</span> à vérifier
                     </button>
                   </>
@@ -133,7 +133,7 @@ function IndexInner() {
           {!user && (
             <p className="text-xs text-muted-foreground">
               Lecture seule ·{" "}
-              <Link to="/auth" className="text-foreground underline underline-offset-2">Se connecter</Link>{" "}
+              <Link to="/auth" className="inline-flex min-h-10 items-center text-foreground underline underline-offset-2 sm:min-h-0">Se connecter</Link>{" "}
               pour ajouter des fiches
             </p>
           )}

@@ -154,7 +154,7 @@ await step("Telephone", async () => {
   verif("Telephone : cibles tactiles assez grandes", m.petits.length === 0, m.petits.slice(0, 6).join(", "));
   const r = await new AxeBuilder({ page }).analyze();
   verif("Accessibilite telephone : aucun defaut", !r.violations.length, r.violations.map((v) => `${v.id} (${v.impact}) ${v.nodes.length} : ${v.nodes.slice(0, 2).map((x) => x.target.join(" ")).join(" ; ")}`).join(" | "));
-  await page.evaluate(() => document.activeElement?.blur());
+  await page.evaluate(() => { document.activeElement?.blur(); document.body.setAttribute("tabindex", "-1"); document.body.focus(); });
   await page.keyboard.press("Tab");
   verif("Lien d'evitement « Aller a la recherche » au premier Tab", await page.evaluate(() => document.activeElement?.textContent === "Aller à la recherche"));
   await page.locator("article").first().getByRole("button", { name: /Copier le lien/ }).click(); await page.waitForTimeout(300);
@@ -262,7 +262,7 @@ await step("Compte en attente", async () => {
   verif("Compte non validé : écran d'attente, pas d'administration", (await page.getByText("Compte en attente de validation").first().isVisible()) && !(await page.getByRole("link", { name: "Administration" }).count()));
   await shot(page, "12-compte-en-attente", false);
   await aller(page);
-  verif("Compte non validé : pas de bouton « Vérifiée » sur les fiches", !(await page.getByRole("button", { name: "Vérifiée" }).count()));
+  verif("Compte non validé : pas de bouton « Vérifiée » sur les fiches", !(await page.getByRole("button", { name: "Vérifiée", exact: true }).count()));
   await c.close();
 });
 

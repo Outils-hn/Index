@@ -22,7 +22,7 @@ const ACTUELLE = "Index";
 export function SelecteurApplis() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-1 rounded-md px-1 py-0.5 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30" aria-label="Changer d'application">
+      <DropdownMenuTrigger className="flex min-h-10 items-center gap-1 rounded-md px-1 py-0.5 outline-none sm:min-h-0 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30" aria-label="Changer d'application">
         <span className="text-[17px] font-semibold leading-none tracking-tight text-foreground">{ACTUELLE}</span>
         <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
       </DropdownMenuTrigger>
