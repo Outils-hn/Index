@@ -164,6 +164,42 @@ await step("Telephone", async () => {
   await c.close();
 });
 
+await step("Telephone : fenetres avec noms longs", async () => {
+  const { c, page, db } = await ctx({ largeur: 390, connecte: true });
+  const LONG = "Mastic polyuréthane monocomposant haute performance pour joints de façade rideau et vitrages structurels collés";
+  db.products.forEach((p, i) => { if (i < 3) { p.name = `${LONG} ${i}`; p.supplier = "Fabrique Suisse de Produits Chimiques pour la Construction SA"; p.pdf_filename = `${LONG.replace(/ /g, "_")}.pdf`; p.pdf_path = "fiches/x.pdf"; p.verified_at = old(30); } });
+  await aller(page);
+  const fenetre = async (nom, sel = "[role=dialog],[role=alertdialog]") => {
+    await page.waitForTimeout(600);
+    const r = await page.evaluate((sel) => {
+      const d = document.querySelector(sel);
+      if (!d) return null;
+      const b = d.getBoundingClientRect();
+      const hors = [...d.querySelectorAll("*")].filter((e) => { const x = e.getBoundingClientRect(); return x.width > 0 && (x.right > b.right + 1 || x.left < b.left - 1); }).slice(0, 4).map((e) => `${e.tagName}.${String(e.className).slice(0, 40)}`);
+      return { sw: d.scrollWidth - d.clientWidth, hors, page: document.documentElement.scrollWidth - window.innerWidth };
+    }, sel);
+    verif(`Telephone : fenetre « ${nom} » sans debordement`, !!r && r.sw <= 0 && r.hors.length === 0 && r.page <= 0, r ? `${r.sw} px ; ${r.hors.join(", ")} ; page ${r.page}` : "fenetre introuvable");
+    await shot(page, `16-${nom.replace(/\W+/g, "-")}`, false);
+  };
+  await page.getByRole("button", { name: "Ouvrir la fiche" }).first().click();
+  await fenetre("Apercu PDF");
+  await page.keyboard.press("Escape"); await page.waitForTimeout(500);
+  await page.locator("article").nth(0).getByRole("button", { name: "Comparer" }).click();
+  await page.locator("article").nth(1).getByRole("button", { name: "Comparer" }).click(); await page.waitForTimeout(400);
+  await shot(page, "16-barre-comparer", false);
+  const barre = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  verif("Telephone : barre de comparaison avec noms longs sans debordement de page", barre <= 0, `${barre} px`);
+  const cmp = page.getByRole("button", { name: /^Comparer \(?\d|Voir la comparaison|Comparer les/ }).first();
+  if (await cmp.count()) { await cmp.click(); await fenetre("Comparaison"); await page.keyboard.press("Escape"); await page.waitForTimeout(500); }
+  await page.getByRole("button", { name: /Fiches à relire du mois/ }).click();
+  await fenetre("Fiches a relire");
+  await page.keyboard.press("Escape"); await page.waitForTimeout(500);
+  await aller(page, "admin");
+  await page.getByRole("button", { name: new RegExp("^Supprimer " + LONG.slice(0, 20)) }).first().click();
+  await fenetre("Supprimer fiche nom long");
+  await c.close();
+});
+
 await step("Fiches a relire du mois", async () => {
   const { c, page, etat } = await ctx({ connecte: true });
   await aller(page);
