@@ -1,10 +1,11 @@
-import { ExternalLink, Globe, MapPin, Check, Loader2, Star, TriangleAlert } from "lucide-react";
-import { memo, useEffect, useState } from "react";
+import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, Star, TriangleAlert } from "lucide-react";
+import { lazy, memo, Suspense, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
-import { PdfViewerModal } from "@/components/PdfViewerModal";
+// Lecteur PDF charge seulement a la premiere ouverture : moins de JavaScript au demarrage
+const PdfViewerModal = lazy(() => import("@/components/PdfViewerModal").then((m) => ({ default: m.PdfViewerModal })));
 import type { Project } from "@/lib/projects";
 import { useCompare } from "@/components/CompareContext";
 import { checkedAt, validity, VALIDITY_LABEL, type Validity } from "@/lib/search";
@@ -60,6 +61,7 @@ export const ProductCard = memo(function ProductCard({
   const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const queryClient = useQueryClient();
   const [pdfOpen, setPdfOpen] = useState(false);
+  const [aide, setAide] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const { isSelected, toggle } = useCompare();
   const selected = isSelected(product.id);
@@ -86,6 +88,12 @@ export const ProductCard = memo(function ProductCard({
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur lors de la vérification"),
   });
 
+  const copierLien = async () => {
+    const url = `${window.location.origin}${window.location.pathname}?fiche=${product.id}`;
+    try { await navigator.clipboard.writeText(url); toast.success("Lien copié", { id: "lien" }); }
+    catch { toast.error("Copie impossible dans ce navigateur."); }
+  };
+
   const open = () => {
     if (hasPdf) {
       const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path!);
@@ -107,7 +115,7 @@ export const ProductCard = memo(function ProductCard({
             <CategoryIcon className="h-3 w-3" aria-hidden="true" />
             {product.category}
           </div>
-          <h3 className="text-base font-semibold leading-snug text-foreground">{product.name}</h3>
+          <h2 className="text-base font-semibold leading-snug text-foreground">{product.name}</h2>
           <p className="text-sm text-muted-foreground">{product.supplier}</p>
         </div>
         <div className="flex shrink-0 items-center gap-1">
@@ -116,9 +124,18 @@ export const ProductCard = memo(function ProductCard({
             onClick={() => toggle(product)}
             aria-pressed={selected}
             title="Ajouter à la comparaison"
-            className={`rounded-md border px-2 py-1 text-[11px] font-medium transition-colors ${selected ? "border-index bg-index-soft text-index" : "border-border text-muted-foreground hover:text-foreground"}`}
+            className={`rounded-md border px-2.5 py-2.5 text-[11px] font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-border text-muted-foreground hover:text-foreground"}`}
           >
             {selected ? "Comparée" : "Comparer"}
+          </button>
+          <button
+            type="button"
+            onClick={copierLien}
+            aria-label={`Copier le lien de ${product.name}`}
+            title="Copier le lien de la fiche"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
+          >
+            <Link2 className="h-4 w-4" />
           </button>
           <button
             type="button"
@@ -126,7 +143,7 @@ export const ProductCard = memo(function ProductCard({
             aria-pressed={favorite}
             aria-label={favorite ? `Retirer ${product.name} des favoris` : `Ajouter ${product.name} aux favoris`}
             title={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-            className={`inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors ${favorite ? "text-index" : "text-muted-foreground hover:text-foreground"}`}
+            className={`inline-flex h-10 w-10 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-muted-foreground hover:text-foreground"}`}
           >
             <Star className="h-4 w-4" fill={favorite ? "currentColor" : "none"} />
           </button>
@@ -166,7 +183,7 @@ export const ProductCard = memo(function ProductCard({
             type="button"
             onClick={open}
             disabled={!hasPdf && !hasUrl}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2.5 text-sm sm:py-1.5 font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
           >
             {hasPdf ? "Ouvrir la fiche" : hasUrl ? "Voir sur le site" : "Aucune fiche"}
             {hasPdf ? <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> : <Globe className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -176,7 +193,7 @@ export const ProductCard = memo(function ProductCard({
               href={product.url!}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted"
+              className="inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2.5 text-sm sm:py-1.5 text-foreground transition-colors hover:bg-muted"
             >
               <Globe className="h-3.5 w-3.5" aria-hidden="true" />
               Site
@@ -186,15 +203,15 @@ export const ProductCard = memo(function ProductCard({
 
         <div className="flex items-center gap-2 text-[11px]">
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${DOT[v]}`} aria-hidden="true" />
-          <span className={TXT[v]}>
+          <button type="button" onClick={() => setAide((a) => !a)} aria-expanded={aide} className={`py-2.5 text-left underline decoration-dotted underline-offset-2 sm:py-0 ${TXT[v]}`} title="Comment est calculée cette mention ?">
             {VALIDITY_LABEL[v]} · vérifiée le <span className="num">{fmtDate(checkedAt(product))}</span>
-          </span>
+          </button>
           {loggedIn && v !== "valid" && (
             <button
               type="button"
               onClick={() => revalidate.mutate()}
               disabled={revalidate.isPending}
-              className="ml-auto inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+              className="ml-auto inline-flex items-center gap-1 rounded px-2 py-2.5 text-muted-foreground sm:px-1.5 sm:py-0.5 transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
               title="Marquer la fiche comme vérifiée aujourd'hui"
             >
               {revalidate.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
@@ -204,8 +221,14 @@ export const ProductCard = memo(function ProductCard({
         </div>
       </div>
 
+      {aide && (
+        <p className="-mt-1 text-[11px] leading-relaxed text-muted-foreground">
+          « À jour » : vérifiée il y a moins de 12 mois. « À vérifier » : entre 12 et 24 mois. « Probablement périmée » : plus de 24 mois. La date est celle de la dernière vérification, sinon de la dernière modification.
+        </p>
+      )}
+
       {/* Lecteur monte seulement a l'ouverture : 400 cartes ne portent pas 400 fenetres fermees */}
-      {pdfOpen && <PdfViewerModal open onClose={() => setPdfOpen(false)} productName={product.name} pdfUrl={pdfUrl} pdfFilename={product.pdf_filename} />}
+      {pdfOpen && <Suspense fallback={null}><PdfViewerModal open onClose={() => setPdfOpen(false)} productName={product.name} pdfUrl={pdfUrl} pdfFilename={product.pdf_filename} /></Suspense>}
     </article>
   );
 });

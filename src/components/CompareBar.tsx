@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { GitCompare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCompare, MAX_COMPARE } from "@/components/CompareContext";
-import { CompareModal } from "@/components/CompareModal";
+// Fenetre de comparaison chargee a la premiere ouverture seulement
+const CompareModal = lazy(() => import("@/components/CompareModal").then((m) => ({ default: m.CompareModal })));
 
 export function CompareBar() {
   const { selected, clear } = useCompare();
@@ -50,7 +51,7 @@ export function CompareBar() {
         </div>
       </div>
 
-      <CompareModal open={open} onClose={() => setOpen(false)} products={selected} />
+      {open && <Suspense fallback={null}><CompareModal open onClose={() => setOpen(false)} products={selected} /></Suspense>}
     </>
   );
 }
