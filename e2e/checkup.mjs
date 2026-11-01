@@ -200,6 +200,19 @@ await step("Telephone : fenetres avec noms longs", async () => {
   await c.close();
 });
 
+await step("Telephone : page Administration", async () => {
+  const { c, page, db } = await ctx({ largeur: 390, connecte: true });
+  db.products[0].name = "Mastic polyuréthane monocomposant haute performance pour joints de façade rideau et vitrages structurels collés";
+  await aller(page, "admin");
+  await shot(page, "17-admin-telephone");
+  const m = await page.evaluate(() => ({
+    debord: document.documentElement.scrollWidth - window.innerWidth,
+    larges: [...document.querySelectorAll("body *")].filter((x) => x.getBoundingClientRect().width > window.innerWidth + 1 && x.offsetParent).slice(0, 6).map((x) => `${x.tagName}.${String(x.className).slice(0, 50)} ${Math.round(x.getBoundingClientRect().width)}`),
+  }));
+  verif("Telephone : page Administration sans debordement horizontal", m.debord <= 0, `${m.debord} px ${m.larges.join(" ; ")}`);
+  await c.close();
+});
+
 await step("Fiches a relire du mois", async () => {
   const { c, page, etat } = await ctx({ connecte: true });
   await aller(page);
