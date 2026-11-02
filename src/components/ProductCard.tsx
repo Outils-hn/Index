@@ -49,7 +49,7 @@ export const fmtDate = (d: string) =>
  * que les cartes qui changent.
  */
 export const ProductCard = memo(function ProductCard({
-  product, loggedIn, favorite, onToggleFavorite, autoOpen = false,
+  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf,
 }: {
   product: Product;
   loggedIn: boolean;
@@ -57,6 +57,8 @@ export const ProductCard = memo(function ProductCard({
   onToggleFavorite: (id: string) => void;
   /** Ouvre la fiche (PDF) des l'affichage : lien venant d'une autre appli. */
   autoOpen?: boolean;
+  /** Si fourni, le lecteur PDF est gere par la page (navigation precedente / suivante). */
+  onOpenPdf?: (p: Product) => void;
 }) {
   const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const queryClient = useQueryClient();
@@ -95,7 +97,9 @@ export const ProductCard = memo(function ProductCard({
   };
 
   const open = () => {
-    if (hasPdf) {
+    if (hasPdf && onOpenPdf) {
+      onOpenPdf(product);
+    } else if (hasPdf) {
       const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path!);
       setPdfUrl(data.publicUrl);
       setPdfOpen(true);

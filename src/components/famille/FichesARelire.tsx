@@ -13,8 +13,11 @@ import { aRelire, depuis, DOSE_DU_MOIS, verifieesCeMois } from "@/lib/verificati
  * On ouvre la fiche (ou le site du fournisseur), on controle qu'elle est toujours la bonne,
  * puis « Toujours valable » remet sa date de verification a aujourd'hui ; la suivante prend sa place.
  */
-export function FichesARelire({ products }: { products: Product[] }) {
-  const [open, setOpen] = useState(false);
+export function FichesARelire({ products, open: ouvert, onOpenChange }: { products: Product[]; open?: boolean; onOpenChange?: (o: boolean) => void }) {
+  // Ouverture pilotable de l'exterieur (bandeau de rappel) ; autonome sinon
+  const [interne, setInterne] = useState(false);
+  const open = ouvert ?? interne;
+  const setOpen = onOpenChange ?? setInterne;
   const qc = useQueryClient();
   const liste = aRelire(products);
   const faites = verifieesCeMois(products);

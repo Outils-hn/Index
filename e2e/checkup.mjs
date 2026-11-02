@@ -109,7 +109,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.6 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.7 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -211,6 +211,57 @@ await step("Telephone : page Administration", async () => {
   }));
   verif("Telephone : page Administration sans debordement horizontal", m.debord <= 0, `${m.debord} px ${m.larges.join(" ; ")}`);
   await c.close();
+});
+
+await step("Tri, rappel et lecteur PDF (2.7)", async () => {
+  const { c, page } = await ctx({ connecte: true });
+  await aller(page);
+  const titres = async () => (await page.locator("article h2").allInnerTexts()).map((t) => t.trim());
+  // Rappel mensuel
+  const rappel = page.getByRole("status").filter({ hasText: "à relire ce mois-ci" });
+  verif("Rappel : bandeau « à relire ce mois-ci » affiché", await rappel.isVisible(), await rappel.innerText().catch(() => "absent"));
+  await shot(page, "18-rappel", false);
+  await rappel.getByRole("button", { name: "Relire maintenant" }).click(); await page.waitForTimeout(400);
+  verif("Rappel : « Relire maintenant » ouvre les fiches à relire", await page.getByRole("dialog").getByText("Fiches à relire du mois").isVisible());
+  await page.keyboard.press("Escape"); await page.waitForTimeout(400);
+  await rappel.getByRole("button", { name: "Plus tard" }).click(); await page.waitForTimeout(200);
+  verif("Rappel : « Plus tard » le masque", (await rappel.count()) === 0);
+  await page.reload({ waitUntil: "networkidle" }); await page.waitForTimeout(500);
+  verif("Rappel : reste masqué après rechargement (jusqu'au mois suivant)", (await page.getByText("à relire ce mois-ci").count()) === 0);
+  // Tri
+  const tri = page.getByLabel("Trier");
+  await tri.selectOption("nom"); await page.waitForTimeout(300);
+  const noms = await titres();
+  const attendu = [...noms].sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base", numeric: true }));
+  verif("Tri « Nom » : ordre alphabétique", JSON.stringify(noms) === JSON.stringify(attendu), noms.slice(0, 3).join(" | "));
+  await tri.selectOption("anciens"); await page.waitForTimeout(300);
+  const vieux = ["ISORESIST 1000 031 F", "Profilé de départ alu", "Bande butyle"];
+  verif("Tri « Vérifiées il y a le plus longtemps » : une fiche de 30 mois en tête", vieux.includes((await titres())[0]), (await titres()).slice(0, 2).join(" | "));
+  await tri.selectOption("recents"); await page.waitForTimeout(300);
+  const recents = ["Sikaflex-11 FC+", "Ejot SDK2", "Mastic MS 40"];
+  verif("Tri « Vérifiées le plus récemment » : une fiche du jour en tête", recents.includes((await titres())[0]), (await titres()).slice(0, 2).join(" | "));
+  await tri.selectOption("defaut");
+  // Lecteur PDF : precedent / suivant
+  await page.getByRole("button", { name: "Ouvrir la fiche" }).first().click(); await page.waitForTimeout(700);
+  const d = page.getByRole("dialog");
+  const pos = async () => ((await d.innerText()).match(/(\d+) \/ (\d+)/) ?? [])[0] ?? "";
+  const p1 = await pos();
+  verif("Lecteur : position « 1 / n » affichée", /^1 \/ \d+$/.test(p1), p1);
+  await d.getByRole("button", { name: "Fiche suivante" }).click(); await page.waitForTimeout(500);
+  verif("Lecteur : « suivante » passe à la fiche 2", /^2 \//.test(await pos()), await pos());
+  await page.keyboard.press("ArrowLeft"); await page.waitForTimeout(500);
+  verif("Lecteur : flèche gauche revient à la fiche 1", /^1 \//.test(await pos()), await pos());
+  verif("Lecteur : lien « nouvel onglet » présent", (await d.getByRole("link", { name: /Nouvel onglet|Ouvrir/ }).count()) > 0);
+  await shot(page, "19-lecteur", false);
+  await c.close();
+  // Telephone : lecteur sans debordement
+  const cm = await ctx({ connecte: true, largeur: 390 });
+  await aller(cm.page);
+  await cm.page.getByRole("button", { name: "Ouvrir la fiche" }).first().click(); await cm.page.waitForTimeout(700);
+  const mm = await cm.page.evaluate(() => { const d = document.querySelector("[role=dialog]"); const b = d.getBoundingClientRect(); return { sw: d.scrollWidth - d.clientWidth, hors: [...d.querySelectorAll("*")].filter((e) => { const x = e.getBoundingClientRect(); return x.width > 0 && (x.right > b.right + 1 || x.left < b.left - 1); }).slice(0, 3).map((e) => `${e.tagName}.${String(e.className).slice(0, 30)}`), page: document.documentElement.scrollWidth - innerWidth }; });
+  verif("Telephone : lecteur PDF sans débordement", mm.sw <= 0 && mm.hors.length === 0 && mm.page <= 0, `${mm.sw} px ; ${mm.hors.join(", ")}`);
+  await shot(cm.page, "20-lecteur-telephone", false);
+  await cm.c.close();
 });
 
 await step("Fiches a relire du mois", async () => {

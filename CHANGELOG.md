@@ -4,6 +4,13 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.7 — 2 novembre 2026
+
+- Nouveauté : on peut trier les fiches (« Vérifiées il y a le plus longtemps », « le plus récemment », par nom), un bandeau rappelle les fiches à relire du mois, et le lecteur PDF passe d'une fiche à l'autre avec les flèches.
+- Tri : liste « Trier » au-dessus des fiches ; l'ordre « Dernières modifiées » reste le choix par défaut.
+- Rappel : tant que les 5 fiches du mois ne sont pas relues, un bandeau propose « Relire maintenant » ou « Plus tard » (masqué jusqu'au mois suivant).
+- Lecteur PDF : boutons « fiche précédente / suivante » et flèches du clavier parmi les fiches affichées, lien « Nouvel onglet » (utile sur téléphone pour voir toutes les pages et zoomer).
+
 ## 2.6 — 1er novembre 2026
 
 - Nouveauté : sur téléphone, la fenêtre « Fiches à relire du mois » et la page Administration ne débordent plus quand un nom de fiche est très long.
