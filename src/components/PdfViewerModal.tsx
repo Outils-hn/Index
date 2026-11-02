@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X, Download } from "lucide-react";
+import { X, Download, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PdfViewerModalProps {
@@ -9,9 +9,24 @@ interface PdfViewerModalProps {
   productName: string;
   pdfUrl: string;
   pdfFilename?: string | null;
+  /** Navigation dans la liste affichee : « 3 / 12 », fiche precedente / suivante. */
+  position?: string;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
-export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename }: PdfViewerModalProps) {
+export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename, position, onPrev, onNext }: PdfViewerModalProps) {
+  // Fleches gauche / droite : fiche precedente / suivante (sauf si le curseur est dans un champ)
+  React.useEffect(() => {
+    if (!open || (!onPrev && !onNext)) return;
+    const k = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLElement && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      if (e.key === "ArrowLeft") onPrev?.();
+      if (e.key === "ArrowRight") onNext?.();
+    };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [open, onPrev, onNext]);
   return (
     <DialogPrimitive.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogPrimitive.Portal>
@@ -34,10 +49,32 @@ export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename
         >
           {/* Barre supérieure */}
           <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card shrink-0">
-            <h2 className="text-base font-semibold text-foreground truncate leading-tight" title={productName}>
+            {(onPrev || onNext) && (
+              <div className="flex shrink-0 items-center gap-1" role="group" aria-label="Parcourir les fiches">
+                <button type="button" onClick={onPrev} disabled={!onPrev} aria-label="Fiche précédente" className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-40">
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                {position && <span className="num min-w-[3.5rem] text-center text-xs text-muted-foreground" aria-live="polite">{position}</span>}
+                <button type="button" onClick={onNext} disabled={!onNext} aria-label="Fiche suivante" className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-40">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            <h2 className="min-w-0 flex-1 text-base font-semibold text-foreground truncate leading-tight" title={productName}>
               {productName}
             </h2>
             <div className="flex items-center gap-2 shrink-0">
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                title="Ouvrir dans un nouvel onglet (utile sur téléphone : toutes les pages, zoom)"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Nouvel onglet</span>
+                <span className="sm:hidden">Ouvrir</span>
+              </a>
               <a
                 href={pdfUrl}
                 download={pdfFilename || "fiche-technique.pdf"}

@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, X, Star } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
-import { ProductCard, fmtDate } from "@/components/ProductCard";
+import { ProductCard, fmtDate, type Product } from "@/components/ProductCard";
+import { supabase } from "@/integrations/supabase/client";
 import { fetchCategories } from "@/lib/taxonomies";
 import { useAuth, useApproval } from "@/hooks/use-auth";
 import { useProducts } from "@/lib/products";
@@ -11,7 +12,20 @@ import { CompareProvider } from "@/components/CompareContext";
 import { CompareBar } from "@/components/CompareBar";
 import { useFavorites } from "@/hooks/use-favorites";
 import { FichesARelire } from "@/components/famille/FichesARelire";
-import { haystack, matches, num, validity } from "@/lib/search";
+import { checkedAt, haystack, matches, num, validity } from "@/lib/search";
+import { DOSE_DU_MOIS, aRelire, verifieesCeMois } from "@/lib/verification";
+
+// Lecteur PDF charge a la premiere ouverture seulement
+const PdfViewerModal = lazy(() => import("@/components/PdfViewerModal").then((m) => ({ default: m.PdfViewerModal })));
+
+type Tri = "defaut" | "anciens" | "recents" | "nom";
+const TRIS: { value: Tri; label: string }[] = [
+  { value: "defaut", label: "Dernières modifiées" },
+  { value: "anciens", label: "Vérifiées il y a le plus longtemps" },
+  { value: "recents", label: "Vérifiées le plus récemment" },
+  { value: "nom", label: "Nom (A → Z)" },
+];
+const cleRappel = () => `index:rappel:${new Date().toISOString().slice(0, 7)}`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,6 +63,12 @@ const CHIP_OFF = `${CHIP} border-border text-muted-foreground hover:text-foregro
 function IndexInner() {
   const [search, setSearch] = useState("");
   const [filtre, setFiltre] = useState<Filtre>({ kind: "all" });
+  const [tri, setTri] = useState<Tri>("defaut");
+  const [pdfId, setPdfId] = useState<string | null>(null);
+  const [relireOuvert, setRelireOuvert] = useState(false);
+  const [rappelMasque, setRappelMasque] = useState(() => {
+    try { return localStorage.getItem(cleRappel()) === "1"; } catch { return false; }
+  });
   const { user } = useAuth();
   const { approved } = useApproval(user);
   const { favorites, toggle: toggleFavorite } = useFavorites();
@@ -90,13 +110,34 @@ function IndexInner() {
           if (filtre.kind === "cat" && p.category !== filtre.name) return false;
           return matches(p, q, hay);
         })
-        .map(({ p }) => p),
-    [products, q, filtre, favorites, fiche, ficheLiee],
+        .map(({ p }) => p)
+        .sort(
+          tri === "anciens" ? (a, b) => checkedAt(a).localeCompare(checkedAt(b))
+          : tri === "recents" ? (a, b) => checkedAt(b).localeCompare(checkedAt(a))
+          : tri === "nom" ? (a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base", numeric: true })
+          : () => 0, // « Dernières modifiées » : ordre d'arrivee de la base
+        ),
+    [products, q, filtre, favorites, fiche, ficheLiee, tri],
   );
+
+  // Lecteur PDF de la page : fiche precedente / suivante parmi les fiches affichees qui ont un PDF
+  const avecPdf = useMemo(() => filtered.filter((p) => !!p.pdf_path), [filtered]);
+  const ouvrirPdf = useCallback((p: Product) => setPdfId(p.id), []);
+  const posPdf = pdfId ? avecPdf.findIndex((p) => p.id === pdfId) : -1;
+  const ficheOuverte = posPdf >= 0 ? avecPdf[posPdf] : null;
+
+  // Rappel mensuel : tant que la dose du mois n'est pas faite et qu'il reste des fiches a relire
+  const nbARelire = useMemo(() => aRelire(all).length, [all]);
+  const faitesCeMois = useMemo(() => verifieesCeMois(all), [all]);
+  const rappel = approved && !isLoading && !error && !fiche && !rappelMasque && nbARelire > 0 && faitesCeMois < DOSE_DU_MOIS;
+  const masquerRappel = () => {
+    setRappelMasque(true);
+    try { localStorage.setItem(cleRappel(), "1"); } catch { /* sans stockage : masque jusqu'au prochain chargement */ }
+  };
 
   // Affichage par paquets de 60 : au-dela, « Afficher plus » (la recherche reste instantanee)
   const [limit, setLimit] = useState(60);
-  useEffect(() => setLimit(60), [q, filtre]);
+  useEffect(() => setLimit(60), [q, filtre, tri]);
   const shown = filtered.slice(0, limit);
 
   const is = (f: Filtre) => filtre.kind === f.kind && (f.kind !== "cat" || (filtre.kind === "cat" && filtre.name === f.name));
@@ -129,7 +170,7 @@ function IndexInner() {
               </p>
             )}
           </div>
-          {approved && !isLoading && !error && <FichesARelire products={all} />}
+          {approved && !isLoading && !error && <FichesARelire products={all} open={relireOuvert} onOpenChange={setRelireOuvert} />}
           {!user && (
             <p className="text-xs text-muted-foreground">
               Lecture seule ·{" "}
@@ -138,6 +179,19 @@ function IndexInner() {
             </p>
           )}
         </div>
+
+        {rappel && (
+          <div role="status" className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-border bg-card px-4 py-3 text-sm">
+            <p className="min-w-0 flex-1 text-foreground">
+              <span className="num">{num(Math.min(nbARelire, DOSE_DU_MOIS - faitesCeMois))}</span> fiche{Math.min(nbARelire, DOSE_DU_MOIS - faitesCeMois) > 1 ? "s" : ""} à relire ce mois-ci
+              <span className="text-muted-foreground"> · fait : <span className="num">{faitesCeMois}</span>/{DOSE_DU_MOIS}</span>
+            </p>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => setRelireOuvert(true)} className="inline-flex min-h-10 items-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:opacity-90 sm:min-h-8">Relire maintenant</button>
+              <button type="button" onClick={masquerRappel} className="inline-flex min-h-10 items-center rounded-md border border-border px-3 text-xs text-muted-foreground hover:text-foreground sm:min-h-8">Plus tard</button>
+            </div>
+          </div>
+        )}
 
         <div className="relative mb-4">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
@@ -211,12 +265,24 @@ function IndexInner() {
           </div>
         ) : (
           <>
-            <p className="mb-3 text-xs text-muted-foreground" aria-live="polite">
-              <span className="num">{num(filtered.length)}</span> fiche{filtered.length > 1 ? "s" : ""}
-            </p>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs text-muted-foreground" aria-live="polite">
+                <span className="num">{num(filtered.length)}</span> fiche{filtered.length > 1 ? "s" : ""}
+              </p>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                Trier
+                <select
+                  value={tri}
+                  onChange={(e) => setTri(e.target.value as Tri)}
+                  className="h-10 rounded-md border border-input bg-card px-2 text-xs text-foreground outline-none focus:border-foreground sm:h-8"
+                >
+                  {TRIS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                </select>
+              </label>
+            </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {shown.map((p) => (
-                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} />
+                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} />
               ))}
             </div>
             {filtered.length > shown.length && (
@@ -229,6 +295,20 @@ function IndexInner() {
           </>
         )}
       </main>
+      {ficheOuverte && (
+        <Suspense fallback={null}>
+          <PdfViewerModal
+            open
+            onClose={() => setPdfId(null)}
+            productName={ficheOuverte.name}
+            pdfUrl={supabase.storage.from("technical-sheets").getPublicUrl(ficheOuverte.pdf_path!).data.publicUrl}
+            pdfFilename={ficheOuverte.pdf_filename}
+            position={avecPdf.length > 1 ? `${posPdf + 1} / ${avecPdf.length}` : undefined}
+            onPrev={posPdf > 0 ? () => setPdfId(avecPdf[posPdf - 1].id) : undefined}
+            onNext={posPdf < avecPdf.length - 1 ? () => setPdfId(avecPdf[posPdf + 1].id) : undefined}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
