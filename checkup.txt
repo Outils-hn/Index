@@ -1,0 +1,67 @@
+OK     Curseur dans la recherche a l'ouverture
+OK     Selecteur : Accueil + 8 applis dans l'ordre (Accueil, Access, Check, Format, Index, Linear, Masse, Strate, Trame)
+OK     Pied de page (Index v2.7 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug)
+OK     Plus de de « fiche au hasard » ni de tuiles
+OK     Recherche « etancheite » : 2 fiche(s) (2)
+OK     Recherche « hft 140 » : 1 fiche(s) (1)
+OK     Recherche « chevilles » : 3 fiche(s) (3)
+OK     Recherche « 24-118 » : 1 fiche(s) (1)
+OK     Recherche « poser » : 1 fiche(s) (1)
+OK     Filtre « À vérifier » : 6 fiches (6)
+OK     Accessibilite bibliotheque : aucun defaut grave
+OK     Sauvegarde JSON telechargee (index-sauvegarde-2026-11-02.json)
+OK     Aucune fenetre native du navigateur (0)
+OK     Hors ligne : copie locale affichee (5702 ms)
+OK     Telephone : aucun debordement horizontal (0 px )
+OK     Telephone : cibles tactiles assez grandes
+OK     Accessibilite telephone : aucun defaut
+OK     Lien d'evitement « Aller a la recherche » au premier Tab
+OK     Copie du lien d'une fiche
+OK     Explication de la mention de fraicheur
+OK     Telephone : fenetre « Apercu PDF » sans debordement (0 px ;  ; page 0 A.bandeau-onglet)
+OK     Telephone : barre de comparaison avec noms longs sans debordement de page (0 px)
+OK     Telephone : fenetre « Comparaison » sans debordement (0 px ;  ; page 0 A.bandeau-onglet)
+OK     Telephone : fenetre « Fiches a relire » sans debordement (0 px ;  ; page 0 A.bandeau-onglet)
+OK     Telephone : fenetre « Supprimer fiche nom long » sans debordement (0 px ;  ; page 0 A.bandeau-onglet)
+OK     Telephone : page Administration sans debordement horizontal (0 px )
+OK     Rappel : bandeau « à relire ce mois-ci » affiché (2 fiches à relire ce mois-ci · fait : 3/5
+
+Relire maintenant
+Plus tard)
+OK     Rappel : « Relire maintenant » ouvre les fiches à relire
+OK     Rappel : « Plus tard » le masque
+OK     Rappel : reste masqué après rechargement (jusqu'au mois suivant)
+OK     Tri « Nom » : ordre alphabétique (Bande butyle | Cheville HFT 8x140 | Ejot SDK2)
+OK     Tri « Vérifiées il y a le plus longtemps » : une fiche de 30 mois en tête (ISORESIST 1000 031 F | Profilé de départ alu)
+OK     Tri « Vérifiées le plus récemment » : une fiche du jour en tête (Sikaflex-11 FC+ | Ejot SDK2)
+OK     Lecteur : position « 1 / n » affichée (1 / 6)
+OK     Lecteur : « suivante » passe à la fiche 2 (2 / 6)
+OK     Lecteur : flèche gauche revient à la fiche 1 (1 / 6)
+OK     Lecteur : lien « nouvel onglet » présent
+OK     Telephone : lecteur PDF sans débordement (0 px ; )
+OK     Fiches à relire : 5 fiches proposées, les plus anciennes (5)
+OK     « Toujours valable » enregistre la vérification
+OK     Lien ?fiche= : seule la fiche demandée, PDF ouvert
+OK     Lien vers une fiche disparue : message clair
+OK     « Voir toutes les fiches » revient à la bibliothèque
+OK     Lien ?q= : recherche pré-remplie (3 fiches) (3)
+OK     Hors ligne sans copie : message et Réessayer
+OK     Inscription : prénom, nom, email, mot de passe
+OK     Mot de passe oublié : lien envoyé
+OK     Page nouveau mot de passe sans lien : message clair
+OK     Accessibilite connexion : aucun defaut grave
+OK     Accessibilite admin : aucun defaut grave
+OK     Supprimer : fenetre Épure
+OK     Fiche mise a la corbeille (pas supprimee) (PATCH products)
+OK     Corbeille affichee avec Restaurer
+OK     Restauration
+OK     Aucune fenetre native (admin) (0)
+OK     Accessibilite config : aucun defaut grave
+OK     Comptes : 1 en attente avec bouton Valider
+OK     Validation d'un compte
+OK     Nommer un administrateur
+OK     Non-admin : Configuration sans la section Comptes
+OK     Compte non validé : écran d'attente, pas d'administration
+OK     Compte non validé : pas de bouton « Vérifiée » sur les fiches
+OK     400 fiches : saisie fluide (< 300 ms par frappe) (37 / 38 / 43 ms)
+OK     Mode sombre retenu
