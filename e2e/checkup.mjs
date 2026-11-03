@@ -286,7 +286,7 @@ await step("Lien fournisseur vers Access (2.8)", async () => {
   await h.page.reload({ waitUntil: "load" });
   await h.page.getByText(/copie locale du/).waitFor({ timeout: 20000 }).catch(() => {});
   await h.page.waitForTimeout(1500);
-  verif("Hors ligne : le lien Access reste grâce à la copie locale", (await h.page.locator("article", { hasText: "Sikaflex-11 FC+" }).getByRole("link", { name: /Sika/ }).count()) === 1, `liste: ${await h.page.evaluate(() => localStorage.getItem("index:access-fournisseurs:v1"))}`);
+  verif("Hors ligne : le lien Access reste grâce à la copie locale", (await h.page.locator("article", { hasText: "Sikaflex-11 FC+" }).getByRole("link", { name: /Sika/ }).count()) === 1, `articles ${await h.page.locator("article").count()} ; liens fournisseur ${await h.page.locator("article a[href*=fournisseur]").count()} ; ${(await h.page.locator("article").first().innerText().catch(() => "?")).replace(/\s+/g, " ").slice(0, 120)}`);
   await h.c.close();
 });
 
