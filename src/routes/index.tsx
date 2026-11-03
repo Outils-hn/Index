@@ -329,6 +329,7 @@ function IndexInner() {
             position={avecPdf.length > 1 ? `${posPdf + 1} / ${avecPdf.length}` : undefined}
             onPrev={posPdf > 0 ? () => setPdfId(avecPdf[posPdf - 1].id) : undefined}
             onNext={posPdf < avecPdf.length - 1 ? () => setPdfId(avecPdf[posPdf + 1].id) : undefined}
+            onEdit={approved && !offlineSince ? () => modifier(ficheOuverte) : undefined}
           />
         </Suspense>
       )}
