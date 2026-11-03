@@ -12,6 +12,7 @@ import { CompareProvider } from "@/components/CompareContext";
 import { CompareBar } from "@/components/CompareBar";
 import { useFavorites } from "@/hooks/use-favorites";
 import { FichesARelire } from "@/components/famille/FichesARelire";
+import { trouverFournisseurAccess, useFournisseursAccess } from "@/lib/access";
 import { checkedAt, haystack, matches, num, validity } from "@/lib/search";
 import { DOSE_DU_MOIS, aRelire, verifieesCeMois } from "@/lib/verification";
 
@@ -119,6 +120,18 @@ function IndexInner() {
         ),
     [products, q, filtre, favorites, fiche, ficheLiee, tri],
   );
+
+  // Lien « fournisseur » vers Access : une correspondance par nom de fournisseur (calculee une fois)
+  const fournisseursAccess = useFournisseursAccess();
+  const accessParFournisseur = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const { p } of products) {
+      if (!p.supplier || m.has(p.supplier)) continue;
+      const f = trouverFournisseurAccess(p.supplier, fournisseursAccess);
+      if (f) m.set(p.supplier, f.id);
+    }
+    return m;
+  }, [products, fournisseursAccess]);
 
   // Lecteur PDF de la page : fiche precedente / suivante parmi les fiches affichees qui ont un PDF
   const avecPdf = useMemo(() => filtered.filter((p) => !!p.pdf_path), [filtered]);
@@ -252,7 +265,7 @@ function IndexInner() {
             </p>
             {ficheLiee && (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <ProductCard product={ficheLiee} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
+                <ProductCard product={ficheLiee} accessId={accessParFournisseur.get(ficheLiee.supplier) ?? null} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
               </div>
             )}
           </div>
@@ -282,7 +295,7 @@ function IndexInner() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {shown.map((p) => (
-                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} />
+                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} />
               ))}
             </div>
             {filtered.length > shown.length && (

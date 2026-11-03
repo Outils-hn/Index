@@ -33,7 +33,9 @@ function donnees({ gros = false } = {}) {
     pdf_path: i % 3 ? `fiches/p${i}.pdf` : null, pdf_filename: i % 3 ? `p${i}.pdf` : null, url: i % 2 ? "https://example.com/produit" : null,
     note: i === 2 ? "Ne pas poser sous 5 °C." : null, updated_at: now, verified_at: [now, old(14), old(30)][i % 3], deleted_at: null, created_at: now, created_by: USER.id,
   });
-  return { categories, suppliers, projects, products, product_projects: [{ product_id: products[0].id, project_id: projects[0].id }] };
+  // Fournisseurs d'Access (meme base) : « Würth » doit retrouver « Würth », pas Ejot
+  const access_fournisseurs = [{ id: "acc-sika", nom: "Sika" }, { id: "acc-wurth", nom: "WÜRTH" }, { id: "acc-isover", nom: "Isover" }];
+  return { categories, suppliers, projects, products, access_fournisseurs, product_projects: [{ product_id: products[0].id, project_id: projects[0].id }] };
 }
 
 async function ctx({ gros = false, connecte = false, dark = false, valide = true, admin = true, largeur = 1440 } = {}) {
@@ -109,7 +111,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.7 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.8 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -262,6 +264,29 @@ await step("Tri, rappel et lecteur PDF (2.7)", async () => {
   verif("Telephone : lecteur PDF sans débordement", mm.sw <= 0 && mm.hors.length === 0 && mm.page <= 0, `${mm.sw} px ; ${mm.hors.join(", ")}`);
   await shot(cm.page, "20-lecteur-telephone", false);
   await cm.c.close();
+});
+
+await step("Lien fournisseur vers Access (2.8)", async () => {
+  const { c, page } = await ctx();
+  await aller(page);
+  const carteSika = page.locator("article", { hasText: "Sikaflex-11 FC+" });
+  const lienSika = carteSika.getByRole("link", { name: /Sika/ });
+  verif("Fournisseur « Sika » : lien vers Access", (await lienSika.count()) === 1 && /\/Access\/\?fournisseur=acc-sika$/.test((await lienSika.getAttribute("href")) ?? ""), (await lienSika.getAttribute("href").catch(() => "")) ?? "");
+  verif("Lien Access : s'ouvre dans un nouvel onglet", (await lienSika.getAttribute("target")) === "_blank");
+  const carteWurth = page.locator("article", { hasText: "Spirale Drall-Fix" });
+  verif("« Würth » retrouve « WÜRTH » (accents et majuscules)", (await carteWurth.getByRole("link", { name: /Würth/ }).count()) === 1);
+  const carteEjot = page.locator("article", { hasText: "Ejot SDK2" });
+  verif("Fournisseur absent d'Access (Ejot) : simple texte, pas de lien", (await carteEjot.getByRole("link", { name: /Ejot/ }).count()) === 0 && (await carteEjot.getByText("Ejot", { exact: true }).count()) === 1);
+  await shot(page, "21-lien-access", false);
+  await c.close();
+  // Hors connexion : la copie locale des fournisseurs Access garde le lien
+  const h = await ctx();
+  await aller(h.page);
+  h.etat.horsLigne = true;
+  await h.page.reload({ waitUntil: "load" });
+  await h.page.getByText(/copie locale du/).waitFor({ timeout: 20000 }).catch(() => {});
+  verif("Hors ligne : le lien Access reste grâce à la copie locale", (await h.page.locator("article", { hasText: "Sikaflex-11 FC+" }).getByRole("link", { name: /Sika/ }).count()) === 1);
+  await h.c.close();
 });
 
 await step("Fiches a relire du mois", async () => {

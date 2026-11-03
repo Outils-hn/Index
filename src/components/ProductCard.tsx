@@ -1,3 +1,4 @@
+import { ACCESS_URL } from "@/lib/access";
 import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, Star, TriangleAlert } from "lucide-react";
 import { lazy, memo, Suspense, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -49,7 +50,7 @@ export const fmtDate = (d: string) =>
  * que les cartes qui changent.
  */
 export const ProductCard = memo(function ProductCard({
-  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf,
+  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId,
 }: {
   product: Product;
   loggedIn: boolean;
@@ -59,6 +60,8 @@ export const ProductCard = memo(function ProductCard({
   autoOpen?: boolean;
   /** Si fourni, le lecteur PDF est gere par la page (navigation precedente / suivante). */
   onOpenPdf?: (p: Product) => void;
+  /** Fournisseur correspondant dans Access : le nom du fournisseur devient un lien vers sa fiche. */
+  accessId?: string | null;
 }) {
   const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const queryClient = useQueryClient();
@@ -120,7 +123,19 @@ export const ProductCard = memo(function ProductCard({
             {product.category}
           </div>
           <h2 className="text-base font-semibold leading-snug text-foreground">{product.name}</h2>
-          <p className="text-sm text-muted-foreground">{product.supplier}</p>
+          <p className="text-sm text-muted-foreground">
+            {accessId ? (
+              <a
+                href={`${ACCESS_URL}/?fournisseur=${encodeURIComponent(accessId)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`Voir ${product.supplier} dans Access (site, contact, notes)`}
+                className="inline-flex min-h-10 items-center gap-1 underline decoration-border underline-offset-2 hover:text-foreground hover:decoration-foreground sm:min-h-0"
+              >
+                {product.supplier}<ExternalLink className="h-3 w-3" aria-hidden="true" /><span className="sr-only"> : voir dans Access</span>
+              </a>
+            ) : product.supplier}
+          </p>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <button
