@@ -4,6 +4,11 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.10 — 3 novembre 2026
+
+- Nouveauté : un crayon « Modifier » dans le lecteur PDF permet de corriger la fiche tout en gardant le PDF sous les yeux.
+- La fenêtre de modification s'ouvre par-dessus le PDF ; à l'enregistrement, le titre du lecteur se met à jour. Mêmes conditions que le crayon des cartes (compte validé, en ligne).
+
 ## 2.9 — 3 novembre 2026
 
 - Nouveauté : un petit crayon sur chaque fiche permet de la modifier directement depuis la bibliothèque, sans passer par Administration.

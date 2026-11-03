@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X, Download, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { X, Download, Pencil, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PdfViewerModalProps {
@@ -13,9 +13,11 @@ interface PdfViewerModalProps {
   position?: string;
   onPrev?: () => void;
   onNext?: () => void;
+  /** Si fourni (compte valide), un crayon ouvre la fenetre de modification de la fiche par-dessus le PDF. */
+  onEdit?: () => void;
 }
 
-export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename, position, onPrev, onNext }: PdfViewerModalProps) {
+export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename, position, onPrev, onNext, onEdit }: PdfViewerModalProps) {
   // Fleches gauche / droite : fiche precedente / suivante (sauf si le curseur est dans un champ)
   React.useEffect(() => {
     if (!open || (!onPrev && !onNext)) return;
@@ -45,7 +47,7 @@ export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename
             "duration-200"
           )}
           onEscapeKeyDown={onClose}
-          onPointerDownOutside={onClose}
+          onPointerDownOutside={(e) => { if ((e.target as HTMLElement | null)?.closest?.("[role=dialog]")) return; onClose(); }}
         >
           {/* Barre supérieure */}
           <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card shrink-0">
@@ -63,22 +65,35 @@ export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename
             <h2 className="min-w-0 flex-1 text-base font-semibold text-foreground truncate leading-tight" title={productName}>
               {productName}
             </h2>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {onEdit && (
+                <button
+                  type="button"
+                  onClick={onEdit}
+                  aria-label={`Modifier la fiche ${productName}`}
+                  title="Modifier la fiche (le PDF reste ouvert derrière)"
+                  className="inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Modifier</span>
+                </button>
+              )}
               <a
                 href={pdfUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                aria-label="Ouvrir dans un nouvel onglet"
+                className="inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 sm:px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
                 title="Ouvrir dans un nouvel onglet (utile sur téléphone : toutes les pages, zoom)"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Nouvel onglet</span>
-                <span className="sm:hidden">Ouvrir</span>
               </a>
               <a
                 href={pdfUrl}
                 download={pdfFilename || "fiche-technique.pdf"}
-                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
+                aria-label="Télécharger le PDF"
+                className="inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 sm:px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
                 title="Télécharger le PDF"
               >
                 <Download className="h-3.5 w-3.5" />

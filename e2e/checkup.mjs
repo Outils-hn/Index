@@ -111,7 +111,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.9 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.10 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -325,6 +325,29 @@ await step("Crayon : modifier une fiche depuis la bibliotheque (2.9)", async () 
   verif("Telephone : fenetre de modification sans debordement", o.sw <= 0 && o.hors.length === 0 && o.page <= 0, `${o.sw} px ; ${o.hors.join(", ")} ; page ${o.page}`);
   await shot(m.page, "23-crayon-telephone", false);
   await m.c.close();
+});
+
+await step("Crayon dans le lecteur PDF (2.10)", async () => {
+  const { c, page, etat } = await ctx({ connecte: true });
+  await aller(page);
+  await page.getByLabel("Rechercher une fiche").fill("cheville"); await page.waitForTimeout(400);
+  await page.getByRole("button", { name: "Ouvrir la fiche" }).first().click(); await page.waitForTimeout(800);
+  const lecteur = page.getByRole("dialog");
+  const crayon = lecteur.getByRole("button", { name: /^Modifier la fiche / });
+  verif("Lecteur : crayon present pour un compte valide", (await crayon.count()) === 1);
+  await crayon.click(); await page.waitForTimeout(800);
+  verif("Le crayon ouvre « Modifier la fiche » par-dessus le PDF", (await page.getByText("Modifier la fiche", { exact: true }).isVisible()) && (await page.getByRole("dialog").count()) === 2);
+  await page.locator("#edit-name").fill("Sikaflex-11 FC+ v2");
+  await page.getByRole("button", { name: "Enregistrer les modifications" }).click(); await page.waitForTimeout(1200);
+  verif("Enregistrement envoye, le PDF reste ouvert", etat.ecritures.includes("PATCH products") && (await page.getByRole("dialog").count()) === 1);
+  verif("Le titre du lecteur est mis a jour", (await page.getByRole("dialog").getByRole("heading", { name: /v2/ }).count()) === 1);
+  await c.close();
+  const v = await ctx();
+  await aller(v.page);
+  await v.page.getByLabel("Rechercher une fiche").fill("cheville"); await v.page.waitForTimeout(400);
+  await v.page.getByRole("button", { name: "Ouvrir la fiche" }).first().click(); await v.page.waitForTimeout(800);
+  verif("Visiteur : pas de crayon dans le lecteur", (await v.page.getByRole("dialog").getByRole("button", { name: /^Modifier la fiche / }).count()) === 0);
+  await v.c.close();
 });
 
 await step("Fiches a relire du mois", async () => {
