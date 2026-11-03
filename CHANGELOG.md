@@ -4,6 +4,12 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.8 — 3 novembre 2026
+
+- Nouveauté : le nom du fournisseur sur une fiche devient un lien vers sa fiche dans Access (site, contact, notes) quand le fournisseur y figure ; Access s'ouvre directement sur lui.
+- La correspondance compare les noms sans accents ni majuscules (« WÜRTH » = « Würth », « Schüco International KG » = « Schüco ») ; en cas de doute entre deux fournisseurs, aucun lien plutôt qu'un mauvais.
+- La liste des fournisseurs d'Access est gardée en copie locale : le lien reste disponible hors connexion.
+
 ## 2.7 — 2 novembre 2026
 
 - Nouveauté : on peut trier les fiches (« Vérifiées il y a le plus longtemps », « le plus récemment », par nom), un bandeau rappelle les fiches à relire du mois, et le lecteur PDF passe d'une fiche à l'autre avec les flèches.
