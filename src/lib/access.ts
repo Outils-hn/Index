@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { plain } from "./search";
@@ -55,5 +56,8 @@ export function useFournisseursAccess(): FournisseurAccess[] {
       return liste;
     },
   });
-  return q.data ?? (q.isError ? lireCopie() : []);
+  // Copie locale en attendant la base (liens deja la au chargement) et si la base ne repond pas
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const copie = useMemo(lireCopie, [q.isError]);
+  return q.data ?? copie;
 }
