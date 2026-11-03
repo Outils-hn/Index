@@ -65,7 +65,7 @@ export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename
             <h2 className="min-w-0 flex-1 text-base font-semibold text-foreground truncate leading-tight" title={productName}>
               {productName}
             </h2>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               {onEdit && (
                 <button
                   type="button"
@@ -82,17 +82,18 @@ export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename
                 href={pdfUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                aria-label="Ouvrir dans un nouvel onglet"
+                className="inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 sm:px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
                 title="Ouvrir dans un nouvel onglet (utile sur téléphone : toutes les pages, zoom)"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Nouvel onglet</span>
-                <span className="sm:hidden">Ouvrir</span>
               </a>
               <a
                 href={pdfUrl}
                 download={pdfFilename || "fiche-technique.pdf"}
-                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
+                aria-label="Télécharger le PDF"
+                className="inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 sm:px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-accent hover:border-accent/40 transition-colors"
                 title="Télécharger le PDF"
               >
                 <Download className="h-3.5 w-3.5" />

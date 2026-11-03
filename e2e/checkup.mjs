@@ -330,7 +330,7 @@ await step("Crayon : modifier une fiche depuis la bibliotheque (2.9)", async () 
 await step("Crayon dans le lecteur PDF (2.10)", async () => {
   const { c, page, etat } = await ctx({ connecte: true });
   await aller(page);
-  await page.getByLabel("Rechercher une fiche").fill("sikaflex"); await page.waitForTimeout(400);
+  await page.getByLabel("Rechercher une fiche").fill("cheville"); await page.waitForTimeout(400);
   await page.getByRole("button", { name: "Ouvrir la fiche" }).first().click(); await page.waitForTimeout(800);
   const lecteur = page.getByRole("dialog");
   const crayon = lecteur.getByRole("button", { name: /^Modifier la fiche / });
@@ -344,7 +344,7 @@ await step("Crayon dans le lecteur PDF (2.10)", async () => {
   await c.close();
   const v = await ctx();
   await aller(v.page);
-  await v.page.getByLabel("Rechercher une fiche").fill("sikaflex"); await v.page.waitForTimeout(400);
+  await v.page.getByLabel("Rechercher une fiche").fill("cheville"); await v.page.waitForTimeout(400);
   await v.page.getByRole("button", { name: "Ouvrir la fiche" }).first().click(); await v.page.waitForTimeout(800);
   verif("Visiteur : pas de crayon dans le lecteur", (await v.page.getByRole("dialog").getByRole("button", { name: /^Modifier la fiche / }).count()) === 0);
   await v.c.close();
