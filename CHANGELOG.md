@@ -4,6 +4,12 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.9 — 3 novembre 2026
+
+- Nouveauté : un petit crayon sur chaque fiche permet de la modifier directement depuis la bibliothèque, sans passer par Administration.
+- Le crayon ouvre la même fenêtre « Modifier la fiche » par-dessus la bibliothèque : la recherche, le tri et la position dans la liste ne bougent pas, et la carte se met à jour à l'enregistrement.
+- Visible seulement pour les comptes validés (mêmes droits qu'Administration) et pas en mode hors connexion.
+
 ## 2.8 — 3 novembre 2026
 
 - Nouveauté : le nom du fournisseur sur une fiche devient un lien vers sa fiche dans Access (site, contact, notes) quand le fournisseur y figure ; Access s'ouvre directement sur lui.

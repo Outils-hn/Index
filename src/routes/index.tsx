@@ -16,6 +16,9 @@ import { trouverFournisseurAccess, useFournisseursAccess } from "@/lib/access";
 import { checkedAt, haystack, matches, num, validity } from "@/lib/search";
 import { DOSE_DU_MOIS, aRelire, verifieesCeMois } from "@/lib/verification";
 
+// Fenetre de modification (la meme qu'Administration), chargee a la premiere ouverture
+const EditProductDialog = lazy(() => import("@/components/EditProductDialog").then((m) => ({ default: m.EditProductDialog })));
+
 // Lecteur PDF charge a la premiere ouverture seulement
 const PdfViewerModal = lazy(() => import("@/components/PdfViewerModal").then((m) => ({ default: m.PdfViewerModal })));
 
@@ -66,6 +69,7 @@ function IndexInner() {
   const [filtre, setFiltre] = useState<Filtre>({ kind: "all" });
   const [tri, setTri] = useState<Tri>("defaut");
   const [pdfId, setPdfId] = useState<string | null>(null);
+  const [aModifier, setAModifier] = useState<Product | null>(null);
   const [relireOuvert, setRelireOuvert] = useState(false);
   const [rappelMasque, setRappelMasque] = useState(() => {
     try { return localStorage.getItem(cleRappel()) === "1"; } catch { return false; }
@@ -136,6 +140,7 @@ function IndexInner() {
   // Lecteur PDF de la page : fiche precedente / suivante parmi les fiches affichees qui ont un PDF
   const avecPdf = useMemo(() => filtered.filter((p) => !!p.pdf_path), [filtered]);
   const ouvrirPdf = useCallback((p: Product) => setPdfId(p.id), []);
+  const modifier = useCallback((p: Product) => setAModifier(p), []);
   const posPdf = pdfId ? avecPdf.findIndex((p) => p.id === pdfId) : -1;
   const ficheOuverte = posPdf >= 0 ? avecPdf[posPdf] : null;
 
@@ -265,7 +270,7 @@ function IndexInner() {
             </p>
             {ficheLiee && (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <ProductCard product={ficheLiee} accessId={accessParFournisseur.get(ficheLiee.supplier) ?? null} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
+                <ProductCard product={ficheLiee} accessId={accessParFournisseur.get(ficheLiee.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
               </div>
             )}
           </div>
@@ -295,7 +300,7 @@ function IndexInner() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {shown.map((p) => (
-                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} />
+                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} />
               ))}
             </div>
             {filtered.length > shown.length && (
@@ -308,6 +313,11 @@ function IndexInner() {
           </>
         )}
       </main>
+      {aModifier && (
+        <Suspense fallback={null}>
+          <EditProductDialog product={aModifier} open onOpenChange={(o) => { if (!o) setAModifier(null); }} />
+        </Suspense>
+      )}
       {ficheOuverte && (
         <Suspense fallback={null}>
           <PdfViewerModal
