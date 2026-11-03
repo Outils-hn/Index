@@ -1,5 +1,5 @@
 import { ACCESS_URL } from "@/lib/access";
-import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, Star, TriangleAlert } from "lucide-react";
+import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, Pencil, Star, TriangleAlert } from "lucide-react";
 import { lazy, memo, Suspense, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -50,7 +50,7 @@ export const fmtDate = (d: string) =>
  * que les cartes qui changent.
  */
 export const ProductCard = memo(function ProductCard({
-  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId,
+  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId, onEdit,
 }: {
   product: Product;
   loggedIn: boolean;
@@ -62,6 +62,8 @@ export const ProductCard = memo(function ProductCard({
   onOpenPdf?: (p: Product) => void;
   /** Fournisseur correspondant dans Access : le nom du fournisseur devient un lien vers sa fiche. */
   accessId?: string | null;
+  /** Si fourni (compte valide), un crayon ouvre la fenetre de modification de la fiche. */
+  onEdit?: (p: Product) => void;
 }) {
   const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const queryClient = useQueryClient();
@@ -137,7 +139,7 @@ export const ProductCard = memo(function ProductCard({
             ) : product.supplier}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1 max-sm:gap-0">
           <button
             type="button"
             onClick={() => toggle(product)}
@@ -152,17 +154,28 @@ export const ProductCard = memo(function ProductCard({
             onClick={copierLien}
             aria-label={`Copier le lien de ${product.name}`}
             title="Copier le lien de la fiche"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
+            className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
           >
             <Link2 className="h-4 w-4" />
           </button>
+          {onEdit && (
+            <button
+              type="button"
+              onClick={() => onEdit(product)}
+              aria-label={`Modifier ${product.name}`}
+              title="Modifier la fiche"
+              className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
+          )}
           <button
             type="button"
             onClick={() => onToggleFavorite(product.id)}
             aria-pressed={favorite}
             aria-label={favorite ? `Retirer ${product.name} des favoris` : `Ajouter ${product.name} aux favoris`}
             title={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-            className={`inline-flex h-10 w-10 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-muted-foreground hover:text-foreground"}`}
+            className={`inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-muted-foreground hover:text-foreground"}`}
           >
             <Star className="h-4 w-4" fill={favorite ? "currentColor" : "none"} />
           </button>
