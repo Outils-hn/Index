@@ -139,7 +139,7 @@ export const ProductCard = memo(function ProductCard({
             ) : product.supplier}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1 max-sm:gap-0">
           <button
             type="button"
             onClick={() => toggle(product)}
@@ -154,7 +154,7 @@ export const ProductCard = memo(function ProductCard({
             onClick={copierLien}
             aria-label={`Copier le lien de ${product.name}`}
             title="Copier le lien de la fiche"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
+            className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
           >
             <Link2 className="h-4 w-4" />
           </button>
@@ -164,7 +164,7 @@ export const ProductCard = memo(function ProductCard({
               onClick={() => onEdit(product)}
               aria-label={`Modifier ${product.name}`}
               title="Modifier la fiche"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
+              className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
             >
               <Pencil className="h-4 w-4" />
             </button>
@@ -175,7 +175,7 @@ export const ProductCard = memo(function ProductCard({
             aria-pressed={favorite}
             aria-label={favorite ? `Retirer ${product.name} des favoris` : `Ajouter ${product.name} aux favoris`}
             title={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-            className={`inline-flex h-10 w-10 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-muted-foreground hover:text-foreground"}`}
+            className={`inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-muted-foreground hover:text-foreground"}`}
           >
             <Star className="h-4 w-4" fill={favorite ? "currentColor" : "none"} />
           </button>
