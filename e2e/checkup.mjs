@@ -273,7 +273,7 @@ await step("Lien fournisseur vers Access (2.8)", async () => {
   const lienSika = carteSika.getByRole("link", { name: /Sika/ });
   verif("Fournisseur « Sika » : lien vers Access", (await lienSika.count()) === 1 && /\/Access\/\?fournisseur=acc-sika$/.test((await lienSika.getAttribute("href")) ?? ""), (await lienSika.getAttribute("href").catch(() => "")) ?? "");
   verif("Lien Access : s'ouvre dans un nouvel onglet", (await lienSika.getAttribute("target")) === "_blank");
-  const carteWurth = page.locator("article", { hasText: "Spirale Drall-Fix" });
+  const carteWurth = page.locator("article", { hasText: "Membrane EPDM" });
   verif("« Würth » retrouve « WÜRTH » (accents et majuscules)", (await carteWurth.getByRole("link", { name: /Würth/ }).count()) === 1);
   const carteEjot = page.locator("article", { hasText: "Ejot SDK2" });
   verif("Fournisseur absent d'Access (Ejot) : simple texte, pas de lien", (await carteEjot.getByRole("link", { name: /Ejot/ }).count()) === 0 && (await carteEjot.getByText("Ejot", { exact: true }).count()) === 1);
@@ -285,7 +285,8 @@ await step("Lien fournisseur vers Access (2.8)", async () => {
   h.etat.horsLigne = true;
   await h.page.reload({ waitUntil: "load" });
   await h.page.getByText(/copie locale du/).waitFor({ timeout: 20000 }).catch(() => {});
-  verif("Hors ligne : le lien Access reste grâce à la copie locale", (await h.page.locator("article", { hasText: "Sikaflex-11 FC+" }).getByRole("link", { name: /Sika/ }).count()) === 1);
+  await h.page.waitForTimeout(1500);
+  verif("Hors ligne : le lien Access reste grâce à la copie locale", (await h.page.locator("article", { hasText: "Sikaflex-11 FC+" }).getByRole("link", { name: /Sika/ }).count()) === 1, `liste: ${await h.page.evaluate(() => localStorage.getItem("index:access-fournisseurs:v1"))}`);
   await h.c.close();
 });
 
