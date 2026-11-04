@@ -128,6 +128,11 @@ function AuthPage() {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" autoComplete="email" required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder="prenom.nom@bureau.ch" />
+              {mode === "signup" && (
+                <p className="text-xs text-muted-foreground">
+                  Vous pouvez inventer une adresse email, mais si vous perdez votre mot de passe, vous perdrez le compte : le lien « Mot de passe oublié » s'envoie à cette adresse.
+                </p>
+              )}
             </div>
             {mode !== "reset" && (
             <div className="space-y-2">
