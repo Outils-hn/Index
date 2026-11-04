@@ -4,6 +4,12 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.14 — 4 novembre 2026
+
+- Nouveauté : les comptes ont maintenant un rôle : dessinateur, administrateur ou concepteur. Dans Configuration > Comptes, le rôle s'affiche pour chaque compte.
+- Les adresses email des comptes ne sont plus visibles que par le concepteur ; les administrateurs voient les noms. Seul le concepteur peut nommer ou retirer un administrateur ; les administrateurs continuent de valider les comptes.
+- Un script SQL est à lancer une fois dans Supabase (`supabase/migrations/20261104170000_index_roles.sql`) : sans lui, l'écran continue de fonctionner comme avant.
+
 ## 2.13 — 4 novembre 2026
 
 - Nouveauté : la fenêtre « Fiches à relire du mois » explique clairement le principe : une fiche y entre quand sa dernière vérification date de plus de 12 mois (5 au maximum par mois). Correction du nom de l'appli dans ce texte.
