@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.12 — 4 novembre 2026
+
+- Nouveauté : quand il n'y a plus de fiche à relire, le bouton « Fiches à relire du mois » affiche « À jour » au lieu d'un compteur comme « 2/5 » qui laissait croire qu'il restait du travail. Le texte de la fenêtre l'explique aussi.
+
 ## 2.11 — 4 novembre 2026
 
 - Nouveauté : à la création d'un compte, un texte prévient qu'on peut inventer une adresse email, mais qu'en cas de mot de passe perdu le compte sera perdu (le lien « Mot de passe oublié » part vers cette adresse).
