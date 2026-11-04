@@ -2,18 +2,23 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Users } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, useConcepteur } from "@/hooks/use-auth";
 import { ask } from "@/lib/confirm";
 import { fmtDate } from "@/components/ProductCard";
 
 /**
  * Configuration > Comptes (administrateurs seulement) : les nouveaux comptes attendent ici.
  * Valider = pouvoir ajouter, modifier, supprimer des fiches et voir les chantiers.
- * Administrateur = peut en plus valider des comptes et nommer d'autres administrateurs.
+ * Administrateur = peut en plus valider des comptes. Concepteur = seul a voir les adresses email, nommer
+ * des administrateurs et changer les roles (le role « concepteur » s'attribue par SQL seulement).
  */
+/** Nom affiche : le nom du compte, sinon l'email (visible du concepteur seulement). */
+const nom = (c: { display_name: string; email: string | null }) => c.display_name || c.email || "Compte sans nom";
+
 export function ComptesPanel() {
   const qc = useQueryClient();
   const { user } = useAuth();
+  const concepteur = useConcepteur(user);
   const { data: comptes = [], error } = useQuery({
     queryKey: ["accounts"],
     queryFn: async () => {
@@ -65,34 +70,36 @@ export function ComptesPanel() {
           {comptes.map((c) => (
             <li key={c.id} className="flex items-center gap-3 px-5 py-3 text-sm">
               <div className="min-w-0 flex-1">
-                <div className="truncate">{c.display_name || c.email}</div>
-                <div className="truncate text-xs text-muted-foreground">{c.email} · créé le <span className="num">{fmtDate(c.created_at)}</span></div>
+                <div className="truncate">{nom(c)}</div>
+                <div className="truncate text-xs text-muted-foreground">{c.email ? `${c.email} · ` : ""}créé le <span className="num">{fmtDate(c.created_at)}</span></div>
               </div>
               {c.approved ? (
                 <>
-                  {c.is_admin ? (
+                  {c.role === "concepteur" ? (
+                    <span className="rounded-full border border-border px-2 py-0.5 text-xs font-medium">Concepteur</span>
+                  ) : c.is_admin ? (
                     <span className="rounded-full border border-border px-2 py-0.5 text-xs">Administrateur</span>
                   ) : (
-                    <span className="text-xs text-muted-foreground">Validé</span>
+                    <span className="text-xs text-muted-foreground">Dessinateur</span>
                   )}
-                  {c.id !== user?.id && (
+                  {c.id !== user?.id && c.role !== "concepteur" && (
                     <>
-                      <button
+                      {concepteur && <button
                         className="rounded-md border border-border px-2.5 py-1 text-xs hover:bg-muted"
                         onClick={async () => {
                           if (c.is_admin) {
-                            if (await ask({ title: `Retirer le rôle d'administrateur de ${c.display_name || c.email} ?`, message: "Le compte reste validé : il pourra toujours modifier des fiches.", confirm: "Retirer le rôle", danger: true })) role.mutate({ id: c.id, admin: false });
-                          } else if (await ask({ title: `Nommer ${c.display_name || c.email} administrateur ?`, message: "Il pourra valider des comptes, retirer des accès et nommer d'autres administrateurs.", confirm: "Nommer administrateur" })) {
+                            if (await ask({ title: `Retirer le rôle d'administrateur de ${nom(c)} ?`, message: "Le compte reste validé : il pourra toujours modifier des fiches.", confirm: "Retirer le rôle", danger: true })) role.mutate({ id: c.id, admin: false });
+                          } else if (await ask({ title: `Nommer ${nom(c)} administrateur ?`, message: "Il pourra valider des comptes et retirer des accès.", confirm: "Nommer administrateur" })) {
                             role.mutate({ id: c.id, admin: true });
                           }
                         }}
                       >
                         {c.is_admin ? "Retirer admin" : "Nommer admin"}
-                      </button>
+                      </button>}
                       <button
                         className="rounded-md px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10"
                         onClick={async () => {
-                          if (await ask({ title: `Retirer l'accès de ${c.display_name || c.email} ?`, message: "Le compte pourra encore consulter la bibliothèque, mais plus rien modifier.", confirm: "Retirer l'accès", danger: true })) {
+                          if (await ask({ title: `Retirer l'accès de ${nom(c)} ?`, message: "Le compte pourra encore consulter la bibliothèque, mais plus rien modifier.", confirm: "Retirer l'accès", danger: true })) {
                             set.mutate({ id: c.id, ok: false });
                           }
                         }}

@@ -288,6 +288,8 @@ export type Database = {
       }
       is_approved: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
+      is_concepteur: { Args: never; Returns: boolean }
+      mon_role: { Args: never; Returns: string }
       set_account_admin: { Args: { _id: string; _admin: boolean }; Returns: undefined }
       list_accounts: {
         Args: never
@@ -295,9 +297,10 @@ export type Database = {
           approved: boolean
           created_at: string
           display_name: string
-          email: string
+          email: string | null
           id: string
           is_admin: boolean
+          role: string
         }[]
       }
       set_account_approved: {

@@ -73,3 +73,17 @@ export function useAdmin(user: User | null) {
   });
   return !!user && q.data === true;
 }
+
+/** Concepteur : seul a voir les adresses email des comptes et a nommer des administrateurs. */
+export function useConcepteur(user: User | null) {
+  const q = useQuery({
+    queryKey: ["concepteur", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("is_concepteur");
+      return !error && data === true;
+    },
+  });
+  return !!user && q.data === true;
+}

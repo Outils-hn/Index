@@ -42,7 +42,7 @@ async function ctx({ gros = false, connecte = false, dark = false, valide = true
   const c = await browser.newContext({ viewport: { width: largeur, height: largeur < 600 ? 800 : 900 }, acceptDownloads: true, permissions: ["clipboard-read", "clipboard-write"] });
   if (dark) await c.addInitScript(() => localStorage.setItem("theme", "dark"));
   const db = donnees({ gros });
-  const etat = { horsLigne: false, natifs: 0, ecritures: [] };
+  const etat = { horsLigne: false, natifs: 0, ecritures: [], concepteur: true };
   if (connecte) {
     const exp = Math.floor(Date.now() / 1000) + 86400;
     const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
@@ -63,11 +63,12 @@ async function ctx({ gros = false, connecte = false, dark = false, valide = true
     if (m[1]) {
       if (m[2] === "is_approved") return route.fulfill({ json: valide });
       if (m[2] === "is_admin") return route.fulfill({ json: valide && admin });
+      if (m[2] === "is_concepteur") return route.fulfill({ json: valide && admin && etat.concepteur });
       if (m[2] === "set_account_admin") { etat.ecritures.push("rpc set_account_admin"); return route.fulfill({ status: 204, body: "" }); }
       if (m[2] === "list_accounts") return route.fulfill({ json: [
-        { id: USER.id, email: USER.email, display_name: "Test Audit", approved: true, is_admin: true, created_at: now },
-        { id: uid(), email: "collegue@bureau.ch", display_name: "Collègue Validé", approved: true, is_admin: false, created_at: now },
-        { id: uid(), email: "nouveau@bureau.ch", display_name: "Nouveau Collègue", approved: false, is_admin: false, created_at: now },
+        { id: USER.id, email: etat.concepteur ? USER.email : null, display_name: "Test Audit", approved: true, is_admin: true, role: etat.concepteur ? "concepteur" : "administrateur", created_at: now },
+        { id: uid(), email: etat.concepteur ? "collegue@bureau.ch" : null, display_name: "Collègue Validé", approved: true, is_admin: false, role: "dessinateur", created_at: now },
+        { id: uid(), email: etat.concepteur ? "nouveau@bureau.ch" : null, display_name: "Nouveau Collègue", approved: false, is_admin: false, role: "dessinateur", created_at: now },
       ] });
       if (m[2] === "set_account_approved") { etat.ecritures.push("rpc set_account_approved"); return route.fulfill({ status: 204, body: "" }); }
       return route.fulfill({ json: [] });
@@ -111,7 +112,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.13 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.14 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -130,8 +131,9 @@ await step("Bibliotheque", async () => {
   await page.locator("article").nth(1).getByRole("button", { name: "Comparer" }).click();
   await page.locator("article").nth(2).getByRole("button", { name: "Comparer" }).click(); await page.waitForTimeout(300);
   await shot(page, "04-comparer", false);
-  const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 10000 }), page.locator("footer").getByRole("button", { name: "Sauvegarde" }).click()]);
-  verif("Sauvegarde JSON telechargee", /index-sauvegarde-.*\.json$/.test(dl.suggestedFilename()), dl.suggestedFilename());
+  const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 1500 }).catch(() => null), page.locator("footer").getByRole("button", { name: "Sauvegarde" }).click()]);
+  await page.waitForTimeout(300);
+  verif("Sans compte : pas de sauvegarde JSON, message « compte requis »", !dl && await page.getByText("Fichier JSON : compte requis").first().isVisible());
   verif("Aucune fenetre native du navigateur", etat.natifs === 0, `${etat.natifs}`);
   // Hors ligne avec la copie locale creee ci-dessus
   etat.horsLigne = true;
@@ -431,7 +433,21 @@ await step("Administration", async () => {
   await page.getByRole("button", { name: "Nommer admin" }).click(); await page.waitForTimeout(300);
   await page.getByRole("alertdialog").getByRole("button", { name: "Nommer administrateur" }).click(); await page.waitForTimeout(500);
   verif("Nommer un administrateur", etat.ecritures.includes("rpc set_account_admin"));
+  const [dlJ] = await Promise.all([page.waitForEvent("download", { timeout: 10000 }).catch(() => null), page.locator("footer").getByRole("button", { name: "Sauvegarde" }).click()]);
+  verif("Avec compte : sauvegarde JSON telechargee", !!dlJ && /index-sauvegarde-.*\.json$/.test(dlJ.suggestedFilename()), dlJ?.suggestedFilename() ?? "");
+  await page.locator('header button[title^="Mon compte"]').click(); await page.waitForTimeout(300);
+  await page.getByLabel("Nouvelle adresse email").fill("nouvelle@exemple.ch");
+  await page.getByRole("button", { name: "Changer l'adresse" }).click(); await page.waitForTimeout(500);
+  verif("Mon compte : changement d'email demandé, confirmation par lien", await page.getByText("Un email de confirmation a été envoyé").isVisible());
+  await page.keyboard.press("Escape"); await page.waitForTimeout(300);
+  verif("Concepteur : adresses email et rôles visibles", (await page.getByText("collegue@bureau.ch").isVisible()) && (await page.getByText("Concepteur", { exact: true }).isVisible()) && (await page.getByText("Dessinateur").first().isVisible()));
   await shot(page, "13-comptes", false);
+  // Administrateur simple : pas d'email, pas de « Nommer admin »
+  etat.concepteur = false;
+  await page.reload({ waitUntil: "networkidle" }); await aller(page, "config"); await page.waitForTimeout(500);
+  verif("Administrateur : adresses email masquées", !(await page.getByText("collegue@bureau.ch").count()) && (await page.getByText("Collègue Validé").isVisible()));
+  verif("Administrateur : pas de bouton « Nommer admin »", !(await page.getByRole("button", { name: "Nommer admin" }).count()));
+  etat.concepteur = true;
   await c.close();
 });
 

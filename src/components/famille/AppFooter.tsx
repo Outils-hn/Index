@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { APP_AUTHOR, APP_NAME, APP_TAGLINE, APP_UPDATED, APP_VERSION, APP_YEAR } from "@/lib/version";
 import { exportBackup } from "@/lib/backup";
+import { useAuth } from "@/hooks/use-auth";
 import { IndexMark } from "./IndexMark";
 
 /**
@@ -12,7 +13,8 @@ import { IndexMark } from "./IndexMark";
  */
 export function AppFooter() {
   const [open, setOpen] = useState(false);
-  const save = () => exportBackup().then(
+  const { user } = useAuth();
+  const save = () => !user ? toast.message("Fichier JSON : compte requis", { description: "Sans compte, on ne peut pas télécharger la sauvegarde. Connectez-vous avec votre compte Index." }) : exportBackup().then(
     (n) => toast.success(`Sauvegarde téléchargée (${n} fiches, sans les PDF).`),
     () => toast.error("Sauvegarde impossible : base injoignable."),
   );
