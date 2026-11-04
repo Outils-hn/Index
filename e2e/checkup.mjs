@@ -435,6 +435,11 @@ await step("Administration", async () => {
   verif("Nommer un administrateur", etat.ecritures.includes("rpc set_account_admin"));
   const [dlJ] = await Promise.all([page.waitForEvent("download", { timeout: 10000 }).catch(() => null), page.locator("footer").getByRole("button", { name: "Sauvegarde" }).click()]);
   verif("Avec compte : sauvegarde JSON telechargee", !!dlJ && /index-sauvegarde-.*\.json$/.test(dlJ.suggestedFilename()), dlJ?.suggestedFilename() ?? "");
+  await page.locator('header button[title^="Mon compte"]').click(); await page.waitForTimeout(300);
+  await page.getByLabel("Nouvelle adresse email").fill("nouvelle@exemple.ch");
+  await page.getByRole("button", { name: "Changer l'adresse" }).click(); await page.waitForTimeout(500);
+  verif("Mon compte : changement d'email demandé, confirmation par lien", await page.getByText("Un email de confirmation a été envoyé").isVisible());
+  await page.keyboard.press("Escape"); await page.waitForTimeout(300);
   verif("Concepteur : adresses email et rôles visibles", (await page.getByText("collegue@bureau.ch").isVisible()) && (await page.getByText("Concepteur", { exact: true }).isVisible()) && (await page.getByText("Dessinateur").first().isVisible()));
   await shot(page, "13-comptes", false);
   // Administrateur simple : pas d'email, pas de « Nommer admin »

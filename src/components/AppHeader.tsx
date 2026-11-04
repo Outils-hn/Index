@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, LogIn } from "lucide-react";
 import { useAuth, useApproval } from "@/hooks/use-auth";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SelecteurApplis } from "@/components/famille/SelecteurApplis";
 import { IndexMark } from "@/components/famille/IndexMark";
+import { MonCompte } from "@/components/famille/MonCompte";
 import { Bandeau } from "@/components/famille/Bandeau";
 
 /** En-tete : bandeau commun de la famille (logo + selecteur, onglets, compte, theme). */
@@ -13,6 +15,7 @@ export function AppHeader() {
   const { user } = useAuth();
   const { approved } = useApproval(user);
   const navigate = useNavigate();
+  const [compteOuvert, setCompteOuvert] = useState(false);
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -41,7 +44,8 @@ export function AppHeader() {
           {!approved && (
             <span className="bandeau-statut" title="Un administrateur doit valider ce compte avant qu'il puisse modifier des fiches">En attente de validation</span>
           )}
-          <span className="bandeau-statut ouvert" title={user.email ?? ""}>{user.email}</span>
+          <button onClick={() => setCompteOuvert(true)} className="bandeau-statut ouvert" title="Mon compte : changer d'adresse email">{user.email}</button>
+          <MonCompte email={user.email ?? ""} open={compteOuvert} onOpenChange={setCompteOuvert} />
           <button onClick={logout} className="bandeau-btn"><LogOut /> Déconnexion</button>
         </>
       ) : (
