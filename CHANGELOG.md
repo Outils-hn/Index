@@ -9,6 +9,7 @@ Chaque version qui change quelque chose de visible pour l'équipe a une puce « 
 - Nouveauté : les comptes ont maintenant un rôle : dessinateur, administrateur ou concepteur. Dans Configuration > Comptes, le rôle s'affiche pour chaque compte.
 - Les adresses email des comptes ne sont plus visibles que par le concepteur ; les administrateurs voient les noms. Seul le concepteur peut nommer ou retirer un administrateur ; les administrateurs continuent de valider les comptes.
 - Nouveauté : la mention « À jour · vérifiée le … » sous chaque fiche n'est plus soulignée en pointillés (un clic dessus explique toujours comment elle est calculée).
+- Nouveauté : sans compte, le lien « Sauvegarde » du pied de page ne télécharge plus le fichier JSON : un message invite à se connecter.
 - Un script SQL est à lancer une fois dans Supabase (`supabase/migrations/20261104170000_index_roles.sql`) : sans lui, l'écran continue de fonctionner comme avant.
 
 ## 2.13 — 4 novembre 2026

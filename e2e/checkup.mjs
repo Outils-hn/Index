@@ -131,8 +131,9 @@ await step("Bibliotheque", async () => {
   await page.locator("article").nth(1).getByRole("button", { name: "Comparer" }).click();
   await page.locator("article").nth(2).getByRole("button", { name: "Comparer" }).click(); await page.waitForTimeout(300);
   await shot(page, "04-comparer", false);
-  const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 10000 }), page.locator("footer").getByRole("button", { name: "Sauvegarde" }).click()]);
-  verif("Sauvegarde JSON telechargee", /index-sauvegarde-.*\.json$/.test(dl.suggestedFilename()), dl.suggestedFilename());
+  const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 1500 }).catch(() => null), page.locator("footer").getByRole("button", { name: "Sauvegarde" }).click()]);
+  await page.waitForTimeout(300);
+  verif("Sans compte : pas de sauvegarde JSON, message « compte requis »", !dl && await page.getByText("Fichier JSON : compte requis").first().isVisible());
   verif("Aucune fenetre native du navigateur", etat.natifs === 0, `${etat.natifs}`);
   // Hors ligne avec la copie locale creee ci-dessus
   etat.horsLigne = true;
@@ -432,6 +433,8 @@ await step("Administration", async () => {
   await page.getByRole("button", { name: "Nommer admin" }).click(); await page.waitForTimeout(300);
   await page.getByRole("alertdialog").getByRole("button", { name: "Nommer administrateur" }).click(); await page.waitForTimeout(500);
   verif("Nommer un administrateur", etat.ecritures.includes("rpc set_account_admin"));
+  const [dlJ] = await Promise.all([page.waitForEvent("download", { timeout: 10000 }).catch(() => null), page.locator("footer").getByRole("button", { name: "Sauvegarde" }).click()]);
+  verif("Avec compte : sauvegarde JSON telechargee", !!dlJ && /index-sauvegarde-.*\.json$/.test(dlJ.suggestedFilename()), dlJ?.suggestedFilename() ?? "");
   verif("Concepteur : adresses email et rôles visibles", (await page.getByText("collegue@bureau.ch").isVisible()) && (await page.getByText("Concepteur", { exact: true }).isVisible()) && (await page.getByText("Dessinateur").first().isVisible()));
   await shot(page, "13-comptes", false);
   // Administrateur simple : pas d'email, pas de « Nommer admin »
