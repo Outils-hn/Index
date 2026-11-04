@@ -44,15 +44,17 @@ export function FichesARelire({ products, open: ouvert, onOpenChange }: { produc
       <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-muted">
         <span className="h-1.5 w-1.5 rounded-full bg-[var(--app)]" aria-hidden="true" />
         Fiches à relire du mois
-        <span className="num text-muted-foreground">{Math.min(faites, DOSE_DU_MOIS)}/{DOSE_DU_MOIS}</span>
+        {/* Plus rien a relire : « 2/5 » serait trompeur (le quota ne peut plus etre atteint), on dit que tout est a jour */}
+        <span className="num text-muted-foreground">{liste.length ? `${Math.min(faites, DOSE_DU_MOIS)}/${DOSE_DU_MOIS}` : "À jour"}</span>
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-xl [&>*]:min-w-0">
           <DialogHeader>
             <DialogTitle>Fiches à relire du mois</DialogTitle>
             <DialogDescription>
-              Les {DOSE_DU_MOIS} fiches vérifiées il y a le plus longtemps. Ouvrez-la, vérifiez qu'elle est toujours la dernière version
-              du fournisseur (sinon remplacez le PDF dans Administration), puis cliquez « Toujours valable ».
+              {liste.length
+                ? `Les ${DOSE_DU_MOIS} fiches vérifiées il y a le plus longtemps. Ouvrez-la, vérifiez qu'elle est toujours la dernière version du fournisseur (sinon remplacez le PDF dans Administration), puis cliquez « Toujours valable ».`
+                : "Chaque mois, Check propose jusqu'à 5 fiches non vérifiées depuis longtemps. Il n'y en a plus à relire pour l'instant."}
             </DialogDescription>
           </DialogHeader>
           <p className="text-xs text-muted-foreground">
