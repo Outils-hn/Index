@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.11 — 4 novembre 2026
+
+- Nouveauté : à la création d'un compte, un texte prévient qu'on peut inventer une adresse email, mais qu'en cas de mot de passe perdu le compte sera perdu (le lien « Mot de passe oublié » part vers cette adresse).
+
 ## 2.10 — 3 novembre 2026
 
 - Nouveauté : un crayon « Modifier » dans le lecteur PDF permet de corriger la fiche tout en gardant le PDF sous les yeux.
