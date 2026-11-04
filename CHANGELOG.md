@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.13 — 4 novembre 2026
+
+- Nouveauté : la fenêtre « Fiches à relire du mois » explique clairement le principe : une fiche y entre quand sa dernière vérification date de plus de 12 mois (5 au maximum par mois). Correction du nom de l'appli dans ce texte.
+
 ## 2.12 — 4 novembre 2026
 
 - Nouveauté : quand il n'y a plus de fiche à relire, le bouton « Fiches à relire du mois » affiche « À jour » au lieu d'un compteur comme « 2/5 » qui laissait croire qu'il restait du travail. Le texte de la fenêtre l'explique aussi.

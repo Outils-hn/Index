@@ -53,8 +53,8 @@ export function FichesARelire({ products, open: ouvert, onOpenChange }: { produc
             <DialogTitle>Fiches à relire du mois</DialogTitle>
             <DialogDescription>
               {liste.length
-                ? `Les ${DOSE_DU_MOIS} fiches vérifiées il y a le plus longtemps. Ouvrez-la, vérifiez qu'elle est toujours la dernière version du fournisseur (sinon remplacez le PDF dans Administration), puis cliquez « Toujours valable ».`
-                : "Chaque mois, Check propose jusqu'à 5 fiches non vérifiées depuis longtemps. Il n'y en a plus à relire pour l'instant."}
+                ? `Jusqu'à ${DOSE_DU_MOIS} fiches dont la dernière vérification date de plus de 12 mois, les plus anciennes d'abord. Ouvrez-la, vérifiez qu'elle est toujours la dernière version du fournisseur (sinon remplacez le PDF dans Administration), puis cliquez « Toujours valable ».`
+                : "Chaque mois, Index propose jusqu'à 5 fiches dont la dernière vérification date de plus de 12 mois. Aucune fiche n'est dans ce cas pour l'instant."}
             </DialogDescription>
           </DialogHeader>
           <p className="text-xs text-muted-foreground">
