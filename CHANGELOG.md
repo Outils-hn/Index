@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.15 — 5 novembre 2026
+
+- Nouveauté : sur téléphone, ton adresse reste visible dans le bandeau d'Index, pour ouvrir « Mon compte » (elle était cachée).
+
 ## 2.14 — 4 novembre 2026
 
 - Nouveauté : les comptes ont maintenant un rôle : dessinateur, administrateur ou concepteur. Dans Configuration > Comptes, le rôle s'affiche pour chaque compte.
