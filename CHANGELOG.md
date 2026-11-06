@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.15 — 6 novembre 2026
+
+- Le menu des applis propose Joint (en préparation), pour le concepteur seulement : aucune Nouveauté à annoncer à l'équipe.
+
 ## 2.14 — 4 novembre 2026
 
 - Nouveauté : les comptes ont maintenant un rôle : dessinateur, administrateur ou concepteur. Dans Configuration > Comptes, le rôle s'affiche pour chaque compte.
