@@ -242,7 +242,8 @@ body { border-top: 3px solid var(--app); }
   .bandeau-marque { gap: 6px; }
   .bandeau-nav { flex: 1 1 0; min-width: 0; overflow-x: auto; scrollbar-width: none; }
   .bandeau-droite { flex-shrink: 0; }
-  .bandeau-statut { display: none; }
+  .bandeau-statut:not(button) { display: none; }
+  button.bandeau-statut { max-width: 72px; }
   .bandeau-btn { height: 40px; }
   .bandeau-icone { width: 40px; height: 40px; }
   .bandeau-onglet { min-height: 40px; }
