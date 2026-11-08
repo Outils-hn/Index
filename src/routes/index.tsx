@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { lazy, Suspense, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, X, Star } from "lucide-react";
+import { Search, X, Star, Plus, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard, fmtDate, type Product } from "@/components/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,8 +15,12 @@ import { FichesARelire } from "@/components/famille/FichesARelire";
 import { trouverFournisseurAccess, useFournisseursAccess } from "@/lib/access";
 import { checkedAt, haystack, matches, num, validity } from "@/lib/search";
 import { DOSE_DU_MOIS, aRelire, verifieesCeMois } from "@/lib/verification";
+import { useCorbeille } from "@/lib/corbeille";
+import { ask } from "@/lib/confirm";
 
-// Fenetre de modification (la meme qu'Administration), chargee a la premiere ouverture
+// Fenetres d'ajout, de modification et de corbeille, chargees a la premiere ouverture
+const AjouterFicheDialog = lazy(() => import("@/components/AjouterFicheDialog").then((m) => ({ default: m.AjouterFicheDialog })));
+const CorbeilleDialog = lazy(() => import("@/components/CorbeilleDialog").then((m) => ({ default: m.CorbeilleDialog })));
 const EditProductDialog = lazy(() => import("@/components/EditProductDialog").then((m) => ({ default: m.EditProductDialog })));
 
 // Lecteur PDF charge a la premiere ouverture seulement
@@ -71,6 +75,8 @@ function IndexInner() {
   const [pdfId, setPdfId] = useState<string | null>(null);
   const [aModifier, setAModifier] = useState<Product | null>(null);
   const [relireOuvert, setRelireOuvert] = useState(false);
+  const [ajoutOuvert, setAjoutOuvert] = useState(false);
+  const [corbeilleOuverte, setCorbeilleOuverte] = useState(false);
   const [rappelMasque, setRappelMasque] = useState(() => {
     try { return localStorage.getItem(cleRappel()) === "1"; } catch { return false; }
   });
@@ -141,6 +147,13 @@ function IndexInner() {
   const avecPdf = useMemo(() => filtered.filter((p) => !!p.pdf_path), [filtered]);
   const ouvrirPdf = useCallback((p: Product) => setPdfId(p.id), []);
   const modifier = useCallback((p: Product) => setAModifier(p), []);
+  const { trash } = useCorbeille();
+  const supprimer = useCallback(async (p: Product) => {
+    if (await ask({ title: `Mettre « ${p.name} » à la corbeille ?`, message: "Vous pourrez la restaurer pendant 30 jours, PDF compris.", confirm: "Mettre à la corbeille", danger: true })) {
+      trash.mutate({ id: p.id });
+    }
+  }, [trash]);
+  const dansCorbeille = useMemo(() => all.filter((p) => p.deleted_at), [all]);
   const posPdf = pdfId ? avecPdf.findIndex((p) => p.id === pdfId) : -1;
   const ficheOuverte = posPdf >= 0 ? avecPdf[posPdf] : null;
 
@@ -188,7 +201,21 @@ function IndexInner() {
               </p>
             )}
           </div>
-          {approved && !isLoading && !error && <FichesARelire products={all} open={relireOuvert} onOpenChange={setRelireOuvert} />}
+          <div className="flex flex-wrap items-center gap-2">
+            {approved && !isLoading && !error && <FichesARelire products={all} open={relireOuvert} onOpenChange={setRelireOuvert} />}
+            {approved && !isLoading && !error && !offlineSince && (
+              <>
+                {dansCorbeille.length > 0 && (
+                  <button type="button" onClick={() => setCorbeilleOuverte(true)} className="inline-flex min-h-10 items-center gap-1.5 rounded-md border border-border px-3 text-xs text-muted-foreground hover:text-foreground sm:min-h-9">
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Corbeille <span className="num opacity-70">{dansCorbeille.length}</span>
+                  </button>
+                )}
+                <button type="button" onClick={() => setAjoutOuvert(true)} className="inline-flex min-h-10 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90 sm:min-h-9">
+                  <Plus className="h-4 w-4" aria-hidden="true" /> Ajouter une fiche
+                </button>
+              </>
+            )}
+          </div>
           {!user && (
             <p className="text-xs text-muted-foreground">
               Lecture seule ·{" "}
@@ -270,7 +297,7 @@ function IndexInner() {
             </p>
             {ficheLiee && (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <ProductCard product={ficheLiee} accessId={accessParFournisseur.get(ficheLiee.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
+                <ProductCard product={ficheLiee} accessId={accessParFournisseur.get(ficheLiee.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
               </div>
             )}
           </div>
@@ -300,7 +327,7 @@ function IndexInner() {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {shown.map((p) => (
-                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} />
+                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
               ))}
             </div>
             {filtered.length > shown.length && (
@@ -313,6 +340,16 @@ function IndexInner() {
           </>
         )}
       </main>
+      {ajoutOuvert && (
+        <Suspense fallback={null}>
+          <AjouterFicheDialog open onOpenChange={(o) => { if (!o) setAjoutOuvert(false); }} />
+        </Suspense>
+      )}
+      {corbeilleOuverte && (
+        <Suspense fallback={null}>
+          <CorbeilleDialog fiches={dansCorbeille} open onOpenChange={(o) => { if (!o) setCorbeilleOuverte(false); }} />
+        </Suspense>
+      )}
       {aModifier && (
         <Suspense fallback={null}>
           <EditProductDialog product={aModifier} open onOpenChange={(o) => { if (!o) setAModifier(null); }} />

@@ -11,7 +11,7 @@ export function CompteEnAttente({ email }: { email: string | undefined }) {
         </div>
         <p className="text-sm text-muted-foreground">
           Le compte <span className="text-foreground">{email}</span> est bien créé. Un administrateur doit le valider
-          (Configuration → Comptes) avant que vous puissiez ajouter ou modifier des fiches. En attendant, la
+          (Tableau de bord de l'Accueil) avant que vous puissiez ajouter ou modifier des fiches. En attendant, la
           bibliothèque reste consultable.
         </p>
       </div>

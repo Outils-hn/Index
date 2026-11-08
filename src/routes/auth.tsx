@@ -34,7 +34,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user && mode === "signin") navigate({ to: "/admin" });
+    if (!authLoading && user && mode === "signin") navigate({ to: "/" });
   }, [authLoading, user, navigate, mode]);
 
   const submit = async (e: React.FormEvent) => {
@@ -73,7 +73,7 @@ function AuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast.success("Connexion réussie.");
-      navigate({ to: "/admin" });
+      navigate({ to: "/" });
     } catch (err: any) {
       const m = err?.message ?? "";
       toast.error(/invalid login/i.test(m) ? "Email ou mot de passe incorrect." : /already registered/i.test(m) ? "Un compte existe déjà avec cet email." : /signups? not allowed|disabled/i.test(m) ? "Les inscriptions sont fermées pour le moment." : m || "Erreur de connexion.");
