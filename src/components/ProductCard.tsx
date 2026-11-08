@@ -1,5 +1,5 @@
 import { ACCESS_URL } from "@/lib/access";
-import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, Pencil, Star, TriangleAlert } from "lucide-react";
+import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, Pencil, Star, Trash2, TriangleAlert } from "lucide-react";
 import { lazy, memo, Suspense, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -50,7 +50,7 @@ export const fmtDate = (d: string) =>
  * que les cartes qui changent.
  */
 export const ProductCard = memo(function ProductCard({
-  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId, onEdit,
+  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId, onEdit, onDelete,
 }: {
   product: Product;
   loggedIn: boolean;
@@ -64,6 +64,8 @@ export const ProductCard = memo(function ProductCard({
   accessId?: string | null;
   /** Si fourni (compte valide), un crayon ouvre la fenetre de modification de la fiche. */
   onEdit?: (p: Product) => void;
+  /** Si fourni (compte valide), une corbeille met la fiche a la corbeille (restaurable 30 jours). */
+  onDelete?: (p: Product) => void;
 }) {
   const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const queryClient = useQueryClient();
@@ -167,6 +169,17 @@ export const ProductCard = memo(function ProductCard({
               className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
             >
               <Pencil className="h-4 w-4" />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete(product)}
+              aria-label={`Mettre ${product.name} à la corbeille`}
+              title="Mettre à la corbeille"
+              className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-destructive sm:h-7 sm:w-7"
+            >
+              <Trash2 className="h-4 w-4" />
             </button>
           )}
           <button

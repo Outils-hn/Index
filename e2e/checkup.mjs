@@ -112,7 +112,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.19 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.20 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -198,22 +198,19 @@ await step("Telephone : fenetres avec noms longs", async () => {
   await page.getByRole("button", { name: /Fiches à relire du mois/ }).click();
   await fenetre("Fiches a relire");
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
-  await aller(page, "admin");
-  await page.getByRole("button", { name: new RegExp("^Supprimer " + LONG.slice(0, 20)) }).first().click();
+  await aller(page);
+  await page.getByRole("button", { name: new RegExp("^Mettre " + LONG.slice(0, 20)) }).first().click();
   await fenetre("Supprimer fiche nom long");
   await c.close();
 });
 
-await step("Telephone : page Administration", async () => {
-  const { c, page, db } = await ctx({ largeur: 390, connecte: true });
-  db.products[0].name = "Mastic polyuréthane monocomposant haute performance pour joints de façade rideau et vitrages structurels collés";
-  await aller(page, "admin");
-  await shot(page, "17-admin-telephone");
-  const m = await page.evaluate(() => ({
-    debord: document.documentElement.scrollWidth - window.innerWidth,
-    larges: [...document.querySelectorAll("body *")].filter((x) => x.getBoundingClientRect().width > window.innerWidth + 1 && x.offsetParent).slice(0, 6).map((x) => `${x.tagName}.${String(x.className).slice(0, 50)} ${Math.round(x.getBoundingClientRect().width)}`),
-  }));
-  verif("Telephone : page Administration sans debordement horizontal", m.debord <= 0, `${m.debord} px ${m.larges.join(" ; ")}`);
+await step("Telephone : fenetre Ajouter une fiche", async () => {
+  const { c, page } = await ctx({ largeur: 390, connecte: true });
+  await aller(page);
+  await page.getByRole("button", { name: "Ajouter une fiche" }).click(); await page.waitForTimeout(700);
+  await shot(page, "17-ajout-telephone", false);
+  const o = await page.evaluate(() => { const d = document.querySelector("[role=dialog]"); return { sw: d.scrollWidth - d.clientWidth, page: document.documentElement.scrollWidth - innerWidth }; });
+  verif("Telephone : fenetre Ajouter une fiche sans debordement", o.sw <= 0 && o.page <= 0, `${o.sw} px ; page ${o.page}`);
   await c.close();
 });
 
@@ -298,7 +295,7 @@ await step("Crayon : modifier une fiche depuis la bibliotheque (2.9)", async () 
   await aller(v.page);
   verif("Visiteur : pas de crayon de modification", (await v.page.getByRole("button", { name: /^Modifier / }).count()) === 0);
   await v.c.close();
-  // Compte valide : crayon sur chaque carte, meme fenetre qu'Administration, on reste sur la bibliotheque
+  // Compte valide : crayon sur chaque carte, on reste sur la bibliotheque
   const { c, page, etat } = await ctx({ connecte: true });
   await aller(page);
   await page.getByLabel("Rechercher une fiche").fill("sikaflex"); await page.waitForTimeout(400);
@@ -408,22 +405,31 @@ await step("Connexion", async () => {
   await c.close();
 });
 
-await step("Administration", async () => {
+await step("Bibliotheque : ajout, corbeille", async () => {
   const { c, page, etat } = await ctx({ connecte: true });
-  await aller(page, "admin");
-  await shot(page, "07-admin");
-  await axe(page, "admin");
-  await page.getByRole("button", { name: "Supprimer Sikaflex-11 FC+" }).click(); await page.waitForTimeout(300);
+  await aller(page);
+  await shot(page, "07-bibliotheque-compte");
+  await axe(page, "bibliotheque-compte");
+  verif("Onglets : Bibliotheque et Listes, plus d'Administration", (await page.getByRole("link", { name: "Listes" }).count()) === 1 && (await page.getByRole("link", { name: "Administration" }).count()) === 0);
+  await page.getByRole("button", { name: "Ajouter une fiche" }).click(); await page.waitForTimeout(600);
+  verif("Ajouter une fiche : fenetre ouverte sur la bibliotheque", await page.getByRole("dialog").getByText("Enregistrer le produit").isVisible());
+  await shot(page, "07b-ajout", false);
+  await page.keyboard.press("Escape"); await page.waitForTimeout(400);
+  await page.getByRole("button", { name: "Mettre Sikaflex-11 FC+ à la corbeille" }).click(); await page.waitForTimeout(300);
   const fen = page.getByRole("alertdialog");
-  verif("Supprimer : fenetre Épure", await fen.getByText(/à la corbeille/).first().isVisible());
+  verif("Supprimer : fenetre Épure", await fen.getByText(/corbeille/).first().isVisible());
   await shot(page, "08-supprimer", false);
   await fen.getByRole("button", { name: "Mettre à la corbeille" }).click(); await page.waitForTimeout(800);
   verif("Fiche mise a la corbeille (pas supprimee)", etat.ecritures.includes("PATCH products") && !etat.ecritures.includes("DELETE products") && !etat.ecritures.some((e) => e.startsWith("storage")), etat.ecritures.join(", "));
-  verif("Corbeille affichee avec Restaurer", await page.getByRole("button", { name: "Restaurer" }).isVisible());
-  await shot(page, "09-corbeille");
-  await page.getByRole("button", { name: "Restaurer" }).click(); await page.waitForTimeout(800);
+  await page.getByRole("button", { name: /^Corbeille/ }).click(); await page.waitForTimeout(500);
+  verif("Corbeille affichee avec Restaurer", await page.getByRole("button", { name: "Restaurer" }).first().isVisible());
+  await shot(page, "09-corbeille", false);
+  await page.getByRole("button", { name: "Restaurer" }).first().click(); await page.waitForTimeout(800);
   verif("Restauration", !(await page.getByRole("button", { name: "Restaurer" }).count()));
-  verif("Aucune fenetre native (admin)", etat.natifs === 0, `${etat.natifs}`);
+  await page.keyboard.press("Escape"); await page.waitForTimeout(300);
+  verif("Aucune fenetre native (bibliotheque)", etat.natifs === 0, `${etat.natifs}`);
+  await aller(page, "admin");
+  verif("Ancienne adresse /admin : redirige vers la bibliotheque", !page.url().includes("admin"), page.url());
   await aller(page, "config");
   await shot(page, "10-config");
   await axe(page, "config");
@@ -449,10 +455,11 @@ await step("Compte valide non administrateur", async () => {
 
 await step("Compte en attente", async () => {
   const { c, page } = await ctx({ connecte: true, valide: false });
-  await aller(page, "admin");
-  verif("Compte non validé : écran d'attente, pas d'administration", (await page.getByText("Compte en attente de validation").first().isVisible()) && !(await page.getByRole("link", { name: "Administration" }).count()));
+  await aller(page, "config");
+  verif("Compte non validé : écran d'attente sur les Listes", await page.getByText("Compte en attente de validation").first().isVisible());
   await shot(page, "12-compte-en-attente", false);
   await aller(page);
+  verif("Compte non validé : pas d'ajout ni de corbeille", !(await page.getByRole("button", { name: "Ajouter une fiche" }).count()) && !(await page.getByRole("button", { name: /^Mettre .* à la corbeille/ }).count()));
   verif("Compte non validé : pas de bouton « Vérifiée » sur les fiches", !(await page.getByRole("button", { name: "Vérifiée", exact: true }).count()));
   await c.close();
 });

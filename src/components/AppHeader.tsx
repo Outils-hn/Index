@@ -34,8 +34,7 @@ export function AppHeader() {
         <Link to="/" className="bandeau-onglet" activeOptions={{ exact: true }}>Bibliothèque</Link>
         {user && approved && (
           <>
-            <Link to="/admin" className="bandeau-onglet">Administration</Link>
-            <Link to="/config" className="bandeau-onglet">Configuration</Link>
+            <Link to="/config" className="bandeau-onglet">Listes</Link>
           </>
         )}
       </>}

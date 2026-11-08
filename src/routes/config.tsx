@@ -53,7 +53,7 @@ import {
 export const Route = createFileRoute("/config")({
   head: () => ({
     meta: [
-      { title: "Configuration — Index" },
+      { title: "Listes — Index" },
       { name: "description", content: "Gérer les catégories et fournisseurs." },
     ],
   }),
@@ -97,7 +97,7 @@ function ConfigPage() {
       <main className="page py-10">
         <div className="mb-8">
           <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--app-ink)] mb-1">
-            Configuration
+            Listes
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Catégories, fournisseurs et chantiers</h1>
           <p className="text-muted-foreground mt-1.5 text-sm">

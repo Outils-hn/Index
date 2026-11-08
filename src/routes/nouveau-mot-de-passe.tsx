@@ -44,7 +44,7 @@ function NouveauMotDePasse() {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Mot de passe changé.");
-    navigate({ to: "/admin" });
+    navigate({ to: "/" });
   };
 
   return (
