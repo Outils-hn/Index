@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.18 — 8 novembre 2026
+
+- Nouveauté : les comptes et l'historique des modifications quittent la Configuration d'Index : ils sont maintenant dans le « Tableau de bord » de l'Accueil, avec les statistiques. La Configuration garde les catégories, fournisseurs et chantiers, et un lien vers le Tableau de bord.
+
 ## 2.17 — 8 novembre 2026
 
 - Nouveauté : Configuration > Historique garde les 90 derniers jours de tout ce qui est ajouté, modifié ou supprimé dans les données communes des applis (fiches, Access, Format, Strate, Membrane, Masse), avec le nom de la personne. Un bouton « Annuler » remet la ligne comme avant : chacun annule ses propres modifications, les administrateurs annulent aussi celles des autres.
