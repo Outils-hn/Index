@@ -112,7 +112,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.17 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.18 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -427,12 +427,9 @@ await step("Administration", async () => {
   await aller(page, "config");
   await shot(page, "10-config");
   await axe(page, "config");
-  verif("Comptes : 1 en attente avec bouton Valider", (await page.getByText("1 en attente").isVisible()) && (await page.getByRole("button", { name: "Valider" }).isVisible()));
-  await page.getByRole("button", { name: "Valider" }).click(); await page.waitForTimeout(500);
-  verif("Validation d'un compte", etat.ecritures.includes("rpc set_account_approved"));
-  await page.getByRole("button", { name: "Nommer admin" }).click(); await page.waitForTimeout(300);
-  await page.getByRole("alertdialog").getByRole("button", { name: "Nommer administrateur" }).click(); await page.waitForTimeout(500);
-  verif("Nommer un administrateur", etat.ecritures.includes("rpc set_account_admin"));
+  verif("Configuration : plus de section Comptes ni Historique, lien vers le Tableau de bord de l'Accueil",
+    !(await page.getByRole("heading", { name: "Comptes" }).count()) && !(await page.getByRole("heading", { name: "Historique" }).count())
+    && (await page.getByRole("link", { name: /Tableau de bord/ }).getAttribute("href")) === "https://outils-hn.github.io/#tableau");
   const [dlJ] = await Promise.all([page.waitForEvent("download", { timeout: 10000 }).catch(() => null), page.locator("footer").getByRole("button", { name: "Sauvegarde" }).click()]);
   verif("Avec compte : sauvegarde JSON telechargee", !!dlJ && /index-sauvegarde-.*\.json$/.test(dlJ.suggestedFilename()), dlJ?.suggestedFilename() ?? "");
   await page.locator('header button[title^="Mon compte"]').click(); await page.waitForTimeout(300);
@@ -440,14 +437,6 @@ await step("Administration", async () => {
   await page.getByRole("button", { name: "Changer l'adresse" }).click(); await page.waitForTimeout(500);
   verif("Mon compte : changement d'email demandé, confirmation par lien", await page.getByText("Un email de confirmation a été envoyé").isVisible());
   await page.keyboard.press("Escape"); await page.waitForTimeout(300);
-  verif("Concepteur : adresses email et rôles visibles", (await page.getByText("collegue@bureau.ch").isVisible()) && (await page.getByText("Concepteur", { exact: true }).isVisible()) && (await page.getByText("Dessinateur").first().isVisible()));
-  await shot(page, "13-comptes", false);
-  // Administrateur simple : pas d'email, pas de « Nommer admin »
-  etat.concepteur = false;
-  await page.reload({ waitUntil: "networkidle" }); await aller(page, "config"); await page.waitForTimeout(500);
-  verif("Administrateur : adresses email masquées", !(await page.getByText("collegue@bureau.ch").count()) && (await page.getByText("Collègue Validé").isVisible()));
-  verif("Administrateur : pas de bouton « Nommer admin »", !(await page.getByRole("button", { name: "Nommer admin" }).count()));
-  etat.concepteur = true;
   await c.close();
 });
 

@@ -35,10 +35,8 @@ import {
   deleteProject,
   type Project,
 } from "@/lib/projects";
-import { useAuth, useApproval, useAdmin } from "@/hooks/use-auth";
+import { useAuth, useApproval } from "@/hooks/use-auth";
 import { CompteEnAttente } from "@/components/famille/CompteEnAttente";
-import { ComptesPanel } from "@/components/famille/ComptesPanel";
-import { HistoriquePanel } from "@/components/famille/HistoriquePanel";
 import {
   fetchCategories,
   fetchSuppliers,
@@ -66,7 +64,6 @@ function ConfigPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { approved, checking } = useApproval(user);
-  const admin = useAdmin(user);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/auth" });
@@ -102,7 +99,7 @@ function ConfigPage() {
           <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--app-ink)] mb-1">
             Configuration
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Catégories, fournisseurs{admin ? " et comptes" : ""}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Catégories, fournisseurs et chantiers</h1>
           <p className="text-muted-foreground mt-1.5 text-sm">
             Gérez les listes utilisées dans toute l'application.
           </p>
@@ -127,15 +124,13 @@ function ConfigPage() {
           <ProjectsPanel />
         </div>
 
-        <div className="mt-8">
-          <HistoriquePanel />
-        </div>
-
-        {admin && (
-          <div className="mt-8">
-            <ComptesPanel />
-          </div>
-        )}
+        <p className="mt-8 rounded-lg border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+          Les comptes, l'historique des modifications et les statistiques sont maintenant dans le{" "}
+          <a className="font-medium text-foreground underline underline-offset-2" href="https://outils-hn.github.io/#tableau">
+            Tableau de bord de l'Accueil
+          </a>
+          .
+        </p>
       </main>
     </div>
   );
