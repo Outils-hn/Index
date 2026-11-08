@@ -455,10 +455,11 @@ await step("Compte valide non administrateur", async () => {
 
 await step("Compte en attente", async () => {
   const { c, page } = await ctx({ connecte: true, valide: false });
-  await aller(page);
-  verif("Compte non validé : écran d'attente, pas d'ajout ni de corbeille", (await page.getByText("Compte en attente de validation").first().isVisible()) && !(await page.getByRole("button", { name: "Ajouter une fiche" }).count()));
+  await aller(page, "config");
+  verif("Compte non validé : écran d'attente sur les Listes", await page.getByText("Compte en attente de validation").first().isVisible());
   await shot(page, "12-compte-en-attente", false);
   await aller(page);
+  verif("Compte non validé : pas d'ajout ni de corbeille", !(await page.getByRole("button", { name: "Ajouter une fiche" }).count()) && !(await page.getByRole("button", { name: /^Mettre .* à la corbeille/ }).count()));
   verif("Compte non validé : pas de bouton « Vérifiée » sur les fiches", !(await page.getByRole("button", { name: "Vérifiée", exact: true }).count()));
   await c.close();
 });
