@@ -112,7 +112,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.20 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.21 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -211,6 +211,16 @@ await step("Telephone : fenetre Ajouter une fiche", async () => {
   await shot(page, "17-ajout-telephone", false);
   const o = await page.evaluate(() => { const d = document.querySelector("[role=dialog]"); return { sw: d.scrollWidth - d.clientWidth, page: document.documentElement.scrollWidth - innerWidth }; });
   verif("Telephone : fenetre Ajouter une fiche sans debordement", o.sw <= 0 && o.page <= 0, `${o.sw} px ; page ${o.page}`);
+  await c.close();
+});
+
+await step("Telephone : Mon compte accessible", async () => {
+  const { c, page } = await ctx({ largeur: 390, connecte: true });
+  await aller(page);
+  const b = page.locator('header button[title^="Mon compte"]');
+  verif("Telephone : l'adresse du bandeau est visible et ouvre Mon compte", await b.isVisible());
+  await b.click(); await page.waitForTimeout(400);
+  verif("Telephone : la fenetre Mon compte s'ouvre", await page.getByLabel("Nouvelle adresse email").isVisible());
   await c.close();
 });
 
