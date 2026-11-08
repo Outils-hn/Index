@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.19 — 8 novembre 2026
+
+- Nouveauté : toutes les données des applis sont maintenant hébergées en Suisse. Reconnecte-toi une fois avec ton e-mail et ton mot de passe habituels.
+
 ## 2.18 — 8 novembre 2026
 
 - Nouveauté : les comptes et l'historique des modifications quittent la Configuration d'Index : ils sont maintenant dans le « Tableau de bord » de l'Accueil, avec les statistiques. La Configuration garde les catégories, fournisseurs et chantiers, et un lien vers le Tableau de bord.
