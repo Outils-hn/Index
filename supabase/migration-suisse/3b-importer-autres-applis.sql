@@ -14,7 +14,10 @@ begin
   foreach t in array array['access_domaines', 'access_fournisseurs', 'access_acces', 'check_projets', 'check_membres', 'check_notes', 'materials', 'elements', 'components', 'lists', 'list_items', 'format_materiaux', 'strate_catalogue', 'membrane_catalogue', 'retours'] loop
     select string_agg(format('%I', column_name), ', ') into cols from information_schema.columns
       where table_schema = 'public' and table_name = t and is_generated = 'NEVER';
+    -- Pendant la copie, les automatismes de chaque table sont coupes (ils supposent un compte connecte) : on copie les lignes telles quelles
+    execute format('alter table public.%I disable trigger user', t);
     execute format('insert into public.%I (%s) select %s from jsonb_populate_recordset(null::public.%I, (select j->%L from _j))', t, cols, cols, t, t);
+    execute format('alter table public.%I enable trigger user', t);
   end loop;
   -- L'historique ne doit pas contenir ces copies : il repart de zero
   delete from public.historique;
