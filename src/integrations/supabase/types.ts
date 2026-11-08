@@ -290,6 +290,23 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_concepteur: { Args: never; Returns: boolean }
       mon_role: { Args: never; Returns: string }
+      historique_annuler: { Args: { _id: number }; Returns: undefined }
+      historique_lire: {
+        Args: { _tbl?: string | null; _limite?: number }
+        Returns: {
+          action: string
+          annule: boolean
+          at: string
+          auteur_nom: string
+          diff: Record<string, [unknown, unknown]> | null
+          est_annulation: boolean
+          id: number
+          libelle: string | null
+          ligne: string
+          peut_annuler: boolean
+          tbl: string
+        }[]
+      }
       set_account_admin: { Args: { _id: string; _admin: boolean }; Returns: undefined }
       list_accounts: {
         Args: never

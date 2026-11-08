@@ -38,6 +38,7 @@ import {
 import { useAuth, useApproval, useAdmin } from "@/hooks/use-auth";
 import { CompteEnAttente } from "@/components/famille/CompteEnAttente";
 import { ComptesPanel } from "@/components/famille/ComptesPanel";
+import { HistoriquePanel } from "@/components/famille/HistoriquePanel";
 import {
   fetchCategories,
   fetchSuppliers,
@@ -124,6 +125,10 @@ function ConfigPage() {
 
         <div className="mt-8">
           <ProjectsPanel />
+        </div>
+
+        <div className="mt-8">
+          <HistoriquePanel />
         </div>
 
         {admin && (
