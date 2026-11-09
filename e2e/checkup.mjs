@@ -210,7 +210,7 @@ await step("Telephone : fenetres avec noms longs", async () => {
   await fenetre("Fiches a relire");
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   await aller(page);
-  await page.getByRole("button", { name: new RegExp("^Mettre " + LONG.slice(0, 20)) }).first().click();
+  await page.getByRole("button", { name: new RegExp("^Plus d.actions pour " + LONG.slice(0, 20)) }).first().click(); await page.getByRole("menuitem", { name: "Mettre à la corbeille" }).click();
   await fenetre("Supprimer fiche nom long");
   await c.close();
 });
