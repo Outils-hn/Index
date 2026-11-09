@@ -147,7 +147,7 @@ export const ProductCard = memo(function ProductCard({
             onClick={() => toggle(product)}
             aria-pressed={selected}
             title="Ajouter à la comparaison"
-            className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-2.5 text-xs font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-foreground/25 bg-card text-foreground hover:border-foreground/50"}`}
+            className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-2.5 text-xs font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-transparent text-foreground/80 hover:border-foreground/40 hover:bg-card hover:text-foreground"}`}
           >
             <Scale className="h-3.5 w-3.5" aria-hidden="true" />
             {selected ? "Comparée" : "Comparer"}
@@ -207,7 +207,7 @@ export const ProductCard = memo(function ProductCard({
       {product.tags.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {product.tags.map((t) => (
-            <span key={t} className="rounded border border-border px-1.5 py-0.5 text-[11px] text-muted-foreground">{t}</span>
+            <span key={t} className="rounded border border-border px-1.5 py-0.5 text-xs text-foreground/75">{t}</span>
           ))}
         </div>
       )}
