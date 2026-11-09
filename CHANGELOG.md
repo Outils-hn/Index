@@ -6,7 +6,7 @@ Chaque version qui change quelque chose de visible pour l'équipe a une puce « 
 
 ## 2.25 — 9 novembre 2026
 
-- Nouveauté : sur les fiches, la bande de couleur est remplacée par le nom de la famille (et son icône) en couleur, une couleur par famille ; le damier est plus marqué pour mieux séparer les cartes.
+- Nouveauté : la bibliothèque se trie aussi « Par fournisseur » (une section par fournisseur avec le nombre de fiches) ; dans la vue « Toutes », le nom de la famille et son icône sont en couleur ; le bouton « Ouvrir la fiche » est plus doux (violet clair au lieu du noir) ; le damier est retiré.
 
 ## 2.24 — 9 novembre 2026
 

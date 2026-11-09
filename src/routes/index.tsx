@@ -26,12 +26,13 @@ const EditProductDialog = lazy(() => import("@/components/EditProductDialog").th
 // Lecteur PDF charge a la premiere ouverture seulement
 const PdfViewerModal = lazy(() => import("@/components/PdfViewerModal").then((m) => ({ default: m.PdfViewerModal })));
 
-type Tri = "defaut" | "anciens" | "recents" | "nom";
+type Tri = "defaut" | "anciens" | "recents" | "nom" | "fournisseur";
 const TRIS: { value: Tri; label: string }[] = [
   { value: "defaut", label: "Dernières modifiées" },
   { value: "anciens", label: "Vérifiées il y a le plus longtemps" },
   { value: "recents", label: "Vérifiées le plus récemment" },
   { value: "nom", label: "Nom (A → Z)" },
+  { value: "fournisseur", label: "Par fournisseur" },
 ];
 const cleRappel = () => `index:rappel:${new Date().toISOString().slice(0, 7)}`;
 
@@ -126,6 +127,7 @@ function IndexInner() {
           tri === "anciens" ? (a, b) => checkedAt(a).localeCompare(checkedAt(b))
           : tri === "recents" ? (a, b) => checkedAt(b).localeCompare(checkedAt(a))
           : tri === "nom" ? (a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base", numeric: true })
+          : tri === "fournisseur" ? (a, b) => (a.supplier || "\uffff").localeCompare(b.supplier || "\uffff", "fr", { sensitivity: "base" }) || a.name.localeCompare(b.name, "fr", { sensitivity: "base", numeric: true })
           : () => 0, // « Dernières modifiées » : ordre d'arrivee de la base
         ),
     [products, q, filtre, favorites, fiche, ficheLiee, tri],
@@ -170,6 +172,12 @@ function IndexInner() {
   const [limit, setLimit] = useState(60);
   useEffect(() => setLimit(60), [q, filtre, tri]);
   const shown = filtered.slice(0, limit);
+  // « Par fournisseur » : une section par fournisseur (deja trie), « Sans fournisseur » a la fin
+  const parFournisseur = useMemo(() => {
+    const m = new Map<string, Product[]>();
+    for (const p of shown) { const k = p.supplier?.trim() || "Sans fournisseur"; m.set(k, [...(m.get(k) ?? []), p]); }
+    return [...m].map(([nom, fiches]) => ({ nom, fiches }));
+  }, [shown]);
 
   const is = (f: Filtre) => filtre.kind === f.kind && (f.kind !== "cat" || (filtre.kind === "cat" && filtre.name === f.name));
 
@@ -296,7 +304,7 @@ function IndexInner() {
               </button>
             </p>
             {ficheLiee && (
-              <div className="damier grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <ProductCard product={ficheLiee} accessId={accessParFournisseur.get(ficheLiee.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
               </div>
             )}
@@ -325,11 +333,30 @@ function IndexInner() {
                 </select>
               </label>
             </div>
-            <div className="damier grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {shown.map((p) => (
-                <ProductCard key={p.id} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
-              ))}
-            </div>
+            {tri === "fournisseur" ? (
+              <div className="flex flex-col gap-8">
+                {parFournisseur.map((g) => (
+                  <section key={g.nom} aria-label={g.nom}>
+                    <div className="mb-3 flex items-center gap-3">
+                      <h2 className="text-sm font-bold uppercase tracking-[0.06em] text-foreground">{g.nom}</h2>
+                      <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"><span className="num">{g.fiches.length}</span> fiche{g.fiches.length > 1 ? "s" : ""}</span>
+                      <div className="h-px flex-1 bg-border" aria-hidden="true" />
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {g.fiches.map((p) => (
+                        <ProductCard key={p.id} colorerFamille={filtre.kind !== "cat"} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {shown.map((p) => (
+                  <ProductCard key={p.id} colorerFamille={filtre.kind !== "cat"} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
+                ))}
+              </div>
+            )}
             {filtered.length > shown.length && (
               <div className="mt-6 text-center">
                 <button type="button" onClick={() => setLimit((l) => l + 60)} className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted">

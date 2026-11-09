@@ -51,7 +51,7 @@ export const fmtDate = (d: string) =>
  * que les cartes qui changent.
  */
 export const ProductCard = memo(function ProductCard({
-  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId, onEdit, onDelete,
+  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId, onEdit, onDelete, colorerFamille = false,
 }: {
   product: Product;
   loggedIn: boolean;
@@ -67,6 +67,8 @@ export const ProductCard = memo(function ProductCard({
   onEdit?: (p: Product) => void;
   /** Si fourni (compte valide), une corbeille met la fiche a la corbeille (restaurable 30 jours). */
   onDelete?: (p: Product) => void;
+  /** Nom et icone de la famille en couleur (utile seulement quand la liste melange plusieurs familles). */
+  colorerFamille?: boolean;
 }) {
   const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const fam = couleurFamille(product.category);
@@ -124,7 +126,7 @@ export const ProductCard = memo(function ProductCard({
     <article className={`flex h-full flex-col gap-3 rounded-lg border bg-card p-4 transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <div className="famille mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em]" style={{ "--fam-l": fam.clair, "--fam-d": fam.sombre } as CSSProperties}>
+          <div className={`${colorerFamille ? "famille" : "text-[var(--app-ink)]"} mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em]`} style={colorerFamille ? ({ "--fam-l": fam.clair, "--fam-d": fam.sombre } as CSSProperties) : undefined}>
             <CategoryIcon className="h-3 w-3" aria-hidden="true" />
             {product.category}
           </div>
@@ -230,7 +232,7 @@ export const ProductCard = memo(function ProductCard({
             type="button"
             onClick={open}
             disabled={!hasPdf && !hasUrl}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2.5 text-sm sm:py-1.5 font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-index/25 bg-index-soft px-3 py-2.5 text-sm sm:py-1.5 font-medium text-index transition-colors hover:border-index/50 disabled:opacity-40"
           >
             {hasPdf ? "Ouvrir la fiche" : hasUrl ? "Voir sur le site" : "Aucune fiche"}
             {hasPdf ? <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> : <Globe className="h-3.5 w-3.5" aria-hidden="true" />}
