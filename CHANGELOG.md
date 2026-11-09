@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.24 — 9 novembre 2026
+
+- Nouveauté : les fiches de la bibliothèque sont en damier (une carte sur deux un peu plus claire) et chaque famille a sa bande de couleur en haut de la carte, pour mieux distinguer les cartes voisines.
+
 ## 2.23 — 9 novembre 2026
 
 - Nouveauté : on peut de nouveau ajouter une fiche PDF dans une famille dont le nom contient un accent ou un « & » (par exemple « Membranes & Étanchéité »), qui donnait « Invalid key ».
