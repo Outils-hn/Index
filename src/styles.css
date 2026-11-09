@@ -97,7 +97,7 @@
   --index: #6D4AFF;
   --index-soft: #F1EDFF;
   --ok: #0E7A4F;
-  --warn: #A15C00;
+  --warn: #8F5200;
   --bad: #B42318;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -257,7 +257,7 @@ body { border-top: 3px solid var(--app); }
 }
 
 /* Cartes en damier : une carte sur deux est un peu plus claire (en sombre) ou plus grise (en clair), quel que soit le nombre de colonnes (1, 2 ou 3) */
-.damier > article { --teinte: color-mix(in oklab, var(--card), var(--foreground) 5%); }
+.damier > article { --teinte: color-mix(in oklab, var(--card), var(--foreground) 4%); }
 .damier > article:nth-child(even) { background-color: var(--teinte); }
 @media (min-width: 640px) and (max-width: 1023.98px) {
   .damier > article:nth-child(even) { background-color: var(--card); }
