@@ -123,15 +123,9 @@ export const ProductCard = memo(function ProductCard({
   useEffect(() => { if (autoOpen && product.pdf_path) open(); }, [autoOpen, product.id]);
 
   return (
-    <article className={`flex h-full flex-col gap-3 rounded-lg border bg-card p-4 transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
-      <div className="flex items-start gap-3">
-        <div className="min-w-0 flex-1">
-          <div className={`${colorerFamille ? "famille" : "text-[var(--app-ink)]"} mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em]`} style={colorerFamille ? ({ "--fam-l": fam.clair, "--fam-d": fam.sombre } as CSSProperties) : undefined}>
-            <CategoryIcon className="h-3 w-3" aria-hidden="true" />
-            {product.category}
-          </div>
-          <h2 className="text-base font-semibold leading-snug text-foreground">{product.name}</h2>
-          <p className="text-sm text-muted-foreground">
+    <article className={`flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
+      <div className="bandeau-fournisseur flex items-center justify-between gap-2 px-4 py-1.5">
+        <p className="min-w-0 truncate text-sm font-bold uppercase tracking-[0.06em]">
             {accessId ? (
               <a
                 href={`${ACCESS_URL}/?fournisseur=${encodeURIComponent(accessId)}`}
@@ -142,9 +136,8 @@ export const ProductCard = memo(function ProductCard({
               >
                 {product.supplier}<ExternalLink className="h-3 w-3" aria-hidden="true" /><span className="sr-only"> : voir dans Access</span>
               </a>
-            ) : product.supplier}
+            ) : (product.supplier || "Sans fournisseur")}
           </p>
-        </div>
         <div className="flex shrink-0 items-center gap-1 max-sm:gap-0">
           <button
             type="button"
@@ -198,6 +191,14 @@ export const ProductCard = memo(function ProductCard({
           </button>
         </div>
       </div>
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div>
+          <div className={`${colorerFamille ? "famille" : "text-[var(--app-ink)]"} mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em]`} style={colorerFamille ? ({ "--fam-l": fam.clair, "--fam-d": fam.sombre } as CSSProperties) : undefined}>
+            <CategoryIcon className="h-3 w-3" aria-hidden="true" />
+            {product.category}
+          </div>
+          <h2 className="text-lg font-bold leading-snug text-foreground">{product.name}</h2>
+        </div>
 
       {product.tags.length > 0 && (
         <div className="flex flex-wrap gap-1">
@@ -278,6 +279,7 @@ export const ProductCard = memo(function ProductCard({
 
       {/* Lecteur monte seulement a l'ouverture : 400 cartes ne portent pas 400 fenetres fermees */}
       {pdfOpen && <Suspense fallback={null}><PdfViewerModal open onClose={() => setPdfOpen(false)} productName={product.name} pdfUrl={pdfUrl} pdfFilename={product.pdf_filename} /></Suspense>}
+      </div>
     </article>
   );
 });

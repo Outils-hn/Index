@@ -311,7 +311,7 @@ function IndexInner() {
               </button>
             </p>
             {ficheLiee && (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <ProductCard product={ficheLiee} accessId={accessParFournisseur.get(ficheLiee.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} loggedIn={approved} favorite={favorites.has(ficheLiee.id)} onToggleFavorite={toggleFavorite} autoOpen />
               </div>
             )}
@@ -351,7 +351,7 @@ function IndexInner() {
                       <div className="h-px flex-1 bg-border" aria-hidden="true" />
                     </div>
                     )}
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {g.fiches.map((p) => (
                         <ProductCard key={p.id} colorerFamille={filtre.kind !== "cat" && tri !== "famille"} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
                       ))}
@@ -360,7 +360,7 @@ function IndexInner() {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {shown.map((p) => (
                   <ProductCard key={p.id} colorerFamille={filtre.kind !== "cat"} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
                 ))}

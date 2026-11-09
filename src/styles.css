@@ -258,3 +258,7 @@ body { border-top: 3px solid var(--app); }
 
 .famille { color: var(--fam-l); }
 .dark .famille { color: var(--fam-d); }
+
+/* Carte : bandeau du fournisseur, gris-bleu doux */
+.bandeau-fournisseur { background: #EBEEF4; color: #1F2430; border-bottom: 1px solid var(--border); }
+.dark .bandeau-fournisseur { background: #272C37; color: #E5E7EB; }

@@ -6,7 +6,7 @@ Chaque version qui change quelque chose de visible pour l'équipe a une puce « 
 
 ## 2.26 — 9 novembre 2026
 
-- Nouveauté : la bibliothèque s'ouvre maintenant triée « Par famille » (une section par famille, avec son nom en couleur) ; « Par fournisseur » reste disponible dans le menu « Trier ».
+- Nouveauté : les fiches ont un bandeau gris-bleu avec le nom du fournisseur en gras (et les boutons Comparer, lien, crayon, corbeille, étoile), un titre plus gros et plus d'espace entre les cartes ; la bibliothèque s'ouvre triée « Par famille » (une section par famille, nom en couleur), « Par fournisseur » reste dans le menu « Trier ».
 
 ## 2.25 — 9 novembre 2026
 
