@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { couleurFamille } from "@/lib/famille-couleur";
 import { useQuery } from "@tanstack/react-query";
 import { Search, X, Star, Plus, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
@@ -26,13 +27,14 @@ const EditProductDialog = lazy(() => import("@/components/EditProductDialog").th
 // Lecteur PDF charge a la premiere ouverture seulement
 const PdfViewerModal = lazy(() => import("@/components/PdfViewerModal").then((m) => ({ default: m.PdfViewerModal })));
 
-type Tri = "defaut" | "anciens" | "recents" | "nom" | "fournisseur";
+type Tri = "defaut" | "anciens" | "recents" | "nom" | "fournisseur" | "famille";
 const TRIS: { value: Tri; label: string }[] = [
+  { value: "famille", label: "Par famille" },
+  { value: "fournisseur", label: "Par fournisseur" },
   { value: "defaut", label: "Dernières modifiées" },
   { value: "anciens", label: "Vérifiées il y a le plus longtemps" },
   { value: "recents", label: "Vérifiées le plus récemment" },
   { value: "nom", label: "Nom (A → Z)" },
-  { value: "fournisseur", label: "Par fournisseur" },
 ];
 const cleRappel = () => `index:rappel:${new Date().toISOString().slice(0, 7)}`;
 
@@ -72,7 +74,7 @@ const CHIP_OFF = `${CHIP} border-border text-muted-foreground hover:text-foregro
 function IndexInner() {
   const [search, setSearch] = useState("");
   const [filtre, setFiltre] = useState<Filtre>({ kind: "all" });
-  const [tri, setTri] = useState<Tri>("defaut");
+  const [tri, setTri] = useState<Tri>("famille");
   const [pdfId, setPdfId] = useState<string | null>(null);
   const [aModifier, setAModifier] = useState<Product | null>(null);
   const [relireOuvert, setRelireOuvert] = useState(false);
@@ -127,6 +129,7 @@ function IndexInner() {
           tri === "anciens" ? (a, b) => checkedAt(a).localeCompare(checkedAt(b))
           : tri === "recents" ? (a, b) => checkedAt(b).localeCompare(checkedAt(a))
           : tri === "nom" ? (a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base", numeric: true })
+          : tri === "famille" ? (a, b) => a.category.localeCompare(b.category, "fr", { sensitivity: "base" }) || a.name.localeCompare(b.name, "fr", { sensitivity: "base", numeric: true })
           : tri === "fournisseur" ? (a, b) => (a.supplier || "\uffff").localeCompare(b.supplier || "\uffff", "fr", { sensitivity: "base" }) || a.name.localeCompare(b.name, "fr", { sensitivity: "base", numeric: true })
           : () => 0, // « Dernières modifiées » : ordre d'arrivee de la base
         ),
@@ -172,12 +175,16 @@ function IndexInner() {
   const [limit, setLimit] = useState(60);
   useEffect(() => setLimit(60), [q, filtre, tri]);
   const shown = filtered.slice(0, limit);
-  // « Par fournisseur » : une section par fournisseur (deja trie), « Sans fournisseur » a la fin
-  const parFournisseur = useMemo(() => {
+  // « Par fournisseur » / « Par famille » : une section par groupe (deja trie), « Sans … » a la fin
+  const groupes = useMemo(() => {
+    if (tri !== "fournisseur" && tri !== "famille") return [];
     const m = new Map<string, Product[]>();
-    for (const p of shown) { const k = p.supplier?.trim() || "Sans fournisseur"; m.set(k, [...(m.get(k) ?? []), p]); }
+    for (const p of shown) {
+      const k = (tri === "famille" ? p.category : p.supplier)?.trim() || (tri === "famille" ? "Sans famille" : "Sans fournisseur");
+      m.set(k, [...(m.get(k) ?? []), p]);
+    }
     return [...m].map(([nom, fiches]) => ({ nom, fiches }));
-  }, [shown]);
+  }, [shown, tri]);
 
   const is = (f: Filtre) => filtre.kind === f.kind && (f.kind !== "cat" || (filtre.kind === "cat" && filtre.name === f.name));
 
@@ -333,18 +340,20 @@ function IndexInner() {
                 </select>
               </label>
             </div>
-            {tri === "fournisseur" ? (
+            {tri === "fournisseur" || tri === "famille" ? (
               <div className="flex flex-col gap-8">
-                {parFournisseur.map((g) => (
+                {groupes.map((g) => (
                   <section key={g.nom} aria-label={g.nom}>
+                    {!(tri === "famille" && groupes.length === 1) && (
                     <div className="mb-3 flex items-center gap-3">
-                      <h2 className="text-sm font-bold uppercase tracking-[0.06em] text-foreground">{g.nom}</h2>
+                      <h2 className={`${tri === "famille" ? "famille" : "text-foreground"} text-sm font-bold uppercase tracking-[0.06em]`} style={tri === "famille" ? ({ "--fam-l": couleurFamille(g.nom).clair, "--fam-d": couleurFamille(g.nom).sombre } as CSSProperties) : undefined}>{g.nom}</h2>
                       <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"><span className="num">{g.fiches.length}</span> fiche{g.fiches.length > 1 ? "s" : ""}</span>
                       <div className="h-px flex-1 bg-border" aria-hidden="true" />
                     </div>
+                    )}
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                       {g.fiches.map((p) => (
-                        <ProductCard key={p.id} colorerFamille={filtre.kind !== "cat"} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
+                        <ProductCard key={p.id} colorerFamille={filtre.kind !== "cat" && tri !== "famille"} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
                       ))}
                     </div>
                   </section>
@@ -353,7 +362,7 @@ function IndexInner() {
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {shown.map((p) => (
-                  <ProductCard key={p.id} colorerFamille={filtre.kind !== "cat"} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
+                  <ProductCard key={p.id} colorerFamille={filtre.kind !== "cat" && tri !== "famille"} product={p} loggedIn={approved} favorite={favorites.has(p.id)} onToggleFavorite={toggleFavorite} onOpenPdf={ouvrirPdf} accessId={accessParFournisseur.get(p.supplier) ?? null} onEdit={approved && !offlineSince ? modifier : undefined} onDelete={approved && !offlineSince ? supprimer : undefined} />
                 ))}
               </div>
             )}

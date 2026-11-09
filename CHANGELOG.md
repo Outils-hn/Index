@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.26 — 9 novembre 2026
+
+- Nouveauté : la bibliothèque s'ouvre maintenant triée « Par famille » (une section par famille, avec son nom en couleur) ; « Par fournisseur » reste disponible dans le menu « Trier ».
+
 ## 2.25 — 9 novembre 2026
 
 - Nouveauté : la bibliothèque se trie aussi « Par fournisseur » (une section par fournisseur avec le nombre de fiches) ; dans la vue « Toutes », le nom de la famille et son icône sont en couleur ; le bouton « Ouvrir la fiche » est plus doux (violet clair au lieu du noir) ; le damier est retiré.
