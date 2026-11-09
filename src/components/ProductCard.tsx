@@ -1,3 +1,4 @@
+import { couleurFamille } from "@/lib/famille-couleur";
 import { ACCESS_URL } from "@/lib/access";
 import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, Pencil, Star, Trash2, TriangleAlert } from "lucide-react";
 import { lazy, memo, Suspense, useEffect, useState } from "react";
@@ -119,7 +120,8 @@ export const ProductCard = memo(function ProductCard({
   useEffect(() => { if (autoOpen && product.pdf_path) open(); }, [autoOpen, product.id]);
 
   return (
-    <article className={`flex h-full flex-col gap-3 rounded-lg border bg-card p-4 transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
+    <article className={`relative flex h-full flex-col gap-3 overflow-hidden rounded-lg border bg-card p-4 pt-5 transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
+      <div className="absolute inset-x-0 top-0 h-[5px]" style={{ background: couleurFamille(product.category) }} aria-hidden="true" />
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--app-ink)]">

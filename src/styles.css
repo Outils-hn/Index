@@ -255,3 +255,11 @@ body { border-top: 3px solid var(--app); }
   footer a, footer button { position: relative; }
   footer a::after, footer button::after { content: ""; position: absolute; inset: -14px -8px; }
 }
+
+/* Cartes en damier : une carte sur deux est un peu plus claire (en sombre) ou plus grise (en clair), quel que soit le nombre de colonnes (1, 2 ou 3) */
+.damier > article { --teinte: color-mix(in oklab, var(--card), var(--foreground) 5%); }
+.damier > article:nth-child(even) { background-color: var(--teinte); }
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .damier > article:nth-child(even) { background-color: var(--card); }
+  .damier > article:nth-child(4n + 2), .damier > article:nth-child(4n + 3) { background-color: var(--teinte); }
+}
