@@ -90,7 +90,8 @@ async function ctx({ gros = false, connecte = false, dark = false, valide = true
   page.on("dialog", (d) => { etat.natifs++; d.accept(); });
   return { c, page, etat, db };
 }
-const aller = async (page, chemin = "") => { await page.goto(BASE + chemin, { waitUntil: "networkidle" }); await page.waitForTimeout(600); };
+let triInitial = "";
+const aller = async (page, chemin = "") => { await page.goto(BASE + chemin, { waitUntil: "networkidle" }); await page.waitForTimeout(600); const t = page.getByLabel("Trier"); if (await t.count()) { triInitial = await t.inputValue(); await t.selectOption("defaut"); await page.waitForTimeout(200); } };
 const shot = (page, f, full = true) => page.screenshot({ path: `${OUT}/${f}.png`, fullPage: full });
 const step = async (nom, fn) => { try { await fn(); } catch (e) { verif(nom, false, e.message.split("\n")[0].slice(0, 180)); } };
 const axe = async (page, nom) => {
@@ -112,7 +113,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.25 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.26 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -125,6 +126,9 @@ await step("Bibliotheque", async () => {
   verif("Filtre « À vérifier » : 6 fiches", (await cartes(page)) === 6, `${await cartes(page)}`);
   await page.getByRole("button", { name: "Toutes" }).click();
   await axe(page, "bibliotheque");
+  await page.getByLabel("Trier").selectOption("famille"); await page.waitForTimeout(200);
+  verif("Tri par défaut « Par famille » : une section colorée par famille, aucune carte perdue", triInitial === "famille" && (await page.locator("section[aria-label] > div:first-child > h2.famille").count()) > 1 && (await page.locator("section[aria-label] article").count()) === (await page.locator("article").count()), `initial ${triInitial} · h2.famille ${await page.locator("section[aria-label] > div:first-child > h2.famille").count()} · cartes ${await page.locator("article").count()}`);
+  await page.getByLabel("Trier").selectOption("defaut"); await page.waitForTimeout(200);
   verif("Vue « Toutes » : chaque carte a le nom de sa famille en couleur", (await page.locator("article .famille[style*='--fam-l']").count()) === (await page.locator("article").count()) && (await page.locator("article").count()) > 0);
   await page.getByLabel("Trier").selectOption("fournisseur"); await page.waitForTimeout(300);
   const titres = await page.locator("section[aria-label] > div:first-child > h2").allInnerTexts();

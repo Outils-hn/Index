@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.26 — 9 novembre 2026
+
+- Nouveauté : les fiches ont un bandeau gris-bleu avec le nom du fournisseur en gras (et les boutons Comparer, lien, crayon, corbeille, étoile), un titre plus gros et plus d'espace entre les cartes ; la bibliothèque s'ouvre triée « Par famille » (une section par famille, nom en couleur), « Par fournisseur » reste dans le menu « Trier ».
+
 ## 2.25 — 9 novembre 2026
 
 - Nouveauté : la bibliothèque se trie aussi « Par fournisseur » (une section par fournisseur avec le nombre de fiches) ; dans la vue « Toutes », le nom de la famille et son icône sont en couleur ; le bouton « Ouvrir la fiche » est plus doux (violet clair au lieu du noir) ; le damier est retiré.
