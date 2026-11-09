@@ -127,7 +127,7 @@ await step("Bibliotheque", async () => {
   await axe(page, "bibliotheque");
   verif("Vue « Toutes » : chaque carte a le nom de sa famille en couleur", (await page.locator("article .famille[style*='--fam-l']").count()) === (await page.locator("article").count()) && (await page.locator("article").count()) > 0);
   await page.getByLabel("Trier").selectOption("fournisseur"); await page.waitForTimeout(300);
-  const titres = await page.locator("section[aria-label] h2").allInnerTexts();
+  const titres = await page.locator("section[aria-label] > div:first-child > h2").allInnerTexts();
   verif("Tri « Par fournisseur » : une section par fournisseur, dans l'ordre alphabétique", titres.length > 1 && JSON.stringify(titres.filter((t) => t !== "Sans fournisseur")) === JSON.stringify([...titres.filter((t) => t !== "Sans fournisseur")].sort((x, y) => x.localeCompare(y, "fr", { sensitivity: "base" }))), titres.join(" | "));
   verif("Tri « Par fournisseur » : toutes les cartes restent affichées", (await page.locator("section[aria-label] article").count()) === (await page.locator("article").count()));
   await axe(page, "bibliotheque-par-fournisseur");

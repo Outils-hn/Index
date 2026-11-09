@@ -232,7 +232,7 @@ export const ProductCard = memo(function ProductCard({
             type="button"
             onClick={open}
             disabled={!hasPdf && !hasUrl}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-index/25 bg-index-soft px-3 py-2.5 text-sm sm:py-1.5 font-medium text-index transition-colors hover:border-index/50 disabled:opacity-40"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-index/25 bg-index-soft px-3 py-2.5 text-sm sm:py-1.5 font-medium text-[var(--app-ink)] transition-colors hover:border-index/50 disabled:opacity-40"
           >
             {hasPdf ? "Ouvrir la fiche" : hasUrl ? "Voir sur le site" : "Aucune fiche"}
             {hasPdf ? <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> : <Globe className="h-3.5 w-3.5" aria-hidden="true" />}
