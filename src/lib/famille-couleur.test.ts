@@ -12,4 +12,8 @@ describe("couleur d'une famille", () => {
       expect(c.sombre).toMatch(/^#[0-9A-F]{6}$/i);
     }
   });
+  it("donne une couleur différente à chacune des familles actuelles", () => {
+    const familles = ["Cloisonnement", "Colles & Mastics", "Fixations & Chevilles", "Infos Diverses", "Isolants", "Maçonnerie", "Membranes & Étanchéité", "Profilés & Accessoires"];
+    expect(new Set(familles.map((f) => couleurFamille(f).clair)).size).toBe(familles.length);
+  });
 });
