@@ -208,7 +208,7 @@ function IndexInner() {
                 {toCheck > 0 && (
                   <>
                     {" · "}
-                    <button type="button" onClick={() => setFiltre({ kind: "check" })} className="inline-flex min-h-10 items-center text-warn underline-offset-2 hover:underline sm:min-h-0">
+                    <button type="button" onClick={() => setFiltre({ kind: "check" })} className="inline-flex min-h-10 items-center gap-1 text-warn underline-offset-2 hover:underline sm:min-h-0">
                       <span className="num">{num(toCheck)}</span> à vérifier
                     </button>
                   </>
@@ -233,7 +233,6 @@ function IndexInner() {
           </div>
           {!user && (
             <p className="text-xs text-muted-foreground">
-              Lecture seule ·{" "}
               <Link to="/auth" className="inline-flex min-h-10 items-center text-foreground underline underline-offset-2 sm:min-h-0">Se connecter</Link>{" "}
               pour ajouter des fiches
             </p>
