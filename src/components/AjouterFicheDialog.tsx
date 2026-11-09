@@ -1,3 +1,4 @@
+import { cheminPdf } from "@/lib/pdf-path";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -83,8 +84,7 @@ export function AjouterFicheDialog({ open, onOpenChange }: { open: boolean; onOp
       let pdf_path: string | null = null;
       let pdf_filename: string | null = null;
       if (file) {
-        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const path = `${category}/${Date.now()}-${safeName}`;
+        const path = cheminPdf(category, file.name);
         const upload = await supabase.storage
           .from("technical-sheets")
           .upload(path, file, { contentType: "application/pdf", upsert: false });
