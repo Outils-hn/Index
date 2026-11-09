@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.29 — 9 novembre 2026
+
+- Nouveauté : petites finitions. Le « 6 à vérifier » sous le titre a retrouvé son espace, la phrase « Lecture seule » n'est plus répétée pour un visiteur, une fiche sans PDF ni lien n'affiche plus de bouton grisé, et sur téléphone « Se connecter » devient une icône pour laisser la place à l'onglet « Bibliothèque ».
+
 ## 2.28 — 9 novembre 2026
 
 - Nouveauté : sur les cartes, « Comparer » est plus discret (bord seulement au survol ou une fois choisi), les mots-clés sont un peu plus grands et plus foncés, et le bandeau du fournisseur ressort mieux en mode sombre.

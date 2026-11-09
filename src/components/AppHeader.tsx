@@ -50,7 +50,7 @@ export function AppHeader() {
       ) : (
         <>
           <span className="bandeau-statut">Lecture seule</span>
-          <Link to="/auth" className="bandeau-btn"><LogIn /> Se connecter</Link>
+          <Link to="/auth" className="bandeau-btn" aria-label="Se connecter"><LogIn /> <span className="max-sm:hidden">Se connecter</span></Link>
         </>
       )}
       theme={<ThemeToggle />}

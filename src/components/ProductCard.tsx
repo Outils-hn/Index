@@ -233,15 +233,16 @@ export const ProductCard = memo(function ProductCard({
         )}
 
         <div className="flex gap-2 border-t border-border pt-3">
-          <button
-            type="button"
-            onClick={open}
-            disabled={!hasPdf && !hasUrl}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-foreground/25 bg-card px-3 py-2.5 text-sm sm:py-1.5 font-medium text-foreground transition-colors hover:border-foreground/50 hover:bg-muted disabled:opacity-40"
-          >
-            {hasPdf ? "Ouvrir la fiche" : hasUrl ? "Voir sur le site" : "Aucune fiche"}
-            {hasPdf ? <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> : <Globe className="h-3.5 w-3.5" aria-hidden="true" />}
-          </button>
+          {(hasPdf || hasUrl) && (
+            <button
+              type="button"
+              onClick={open}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-foreground/25 bg-card px-3 py-2.5 text-sm sm:py-1.5 font-medium text-foreground transition-colors hover:border-foreground/50 hover:bg-muted"
+            >
+              {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
+              {hasPdf ? <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> : <Globe className="h-3.5 w-3.5" aria-hidden="true" />}
+            </button>
+          )}
           {hasPdf && hasUrl && (
             <a
               href={product.url!}
