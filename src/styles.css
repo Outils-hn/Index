@@ -257,9 +257,12 @@ body { border-top: 3px solid var(--app); }
 }
 
 /* Cartes en damier : une carte sur deux est un peu plus claire (en sombre) ou plus grise (en clair), quel que soit le nombre de colonnes (1, 2 ou 3) */
-.damier > article { --teinte: color-mix(in oklab, var(--card), var(--foreground) 4%); }
+.damier > article { --teinte: color-mix(in oklab, var(--card), var(--foreground) 7%); }
 .damier > article:nth-child(even) { background-color: var(--teinte); }
 @media (min-width: 640px) and (max-width: 1023.98px) {
   .damier > article:nth-child(even) { background-color: var(--card); }
   .damier > article:nth-child(4n + 2), .damier > article:nth-child(4n + 3) { background-color: var(--teinte); }
 }
+.dark .damier > article { --teinte: color-mix(in oklab, var(--card), var(--foreground) 11%); }
+.famille { color: var(--fam-l); }
+.dark .famille { color: var(--fam-d); }

@@ -112,7 +112,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.24 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.25 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -127,7 +127,7 @@ await step("Bibliotheque", async () => {
   await axe(page, "bibliotheque");
   const fonds = await page.locator(".damier > article").evaluateAll((els) => els.slice(0, 2).map((e) => getComputedStyle(e).backgroundColor));
   verif("Cartes en damier : deux cartes voisines n'ont pas le même fond", fonds.length === 2 && fonds[0] !== fonds[1], JSON.stringify(fonds));
-  verif("Chaque carte a sa bande de famille", (await page.locator(".damier > article > div[aria-hidden='true'][style*='background']").count()) === (await page.locator(".damier > article").count()));
+  verif("Chaque carte a le nom de sa famille en couleur", (await page.locator(".damier > article .famille[style*='--fam-l']").count()) === (await page.locator(".damier > article").count()));
   await page.getByRole("button", { name: "Ouvrir la fiche" }).first().click(); await page.waitForTimeout(500);
   await shot(page, "03-apercu-pdf", false);
   await page.keyboard.press("Escape"); await page.waitForTimeout(300);

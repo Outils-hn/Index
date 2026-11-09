@@ -1,11 +1,13 @@
 /**
- * Couleur de la bande d'une carte selon sa famille. Toujours la même couleur pour la même famille
- * (calculée depuis le nom, rien à enregistrer) ; palette lisible en clair comme en sombre.
+ * Couleur d'une famille (nom et icone sur la carte). Toujours la meme pour la meme famille (calculee depuis le nom,
+ * rien a enregistrer). Deux jeux : un plus fonce pour le mode clair, un plus vif pour le mode sombre (texte lisible dans les deux).
  */
-const PALETTE = ["#8F7CFF", "#E8913A", "#2FA7A0", "#D9558C", "#4F8DF0", "#7DB544", "#C9A227", "#C26A4A"];
+const CLAIR = ["#5B45E0", "#A04E00", "#0F7C76", "#C02A6B", "#2F66D0", "#4C7F1E", "#8A6A00", "#B04A28"];
+const SOMBRE = ["#B3A7FF", "#F2A860", "#4FD1C5", "#F58AB6", "#8DB4FF", "#9BD36A", "#E6C65A", "#E89A7E"];
 
-export function couleurFamille(famille: string): string {
+export function couleurFamille(famille: string): { clair: string; sombre: string } {
   let h = 0;
   for (const c of famille.trim().toLowerCase()) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return PALETTE[h % PALETTE.length];
+  const i = h % CLAIR.length;
+  return { clair: CLAIR[i], sombre: SOMBRE[i] };
 }
