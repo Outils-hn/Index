@@ -125,7 +125,7 @@ await step("Bibliotheque", async () => {
   verif("Filtre « À vérifier » : 6 fiches", (await cartes(page)) === 6, `${await cartes(page)}`);
   await page.getByRole("button", { name: "Toutes" }).click();
   await axe(page, "bibliotheque");
-  verif("Tri par défaut « Par famille » : une section colorée par famille, aucune carte perdue", (await page.getByLabel("Trier").inputValue()) === "famille" && (await page.locator("section[aria-label] > div:first-child > h2.famille").count()) > 1 && (await page.locator("section[aria-label] article").count()) === (await page.locator("article").count()));
+  verif("Tri par défaut « Par famille » : une section colorée par famille, aucune carte perdue", (await page.getByLabel("Trier").inputValue()) === "famille" && (await page.locator("section[aria-label] > div:first-child > h2.famille").count()) > 1 && (await page.locator("section[aria-label] article").count()) === (await page.locator("article").count()), `${await page.getByLabel("Trier").inputValue()} · h2.famille ${await page.locator("section[aria-label] > div:first-child > h2.famille").count()} · sections ${await page.locator("section[aria-label]").count()} · cartes ${await page.locator("article").count()}`);
   await page.getByLabel("Trier").selectOption("defaut"); await page.waitForTimeout(200);
   verif("Vue « Toutes » : chaque carte a le nom de sa famille en couleur", (await page.locator("article .famille[style*='--fam-l']").count()) === (await page.locator("article").count()) && (await page.locator("article").count()) > 0);
   await page.getByLabel("Trier").selectOption("fournisseur"); await page.waitForTimeout(300);
