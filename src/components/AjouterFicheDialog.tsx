@@ -146,7 +146,7 @@ export function AjouterFicheDialog({ open, onOpenChange }: { open: boolean; onOp
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+              <div className="min-w-0 space-y-2">
                 <Label>Fournisseur *</Label>
                 <div className="flex gap-2">
                   <Select value={supplier} onValueChange={setSupplier}>

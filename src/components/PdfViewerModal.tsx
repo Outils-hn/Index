@@ -50,7 +50,7 @@ export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename
           onPointerDownOutside={(e) => { if ((e.target as HTMLElement | null)?.closest?.("[role=dialog]")) return; onClose(); }}
         >
           {/* Barre supérieure */}
-          <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card shrink-0">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-3 border-b border-border bg-card shrink-0">
             {(onPrev || onNext) && (
               <div className="flex shrink-0 items-center gap-1" role="group" aria-label="Parcourir les fiches">
                 <button type="button" onClick={onPrev} disabled={!onPrev} aria-label="Fiche précédente" className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-40">
@@ -62,7 +62,7 @@ export function PdfViewerModal({ open, onClose, productName, pdfUrl, pdfFilename
                 </button>
               </div>
             )}
-            <h2 className="min-w-0 flex-1 text-base font-semibold text-foreground truncate leading-tight" title={productName}>
+            <h2 className="min-w-0 flex-1 text-base font-semibold text-foreground truncate leading-tight max-sm:order-last max-sm:basis-full max-sm:whitespace-normal max-sm:line-clamp-2" title={productName}>
               {productName}
             </h2>
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">

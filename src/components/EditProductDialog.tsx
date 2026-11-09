@@ -175,11 +175,11 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="min-w-0 space-y-2">
               <Label>Fournisseur *</Label>
               <div className="flex gap-2">
                 <Select value={supplier} onValueChange={setSupplier}>
-                  <SelectTrigger className="flex-1" aria-label="Fournisseur"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                  <SelectTrigger className="min-w-0 flex-1" aria-label="Fournisseur"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                   <SelectContent>
                     {suppliers.map((s) => (
                       <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
@@ -191,11 +191,11 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
                 </Button>
               </div>
             </div>
-            <div className="space-y-2">
+            <div className="min-w-0 space-y-2">
               <Label>Catégorie *</Label>
               <div className="flex gap-2">
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="flex-1" aria-label="Catégorie"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                  <SelectTrigger className="min-w-0 flex-1" aria-label="Catégorie"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (
                       <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
@@ -283,7 +283,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
                           : "Aucun PDF"}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {removePdf ? "Suppression en attente" : "PDF actuel"}
+                      {removePdf ? "Suppression en attente" : product?.pdf_path ? "PDF actuel" : "Ajoutez-en un ci-dessous"}
                     </div>
                   </div>
                   {product?.pdf_path && !removePdf && (
