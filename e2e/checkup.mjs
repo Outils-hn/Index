@@ -113,7 +113,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.26 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.27 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -172,7 +172,7 @@ await step("Telephone", async () => {
   await page.evaluate(() => { document.activeElement?.blur(); document.body.setAttribute("tabindex", "-1"); document.body.focus(); });
   await page.keyboard.press("Tab");
   verif("Lien d'evitement « Aller a la recherche » au premier Tab", await page.evaluate(() => document.activeElement?.textContent === "Aller à la recherche"));
-  await page.locator("article").first().getByRole("button", { name: /Copier le lien/ }).click(); await page.waitForTimeout(300);
+  await page.locator("article").first().getByRole("button", { name: /Plus d.actions/ }).click(); await page.getByRole("menuitem", { name: "Copier le lien" }).click(); await page.waitForTimeout(300);
   verif("Copie du lien d'une fiche", await page.getByText("Lien copié").isVisible());
   await page.locator("article").first().getByRole("button", { name: /vérifiée le/ }).click();
   verif("Explication de la mention de fraicheur", await page.getByText("vérifiée il y a moins de 12 mois").first().isVisible());
@@ -210,7 +210,7 @@ await step("Telephone : fenetres avec noms longs", async () => {
   await fenetre("Fiches a relire");
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   await aller(page);
-  await page.getByRole("button", { name: new RegExp("^Mettre " + LONG.slice(0, 20)) }).first().click();
+  await page.getByRole("button", { name: new RegExp("^Plus d.actions pour " + LONG.slice(0, 20)) }).first().click(); await page.getByRole("menuitem", { name: "Mettre à la corbeille" }).click();
   await fenetre("Supprimer fiche nom long");
   await c.close();
 });
@@ -436,7 +436,7 @@ await step("Bibliotheque : ajout, corbeille", async () => {
   verif("Ajouter une fiche : fenetre ouverte sur la bibliotheque", await page.getByRole("dialog").getByText("Enregistrer le produit").isVisible());
   await shot(page, "07b-ajout", false);
   await page.keyboard.press("Escape"); await page.waitForTimeout(400);
-  await page.getByRole("button", { name: "Mettre Sikaflex-11 FC+ à la corbeille" }).click(); await page.waitForTimeout(300);
+  await page.getByRole("button", { name: "Plus d'actions pour Sikaflex-11 FC+" }).click(); await page.getByRole("menuitem", { name: "Mettre à la corbeille" }).click(); await page.waitForTimeout(300);
   const fen = page.getByRole("alertdialog");
   verif("Supprimer : fenetre Épure", await fen.getByText(/corbeille/).first().isVisible());
   await shot(page, "08-supprimer", false);

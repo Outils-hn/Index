@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.27 — 9 novembre 2026
+
+- Nouveauté : cartes allégées. Le nom de la famille n'est plus répété sur chaque carte quand le titre de la section le dit déjà, lien et corbeille passent dans un menu « ⋯ », le bouton « Ouvrir la fiche » est blanc à bord gris (plus de violet), le fournisseur est un peu moins appuyé, le titre plus grand, et chaque famille a maintenant une couleur différente.
+
 ## 2.26 — 9 novembre 2026
 
 - Nouveauté : les fiches ont un bandeau gris-bleu avec le nom du fournisseur en gras (et les boutons Comparer, lien, crayon, corbeille, étoile), un titre plus gros et plus d'espace entre les cartes ; la bibliothèque s'ouvre triée « Par famille » (une section par famille, nom en couleur), « Par fournisseur » reste dans le menu « Trier ».

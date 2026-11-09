@@ -1,6 +1,7 @@
 import { couleurFamille } from "@/lib/famille-couleur";
 import { ACCESS_URL } from "@/lib/access";
-import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, Pencil, Star, Trash2, TriangleAlert } from "lucide-react";
+import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, MoreHorizontal, Pencil, Scale, Star, Trash2, TriangleAlert } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { lazy, memo, Suspense, useEffect, useState, type CSSProperties } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -51,7 +52,7 @@ export const fmtDate = (d: string) =>
  * que les cartes qui changent.
  */
 export const ProductCard = memo(function ProductCard({
-  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId, onEdit, onDelete, colorerFamille = false,
+  product, loggedIn, favorite, onToggleFavorite, autoOpen = false, onOpenPdf, accessId, onEdit, onDelete, colorerFamille = false, masquerFamille = false,
 }: {
   product: Product;
   loggedIn: boolean;
@@ -69,6 +70,8 @@ export const ProductCard = memo(function ProductCard({
   onDelete?: (p: Product) => void;
   /** Nom et icone de la famille en couleur (utile seulement quand la liste melange plusieurs familles). */
   colorerFamille?: boolean;
+  /** Cache le nom de la famille quand le titre de la section (ou le filtre) la donne deja. */
+  masquerFamille?: boolean;
 }) {
   const CategoryIcon = getCategoryIcon(product.category, product.category_icon);
   const fam = couleurFamille(product.category);
@@ -125,7 +128,7 @@ export const ProductCard = memo(function ProductCard({
   return (
     <article className={`flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
       <div className="bandeau-fournisseur flex items-center justify-between gap-2 px-4 py-1.5">
-        <p className="min-w-0 truncate text-sm font-bold uppercase tracking-[0.06em]">
+        <p className="min-w-0 truncate text-sm font-semibold uppercase tracking-[0.06em]">
             {accessId ? (
               <a
                 href={`${ACCESS_URL}/?fournisseur=${encodeURIComponent(accessId)}`}
@@ -144,18 +147,10 @@ export const ProductCard = memo(function ProductCard({
             onClick={() => toggle(product)}
             aria-pressed={selected}
             title="Ajouter à la comparaison"
-            className={`rounded-md border px-2.5 py-2.5 text-[11px] font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-border text-muted-foreground hover:text-foreground"}`}
+            className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-2.5 text-xs font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-foreground/25 bg-card text-foreground hover:border-foreground/50"}`}
           >
+            <Scale className="h-3.5 w-3.5" aria-hidden="true" />
             {selected ? "Comparée" : "Comparer"}
-          </button>
-          <button
-            type="button"
-            onClick={copierLien}
-            aria-label={`Copier le lien de ${product.name}`}
-            title="Copier le lien de la fiche"
-            className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
-          >
-            <Link2 className="h-4 w-4" />
           </button>
           {onEdit && (
             <button
@@ -163,20 +158,9 @@ export const ProductCard = memo(function ProductCard({
               onClick={() => onEdit(product)}
               aria-label={`Modifier ${product.name}`}
               title="Modifier la fiche"
-              className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground sm:h-7 sm:w-7"
+              className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-foreground/80 transition-colors hover:text-foreground sm:h-7 sm:w-7"
             >
               <Pencil className="h-4 w-4" />
-            </button>
-          )}
-          {onDelete && (
-            <button
-              type="button"
-              onClick={() => onDelete(product)}
-              aria-label={`Mettre ${product.name} à la corbeille`}
-              title="Mettre à la corbeille"
-              className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-destructive sm:h-7 sm:w-7"
-            >
-              <Trash2 className="h-4 w-4" />
             </button>
           )}
           <button
@@ -185,19 +169,39 @@ export const ProductCard = memo(function ProductCard({
             aria-pressed={favorite}
             aria-label={favorite ? `Retirer ${product.name} des favoris` : `Ajouter ${product.name} aux favoris`}
             title={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-            className={`inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-muted-foreground hover:text-foreground"}`}
+            className={`inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-foreground/80 hover:text-foreground"}`}
           >
             <Star className="h-4 w-4" fill={favorite ? "currentColor" : "none"} />
           </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                aria-label={`Plus d'actions pour ${product.name}`}
+                title="Plus d'actions"
+                className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-foreground/80 transition-colors hover:text-foreground sm:h-7 sm:w-7"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={copierLien}><Link2 className="mr-2 h-4 w-4" aria-hidden="true" />Copier le lien</DropdownMenuItem>
+              {onDelete && (
+                <DropdownMenuItem onSelect={() => onDelete(product)} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />Mettre à la corbeille</DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div>
-          <div className={`${colorerFamille ? "famille" : "text-[var(--app-ink)]"} mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em]`} style={colorerFamille ? ({ "--fam-l": fam.clair, "--fam-d": fam.sombre } as CSSProperties) : undefined}>
-            <CategoryIcon className="h-3 w-3" aria-hidden="true" />
-            {product.category}
-          </div>
-          <h2 className="text-lg font-bold leading-snug text-foreground">{product.name}</h2>
+          {!masquerFamille && (
+            <div className={`${colorerFamille ? "famille" : "text-[var(--app-ink)]"} mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em]`} style={colorerFamille ? ({ "--fam-l": fam.clair, "--fam-d": fam.sombre } as CSSProperties) : undefined}>
+              <CategoryIcon className="h-3 w-3" aria-hidden="true" />
+              {product.category}
+            </div>
+          )}
+          <h2 className="text-xl font-bold leading-snug text-foreground">{product.name}</h2>
         </div>
 
       {product.tags.length > 0 && (
@@ -233,7 +237,7 @@ export const ProductCard = memo(function ProductCard({
             type="button"
             onClick={open}
             disabled={!hasPdf && !hasUrl}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-index/25 bg-index-soft px-3 py-2.5 text-sm sm:py-1.5 font-medium text-[var(--app-ink)] transition-colors hover:border-index/50 disabled:opacity-40"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-foreground/25 bg-card px-3 py-2.5 text-sm sm:py-1.5 font-medium text-foreground transition-colors hover:border-foreground/50 hover:bg-muted disabled:opacity-40"
           >
             {hasPdf ? "Ouvrir la fiche" : hasUrl ? "Voir sur le site" : "Aucune fiche"}
             {hasPdf ? <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> : <Globe className="h-3.5 w-3.5" aria-hidden="true" />}
