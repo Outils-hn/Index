@@ -243,7 +243,6 @@ function IndexInner() {
           <div role="status" className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-border bg-card px-4 py-3 text-sm">
             <p className="min-w-0 flex-1 text-foreground">
               <span className="num">{num(Math.min(nbARelire, DOSE_DU_MOIS - faitesCeMois))}</span> fiche{Math.min(nbARelire, DOSE_DU_MOIS - faitesCeMois) > 1 ? "s" : ""} à relire ce mois-ci
-              <span className="text-muted-foreground"> · fait : <span className="num">{faitesCeMois}</span>/{DOSE_DU_MOIS}</span>
             </p>
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setRelireOuvert(true)} className="inline-flex min-h-10 items-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:opacity-90 sm:min-h-8">Relire maintenant</button>

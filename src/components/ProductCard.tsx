@@ -232,29 +232,31 @@ export const ProductCard = memo(function ProductCard({
           </div>
         )}
 
-        <div className="flex gap-2 border-t border-border pt-3">
-          {(hasPdf || hasUrl) && (
-            <button
-              type="button"
-              onClick={open}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-foreground/25 bg-card px-3 py-2.5 text-sm sm:py-1.5 font-medium text-foreground transition-colors hover:border-foreground/50 hover:bg-muted"
-            >
-              {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
-              {hasPdf ? <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> : <Globe className="h-3.5 w-3.5" aria-hidden="true" />}
-            </button>
-          )}
-          {hasPdf && hasUrl && (
-            <a
-              href={product.url!}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2.5 text-sm sm:py-1.5 text-foreground transition-colors hover:bg-muted"
-            >
-              <Globe className="h-3.5 w-3.5" aria-hidden="true" />
-              Site
-            </a>
-          )}
-        </div>
+        {(hasPdf || hasUrl) && (
+          <div className="flex gap-2 border-t border-border pt-3">
+            {(hasPdf || hasUrl) && (
+              <button
+                type="button"
+                onClick={open}
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-foreground/25 bg-card px-3 py-2.5 text-sm sm:py-1.5 font-medium text-foreground transition-colors hover:border-foreground/50 hover:bg-muted"
+              >
+                {hasPdf ? "Ouvrir la fiche" : "Voir sur le site"}
+                {hasPdf ? <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> : <Globe className="h-3.5 w-3.5" aria-hidden="true" />}
+              </button>
+            )}
+            {hasPdf && hasUrl && (
+              <a
+                href={product.url!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2.5 text-sm sm:py-1.5 text-foreground transition-colors hover:bg-muted"
+              >
+                <Globe className="h-3.5 w-3.5" aria-hidden="true" />
+                Site
+              </a>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center gap-2 text-[11px]">
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${DOT[v]}`} aria-hidden="true" />

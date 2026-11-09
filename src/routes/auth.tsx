@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,7 @@ function AuthPage() {
   const { user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [mode, setMode] = useState<"signin" | "signup" | "reset">("signin");
@@ -137,11 +138,16 @@ function AuthPage() {
             {mode !== "reset" && (
             <div className="space-y-2">
                 <Label htmlFor="password">Mot de passe</Label>
-                <Input id="password" type="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <div className="relative">
+                  <Input id="password" type={showPwd ? "text" : "password"} className="pr-11" autoComplete={mode === "signin" ? "current-password" : "new-password"} required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <button type="button" onClick={() => setShowPwd((v) => !v)} aria-pressed={showPwd} aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"} title={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"} className="absolute right-0 top-0 inline-flex h-10 w-10 items-center justify-center text-muted-foreground hover:text-foreground">
+                    {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
             )}
             {mode === "signin" && (
-              <button type="button" onClick={() => setMode("reset")} className="-mt-2 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">
+              <button type="button" onClick={() => setMode("reset")} className="-mt-2 inline-flex min-h-10 items-center self-start text-sm text-foreground/80 underline underline-offset-2 hover:text-foreground sm:min-h-0">
                 Mot de passe oublié ?
               </button>
             )}
