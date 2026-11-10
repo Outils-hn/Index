@@ -113,7 +113,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.31 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.32 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -459,6 +459,10 @@ await step("Bibliotheque : ajout, corbeille", async () => {
   await aller(page, "config");
   await shot(page, "10-config");
   await axe(page, "config");
+  verif("Listes : nombre de fiches affiché sur chaque ligne", (await page.getByText(/^\d+ fiches?$/).count()) > 0);
+  await page.getByRole("button", { name: /^Supprimer Sika/ }).first().click();
+  verif("Listes : la confirmation de suppression indique le nombre de fiches", await page.getByRole("alertdialog").getByText(/fiches? (utilisent|utilise) cette valeur/).isVisible());
+  await page.getByRole("button", { name: "Annuler" }).click();
   verif("Configuration : plus de section Comptes ni Historique, lien vers le Tableau de bord de l'Accueil",
     !(await page.getByRole("heading", { name: "Comptes" }).count()) && !(await page.getByRole("heading", { name: "Historique" }).count())
     && (await page.getByRole("link", { name: /Tableau de bord/ }).getAttribute("href")) === "https://outils-hn.github.io/#tableau");
