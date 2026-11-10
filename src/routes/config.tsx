@@ -101,7 +101,7 @@ function ConfigPage() {
             <CategoriesPanel />
             <ProjectsPanel />
           </div>
-          <SuppliersPanel />
+          <div className="lg:relative lg:min-h-[28rem]"><div className="lg:absolute lg:inset-0"><SuppliersPanel /></div></div>
         </div>
 
         <p className="mt-8 rounded-lg border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
@@ -122,8 +122,8 @@ function ConfigPage() {
 
 const SEUIL_RECHERCHE = 8;
 
-function Cadre<T extends { id: string }>({ titre, icone, items, loading, vide, onAjouter, texte, ligne, label }: {
-  titre: string; icone: React.ReactNode; items: T[]; loading: boolean; vide: string; onAjouter: () => void;
+function Cadre<T extends { id: string }>({ etire, titre, icone, items, loading, vide, onAjouter, texte, ligne, label }: {
+  etire?: boolean; titre: string; icone: React.ReactNode; items: T[]; loading: boolean; vide: string; onAjouter: () => void;
   texte: (it: T) => string; ligne: (it: T) => React.ReactNode; label: string;
 }) {
   const [q, setQ] = useState("");
@@ -133,8 +133,8 @@ function Cadre<T extends { id: string }>({ titre, icone, items, loading, vide, o
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, q]);
   return (
-    <section>
-      <div className="rounded-lg border border-border bg-card overflow-hidden">
+    <section className={etire ? "lg:h-full" : undefined}>
+      <div className={"rounded-lg border border-border bg-card overflow-hidden" + (etire ? " lg:flex lg:h-full lg:flex-col" : "")}>
         <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border">
           <h2 className="flex items-center gap-2 font-semibold">
             {icone}
@@ -162,7 +162,7 @@ function Cadre<T extends { id: string }>({ titre, icone, items, loading, vide, o
         ) : visibles.length === 0 ? (
           <div className="px-5 py-8 text-center text-sm text-muted-foreground">Aucun résultat pour « {q} ».</div>
         ) : (
-          <ul className="max-h-[26rem] divide-y divide-border overflow-y-auto">{visibles.map((it) => <li key={it.id}>{ligne(it)}</li>)}</ul>
+          <ul className={"max-h-[26rem] divide-y divide-border overflow-y-auto" + (etire ? " lg:max-h-none lg:min-h-0 lg:flex-1" : "")}>{visibles.map((it) => <li key={it.id}>{ligne(it)}</li>)}</ul>
         )}
       </div>
     </section>
@@ -236,7 +236,7 @@ function SuppliersPanel() {
   });
   return (
     <>
-      <Cadre titre="Fournisseurs" icone={<Building2 className="h-4 w-4" />} items={items} loading={isLoading} vide="Aucune entrée pour le moment."
+      <Cadre etire titre="Fournisseurs" icone={<Building2 className="h-4 w-4" />} items={items} loading={isLoading} vide="Aucune entrée pour le moment."
         onAjouter={() => setAjout(true)} texte={(i) => i.name} label="Filtrer les fournisseurs"
         ligne={(it) => (
           <Ligne affichage={it.name} usage={usage ? usage.suppliers[it.name] ?? 0 : undefined} nomAccessible={it.name}
