@@ -9,6 +9,7 @@ import { SelecteurApplis } from "@/components/famille/SelecteurApplis";
 import { IndexMark } from "@/components/famille/IndexMark";
 import { MonCompte } from "@/components/famille/MonCompte";
 import { Bandeau } from "@/components/famille/Bandeau";
+import { nomAffiche } from "@/lib/nom-affiche";
 
 /** En-tete : bandeau commun de la famille (logo + selecteur, onglets, compte, theme). */
 export function AppHeader() {
@@ -43,7 +44,7 @@ export function AppHeader() {
           {!approved && (
             <span className="bandeau-statut" title="Un administrateur doit valider ce compte avant qu'il puisse modifier des fiches">En attente de validation</span>
           )}
-          <button onClick={() => setCompteOuvert(true)} className="bandeau-statut ouvert" title="Mon compte : changer d'adresse email">{user.email}</button>
+          <button onClick={() => setCompteOuvert(true)} className="bandeau-statut ouvert" title="Mon compte : changer d'adresse email">{nomAffiche(user) || user.email}</button>
           <MonCompte email={user.email ?? ""} open={compteOuvert} onOpenChange={setCompteOuvert} />
           <button onClick={logout} className="bandeau-btn"><LogOut /> Déconnexion</button>
         </>
