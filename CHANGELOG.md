@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.31 — 10 novembre 2026
+
+- Nouveauté : dans le menu ⋯ d'une fiche, « Noter dans Check » ouvre Check avec une note déjà rédigée (produit, fournisseur, lien de la fiche).
+
 ## 2.30 — 9 novembre 2026
 
 - Nouveauté : finitions après une revue complète. Le nom de la fiche reste lisible dans le lecteur PDF sur téléphone, le bouton « + » de la fenêtre « Modifier » ne déborde plus, le texte « Aucun PDF » est clair, la ligne « à relire » du haut est plus courte, l'écran de connexion a un œil pour voir le mot de passe, et l'onglet « Listes » est visible aussi pour un compte en attente.

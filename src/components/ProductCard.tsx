@@ -1,6 +1,6 @@
 import { couleurFamille } from "@/lib/famille-couleur";
 import { ACCESS_URL } from "@/lib/access";
-import { ExternalLink, Globe, Link2, MapPin, Check, Loader2, MoreHorizontal, Pencil, Scale, Star, Trash2, TriangleAlert } from "lucide-react";
+import { ExternalLink, Globe, Link2, NotebookPen, MapPin, Check, Loader2, MoreHorizontal, Pencil, Scale, Star, Trash2, TriangleAlert } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { lazy, memo, Suspense, useEffect, useState, type CSSProperties } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -104,6 +104,12 @@ export const ProductCard = memo(function ProductCard({
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur lors de la vérification"),
   });
 
+  /** Ouvre Check avec une note deja redigee : produit, fournisseur et lien de la fiche. */
+  const noterDansCheck = () => {
+    const lien = `${window.location.origin}${window.location.pathname}?fiche=${product.id}`;
+    const texte = `${product.name}${product.supplier ? ` (${product.supplier})` : ""} : ${lien}`;
+    window.open(`https://outils-hn.github.io/Check/?noter=${encodeURIComponent(texte)}`, "_blank", "noopener,noreferrer");
+  };
   const copierLien = async () => {
     const url = `${window.location.origin}${window.location.pathname}?fiche=${product.id}`;
     try { await navigator.clipboard.writeText(url); toast.success("Lien copié", { id: "lien" }); }
@@ -185,6 +191,7 @@ export const ProductCard = memo(function ProductCard({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={noterDansCheck}><NotebookPen className="mr-2 h-4 w-4" aria-hidden="true" />Noter dans Check</DropdownMenuItem>
               <DropdownMenuItem onSelect={copierLien}><Link2 className="mr-2 h-4 w-4" aria-hidden="true" />Copier le lien</DropdownMenuItem>
               {onDelete && (
                 <DropdownMenuItem onSelect={() => onDelete(product)} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />Mettre à la corbeille</DropdownMenuItem>
