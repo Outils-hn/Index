@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.32 — 10 novembre 2026
+
+- Nouveauté : sur la page Listes, chaque catégorie, fournisseur et chantier indique combien de fiches l'utilisent, et la confirmation de suppression le rappelle. Un champ « Filtrer » apparaît dans les longues listes, qui défilent maintenant dans leur cadre (le bouton Ajouter reste toujours visible). Les chantiers passent sous les catégories pour équilibrer la page.
+
 ## 2.31 — 10 novembre 2026
 
 - Nouveauté : dans le menu ⋯ d'une fiche, « Noter dans Check » ouvre Check avec une note déjà rédigée (produit, fournisseur, lien de la fiche).
