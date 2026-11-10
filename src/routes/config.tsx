@@ -96,7 +96,7 @@ function ConfigPage() {
           <p className="text-muted-foreground mt-1.5 text-sm">Gérez les listes utilisées dans toute l'application.</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 lg:items-stretch">
           <div className="space-y-8">
             <CategoriesPanel />
             <ProjectsPanel />
