@@ -30,6 +30,11 @@ export interface Product {
   verified_at?: string | null;
   /** Mise a la corbeille (2.0) : la fiche reste restaurable 30 jours. */
   deleted_at?: string | null;
+  /** Validation par le concepteur (2.45) : « en_attente » = fiche visible seulement par son auteur et le concepteur. */
+  statut?: string | null;
+  /** Nouveau PDF propose, en attente de validation (le PDF actuel reste affiche d'ici la). */
+  pdf_attente_path?: string | null;
+  pdf_attente_filename?: string | null;
   created_at?: string;
   created_by: string | null;
   author?: {
@@ -285,6 +290,14 @@ export const ProductCard = memo(function ProductCard({
           )}
         </div>
       </div>
+
+      {(product.statut === "en_attente" || product.pdf_attente_path) && (
+        <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-700 dark:text-amber-400">
+          {product.statut === "en_attente"
+            ? "En attente de validation : visible par l'équipe une fois validée par le concepteur."
+            : "Nouveau PDF en attente de validation : le PDF actuel reste affiché d'ici là."}
+        </p>
+      )}
 
       {aide && (
         <p className="-mt-1 text-[11px] leading-relaxed text-muted-foreground">

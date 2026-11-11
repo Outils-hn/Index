@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, useConcepteur } from "@/hooks/use-auth";
 import { fetchCategories, fetchSuppliers, createCategory, createSupplier } from "@/lib/taxonomies";
 import { QuickAddDialog } from "@/components/QuickAddDialog";
 import { ProjectsMultiSelect } from "@/components/ProjectsMultiSelect";
@@ -23,6 +23,7 @@ const MAX_SIZE = 5 * 1024 * 1024;
 export function AjouterFicheDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const qc = useQueryClient();
   const { user } = useAuth();
+  const concepteur = useConcepteur(user);
   const [name, setName] = useState("");
   const [supplier, setSupplier] = useState<string>("");
   const [category, setCategory] = useState<string>("");
@@ -118,7 +119,7 @@ export function AjouterFicheDialog({ open, onOpenChange }: { open: boolean; onOp
       }
     },
     onSuccess: () => {
-      toast.success("Fiche ajoutée.");
+      toast.success(concepteur ? "Fiche ajoutée." : "Fiche envoyée : elle sera visible par l'équipe après validation par le concepteur.");
       reset();
       onOpenChange(false);
       qc.invalidateQueries({ queryKey: ["products"] });
@@ -237,6 +238,7 @@ export function AjouterFicheDialog({ open, onOpenChange }: { open: boolean; onOp
 
             <div className="space-y-2">
               <Label>Fiche technique (PDF, max 5 Mo)</Label>
+              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">Uniquement des fiches techniques publiques de fournisseurs : jamais de plans, de documents de chantier ni de documents internes. Chaque PDF est vérifié par le concepteur avant d'être visible par l'équipe.</p>
               <p className="text-xs text-muted-foreground -mt-1">
                 Facultatif si une URL produit est renseignée.
               </p>
