@@ -112,9 +112,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
       let pdf_filename = product.pdf_filename;
 
       if (removePdf && !newFile) {
-        if (product.pdf_path) {
-          await supabase.storage.from("technical-sheets").remove([product.pdf_path]);
-        }
+        // Le fichier reste dans le stockage : « Annuler » dans l'historique de l'Accueil doit pouvoir le retrouver.
         pdf_path = null;
         pdf_filename = null;
       } else if (newFile) {
@@ -123,9 +121,9 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
           .from("technical-sheets")
           .upload(path, newFile, { contentType: "application/pdf", upsert: false });
         if (upload.error) throw upload.error;
-        // Ancien fichier : supprime tout de suite seulement s'il est remplace directement (concepteur, ou fiche pas encore validee).
-        // Sinon il reste affiche jusqu'a la validation ; seul un PDF deja en attente (remplace par celui-ci) est retire.
-        const aRetirer = pdfEnValidation ? product.pdf_attente_path : product.pdf_path;
+        // Seul un PDF deja en attente (remplace par celui-ci) est retire. L'ancien fichier reste dans le stockage
+        // (affiche jusqu'a la validation, ou retrouvable par « Annuler » dans l'historique).
+        const aRetirer = pdfEnValidation ? product.pdf_attente_path : null;
         if (aRetirer) {
           await supabase.storage.from("technical-sheets").remove([aRetirer]);
         }
