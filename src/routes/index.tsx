@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, X, Star, Plus, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { ProductCard, fmtDate, type Product } from "@/components/ProductCard";
-import { supabase } from "@/integrations/supabase/client";
+import { useLienPdf } from "@/lib/pdf-lien";
 import { fetchCategories } from "@/lib/taxonomies";
 import { useAuth, useApproval } from "@/hooks/use-auth";
 import { useProducts } from "@/lib/products";
@@ -161,6 +161,7 @@ function IndexInner() {
   const dansCorbeille = useMemo(() => all.filter((p) => p.deleted_at), [all]);
   const posPdf = pdfId ? avecPdf.findIndex((p) => p.id === pdfId) : -1;
   const ficheOuverte = posPdf >= 0 ? avecPdf[posPdf] : null;
+  const lienFiche = useLienPdf(ficheOuverte?.pdf_path);
 
   // Rappel mensuel : tant que la dose du mois n'est pas faite et qu'il reste des fiches a relire
   const nbARelire = useMemo(() => aRelire(all).length, [all]);
@@ -395,7 +396,7 @@ function IndexInner() {
             open
             onClose={() => setPdfId(null)}
             productName={ficheOuverte.name}
-            pdfUrl={supabase.storage.from("technical-sheets").getPublicUrl(ficheOuverte.pdf_path!).data.publicUrl}
+            pdfUrl={lienFiche}
             pdfFilename={ficheOuverte.pdf_filename}
             position={avecPdf.length > 1 ? `${posPdf + 1} / ${avecPdf.length}` : undefined}
             onPrev={posPdf > 0 ? () => setPdfId(avecPdf[posPdf - 1].id) : undefined}

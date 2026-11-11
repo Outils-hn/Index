@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, ExternalLink, Globe, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { lienPdf } from "@/lib/pdf-lien";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Product } from "@/components/ProductCard";
 import { checkedAt } from "@/lib/search";
@@ -34,7 +35,12 @@ export function FichesARelire({ products, open: ouvert, onOpenChange }: { produc
     onError: (e: Error) => toast.error(e.message),
   });
   const ouvrir = (p: Product) => {
-    if (p.pdf_path) window.open(supabase.storage.from("technical-sheets").getPublicUrl(p.pdf_path).data.publicUrl, "_blank", "noopener,noreferrer");
+    if (p.pdf_path) {
+      // Onglet ouvert tout de suite (sinon bloque par le navigateur), puis dirige vers le lien temporaire
+      const onglet = window.open("about:blank", "_blank");
+      if (onglet) onglet.opener = null;
+      lienPdf(p.pdf_path).then((u) => { if (onglet) onglet.location.href = u; else window.open(u, "_blank", "noopener,noreferrer"); });
+    }
     else if (p.url) window.open(p.url, "_blank", "noopener,noreferrer");
   };
 
