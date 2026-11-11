@@ -4,6 +4,11 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.45 — 11 novembre 2026
+
+- Nouveauté : une nouvelle fiche, ou un nouveau PDF sur une fiche existante, est vérifié par le concepteur avant d'être visible par l'équipe. En attendant, la fiche affiche « En attente de validation » pour son auteur, et l'ancien PDF reste en place.
+- Nouveauté : un rappel à l'ajout d'un PDF : uniquement des fiches techniques publiques de fournisseurs, jamais de plans ni de documents internes.
+
 ## 2.44 — 11 novembre 2026
 
 - Nouveauté : l'appli est réservée aux comptes de l'équipe. Sans compte, on passe par l'Accueil pour se connecter, puis on revient directement ici.

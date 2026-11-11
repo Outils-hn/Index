@@ -154,6 +154,9 @@ export type Database = {
           note: string | null
           pdf_filename: string | null
           pdf_path: string | null
+          pdf_attente_filename: string | null
+          pdf_attente_path: string | null
+          statut: string
           supplier: string
           tags: string[]
           updated_at: string
@@ -170,6 +173,9 @@ export type Database = {
           note?: string | null
           pdf_filename?: string | null
           pdf_path?: string | null
+          pdf_attente_filename?: string | null
+          pdf_attente_path?: string | null
+          statut?: string
           supplier: string
           tags?: string[]
           updated_at?: string
@@ -186,6 +192,9 @@ export type Database = {
           note?: string | null
           pdf_filename?: string | null
           pdf_path?: string | null
+          pdf_attente_filename?: string | null
+          pdf_attente_path?: string | null
+          statut?: string
           supplier?: string
           tags?: string[]
           updated_at?: string

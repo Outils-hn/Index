@@ -34,6 +34,7 @@ import { QuickAddDialog } from "@/components/QuickAddDialog";
 import { ProjectsMultiSelect } from "@/components/ProjectsMultiSelect";
 import { fetchProjects, setProductProjects } from "@/lib/projects";
 import type { Product } from "@/components/ProductCard";
+import { useAuth, useConcepteur } from "@/hooks/use-auth";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 
@@ -45,6 +46,10 @@ interface Props {
 
 export function EditProductDialog({ product, open, onOpenChange }: Props) {
   const qc = useQueryClient();
+  const { user } = useAuth();
+  const concepteur = useConcepteur(user);
+  // Fiche deja validee + nouveau PDF par un autre que le concepteur : le PDF part en validation, l'actuel reste en place
+  const pdfEnValidation = !concepteur && (product?.statut ?? "valide") === "valide";
   const [name, setName] = useState("");
   const [supplier, setSupplier] = useState("");
   const [category, setCategory] = useState("");
@@ -118,9 +123,11 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
           .from("technical-sheets")
           .upload(path, newFile, { contentType: "application/pdf", upsert: false });
         if (upload.error) throw upload.error;
-        // remove old file
-        if (product.pdf_path) {
-          await supabase.storage.from("technical-sheets").remove([product.pdf_path]);
+        // Ancien fichier : supprime tout de suite seulement s'il est remplace directement (concepteur, ou fiche pas encore validee).
+        // Sinon il reste affiche jusqu'a la validation ; seul un PDF deja en attente (remplace par celui-ci) est retire.
+        const aRetirer = pdfEnValidation ? product.pdf_attente_path : product.pdf_path;
+        if (aRetirer) {
+          await supabase.storage.from("technical-sheets").remove([aRetirer]);
         }
         pdf_path = path;
         pdf_filename = newFile.name;
@@ -151,7 +158,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
       await setProductProjects(product.id, selectedProjects);
     },
     onSuccess: () => {
-      toast.success("Fiche mise à jour.");
+      toast.success(newFile && pdfEnValidation ? "Fiche mise à jour. Le nouveau PDF remplacera l'actuel après validation par le concepteur." : "Fiche mise à jour.");
       qc.invalidateQueries({ queryKey: ["products"] });
       onOpenChange(false);
     },
@@ -253,6 +260,10 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
 
           <div className="space-y-2">
             <Label>Fiche technique (PDF)</Label>
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Uniquement des fiches techniques publiques de fournisseurs : jamais de plans, de documents de chantier ni de documents internes.
+              {pdfEnValidation ? " Un nouveau PDF est vérifié par le concepteur avant de remplacer l'actuel." : ""}
+            </p>
             {newFile ? (
               <div className="rounded-lg border border-border bg-secondary/40 p-3 flex items-center gap-3">
                 <FileText className="h-5 w-5 text-accent shrink-0" />
