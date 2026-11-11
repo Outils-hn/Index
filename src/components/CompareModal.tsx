@@ -4,7 +4,7 @@ import { X, ExternalLink, Globe, FileText, AlertTriangle, MapPin, Download } fro
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { lienPdf } from "@/lib/pdf-lien";
 import { useState, useMemo, useEffect } from "react";
 import { PdfViewerModal } from "@/components/PdfViewerModal";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -34,15 +34,13 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
   const pdfProducts = useMemo(() => products.filter((p) => !!p.pdf_path), [products]);
   const showPdfView = pdfProducts.length >= 2;
 
-  const pdfUrls = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const p of pdfProducts) {
-      if (p.pdf_path) {
-        const { data } = supabase.storage.from("technical-sheets").getPublicUrl(p.pdf_path);
-        map.set(p.id, data.publicUrl);
-      }
-    }
-    return map;
+  // Liens temporaires des PDF compares (dossier prive), prepares a l'ouverture
+  const [pdfUrls, setPdfUrls] = useState<Map<string, string>>(new Map());
+  useEffect(() => {
+    let actif = true;
+    Promise.all(pdfProducts.filter((p) => p.pdf_path).map(async (p) => [p.id, await lienPdf(p.pdf_path!)] as const))
+      .then((liste) => { if (actif) setPdfUrls(new Map(liste)); });
+    return () => { actif = false; };
   }, [pdfProducts]);
 
   const [activeTab, setActiveTab] = useState<string>("");
@@ -54,8 +52,8 @@ export function CompareModal({ open, onClose, products }: CompareModalProps) {
 
   const openPdf = (p: Product) => {
     if (!p.pdf_path) return;
-    const { data } = supabase.storage.from("technical-sheets").getPublicUrl(p.pdf_path);
-    setPdfUrl(data.publicUrl);
+    setPdfUrl("");
+    lienPdf(p.pdf_path).then(setPdfUrl);
     setPdfName(p.name);
     setPdfFilename(p.pdf_filename);
     setPdfOpen(true);

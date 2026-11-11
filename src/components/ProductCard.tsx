@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { supabase } from "@/integrations/supabase/client";
+import { lienPdf } from "@/lib/pdf-lien";
 // Lecteur PDF charge seulement a la premiere ouverture : moins de JavaScript au demarrage
 const PdfViewerModal = lazy(() => import("@/components/PdfViewerModal").then((m) => ({ default: m.PdfViewerModal })));
 import type { Project } from "@/lib/projects";
@@ -120,9 +121,9 @@ export const ProductCard = memo(function ProductCard({
     if (hasPdf && onOpenPdf) {
       onOpenPdf(product);
     } else if (hasPdf) {
-      const { data } = supabase.storage.from("technical-sheets").getPublicUrl(product.pdf_path!);
-      setPdfUrl(data.publicUrl);
+      setPdfUrl("");
       setPdfOpen(true);
+      lienPdf(product.pdf_path!).then(setPdfUrl);
     } else if (hasUrl) {
       window.open(product.url!, "_blank", "noopener,noreferrer");
     }
