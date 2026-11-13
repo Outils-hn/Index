@@ -272,3 +272,10 @@ body { border-top: 3px solid var(--app); }
 @keyframes vt-out { to { opacity: 0; transform: translateY(-6px); } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
+
+/* Index 2.49 : sur ordinateur (souris), les actions d'une carte n'apparaissent qu'au survol ou au clavier.
+   Restent visibles : une fiche comparée ou favorite (bouton enfoncé) et le menu « ⋯ » ouvert. Sur écran tactile, tout reste visible. */
+@media (hover: hover) {
+  .actions-survol > .a-survol:not([aria-pressed="true"]):not([data-state="open"]) { opacity: 0; transition: opacity 0.15s; }
+  .group:hover .actions-survol > .a-survol, .group:focus-within .actions-survol > .a-survol { opacity: 1; }
+}

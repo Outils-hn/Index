@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.49 — 13 novembre 2026
+
+- Nouveauté : sur ordinateur, les boutons en haut à droite des cartes (Comparer, modifier, favori, ⋯) n'apparaissent qu'au survol de la carte ; une fiche favorite ou comparée garde son bouton visible. Sur téléphone et tablette, rien ne change.
+
 ## 2.48 — 13 novembre 2026
 
 - Nouveauté : exemple d'identifiant « j.dupont » sur la page de connexion.
