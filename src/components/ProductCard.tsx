@@ -138,7 +138,7 @@ export const ProductCard = memo(function ProductCard({
   useEffect(() => { if (autoOpen && product.pdf_path) open(); }, [autoOpen, product.id]);
 
   return (
-    <article className={`flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
+    <article className={`group flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors ${selected ? "border-index" : "border-border hover:border-foreground/25"}`}>
       <div className="bandeau-fournisseur flex items-center justify-between gap-2 px-4 py-1.5">
         <p className="min-w-0 truncate text-sm font-semibold uppercase tracking-[0.06em]">
             {accessId ? (
@@ -153,13 +153,13 @@ export const ProductCard = memo(function ProductCard({
               </a>
             ) : (product.supplier || "Sans fournisseur")}
           </p>
-        <div className="flex shrink-0 items-center gap-1 max-sm:gap-0">
+        <div className="actions-survol flex shrink-0 items-center gap-1 max-sm:gap-0">
           <button
             type="button"
             onClick={() => toggle(product)}
             aria-pressed={selected}
             title="Ajouter à la comparaison"
-            className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-2.5 text-xs font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-transparent text-foreground/80 hover:border-foreground/40 hover:bg-card hover:text-foreground"}`}
+            className={`a-survol inline-flex items-center gap-1 rounded-md border px-2.5 py-2.5 text-xs font-medium transition-colors sm:px-2 sm:py-1 ${selected ? "border-index bg-index-soft text-index" : "border-transparent text-foreground/80 hover:border-foreground/40 hover:bg-card hover:text-foreground"}`}
           >
             <Scale className="h-3.5 w-3.5" aria-hidden="true" />
             {selected ? "Comparée" : "Comparer"}
@@ -170,7 +170,7 @@ export const ProductCard = memo(function ProductCard({
               onClick={() => onEdit(product)}
               aria-label={`Modifier ${product.name}`}
               title="Modifier la fiche"
-              className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-foreground/80 transition-colors hover:text-foreground sm:h-7 sm:w-7"
+              className="a-survol inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-foreground/80 transition-colors hover:text-foreground sm:h-7 sm:w-7"
             >
               <Pencil className="h-4 w-4" />
             </button>
@@ -181,7 +181,7 @@ export const ProductCard = memo(function ProductCard({
             aria-pressed={favorite}
             aria-label={favorite ? `Retirer ${product.name} des favoris` : `Ajouter ${product.name} aux favoris`}
             title={favorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-            className={`inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-foreground/80 hover:text-foreground"}`}
+            className={`a-survol inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md transition-colors sm:h-7 sm:w-7 ${favorite ? "text-index" : "text-foreground/80 hover:text-foreground"}`}
           >
             <Star className="h-4 w-4" fill={favorite ? "currentColor" : "none"} />
           </button>
@@ -191,7 +191,7 @@ export const ProductCard = memo(function ProductCard({
                 type="button"
                 aria-label={`Plus d'actions pour ${product.name}`}
                 title="Plus d'actions"
-                className="inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-foreground/80 transition-colors hover:text-foreground sm:h-7 sm:w-7"
+                className="a-survol inline-flex h-10 w-10 max-sm:w-9 items-center justify-center rounded-md text-foreground/80 transition-colors hover:text-foreground sm:h-7 sm:w-7"
               >
                 <MoreHorizontal className="h-4 w-4" />
               </button>
