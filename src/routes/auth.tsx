@@ -71,7 +71,7 @@ function AuthPage() {
         }
         return;
       }
-      // Comptes collegue : on se connecte avec un simple identifiant (« jean.dupont » -> adresse fictive creee par le concepteur)
+      // Comptes collegue : on se connecte avec un simple identifiant (« j.dupont » -> adresse fictive creee par le concepteur)
       const adresse = email.includes("@") ? email.trim() : `${email.trim().toLowerCase()}@equipe.invalid`;
       const { error } = await supabase.auth.signInWithPassword({ email: adresse, password });
       if (error) throw error;
@@ -130,7 +130,7 @@ function AuthPage() {
             )}
             <div className="space-y-2">
               <Label htmlFor="email">{mode === "signin" ? "Identifiant ou e-mail" : "Email"}</Label>
-              <Input id="email" type={mode === "signin" ? "text" : "email"} autoCapitalize="none" spellCheck={false} autoComplete={mode === "signin" ? "username" : "email"} required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder={mode === "signin" ? "ex. jean.dupont" : "prenom.nom@bureau.ch"} />
+              <Input id="email" type={mode === "signin" ? "text" : "email"} autoCapitalize="none" spellCheck={false} autoComplete={mode === "signin" ? "username" : "email"} required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder={mode === "signin" ? "ex. j.dupont" : "j.dupont@bureau.ch"} />
               {mode === "signup" && (
                 <p className="text-xs text-muted-foreground">
                   Pas besoin de votre adresse du travail : vous pouvez en inventer une. En cas d'oubli du mot de passe, Hugo vous en donne un provisoire.
