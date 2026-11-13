@@ -71,13 +71,15 @@ function AuthPage() {
         }
         return;
       }
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      // Comptes collegue : on se connecte avec un simple identifiant (« jean.dupont » -> adresse fictive creee par le concepteur)
+      const adresse = email.includes("@") ? email.trim() : `${email.trim().toLowerCase()}@equipe.invalid`;
+      const { error } = await supabase.auth.signInWithPassword({ email: adresse, password });
       if (error) throw error;
       toast.success("Connexion réussie.");
       navigate({ to: "/" });
     } catch (err: any) {
       const m = err?.message ?? "";
-      toast.error(/invalid login/i.test(m) ? "Email ou mot de passe incorrect." : /already registered/i.test(m) ? "Un compte existe déjà avec cet email." : /signups? not allowed|disabled/i.test(m) ? "Les inscriptions sont fermées pour le moment." : m || "Erreur de connexion.");
+      toast.error(/invalid login/i.test(m) ? "Identifiant ou mot de passe incorrect." : /already registered/i.test(m) ? "Un compte existe déjà avec cet email." : /signups? not allowed|disabled/i.test(m) ? "Les inscriptions sont fermées pour le moment." : m || "Erreur de connexion.");
     } finally {
       setLoading(false);
     }
@@ -110,8 +112,8 @@ function AuthPage() {
             {mode === "signin"
               ? "Pour ajouter et modifier des fiches."
               : mode === "reset"
-                ? "Saisissez votre email : vous recevrez un lien pour choisir un nouveau mot de passe."
-                : "Un administrateur validera votre compte ; en attendant, vous pouvez consulter la bibliothèque."}
+                ? "Vous vous connectez avec un identifiant ou une adresse inventée ? Demandez à Hugo : il vous donne un mot de passe provisoire. Sinon, saisissez votre email pour recevoir un lien."
+                : "Le plus simple : demandez à Hugo, il vous crée un identifiant. Sinon, créez votre compte ici ; un administrateur le validera."}
           </p>
           <form onSubmit={submit} className="space-y-4">
             {mode === "signup" && (
@@ -127,11 +129,11 @@ function AuthPage() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" autoComplete="email" required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder="prenom.nom@bureau.ch" />
+              <Label htmlFor="email">{mode === "signin" ? "Identifiant ou e-mail" : "Email"}</Label>
+              <Input id="email" type={mode === "signin" ? "text" : "email"} autoCapitalize="none" spellCheck={false} autoComplete={mode === "signin" ? "username" : "email"} required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder={mode === "signin" ? "ex. jean.dupont" : "prenom.nom@bureau.ch"} />
               {mode === "signup" && (
                 <p className="text-xs text-muted-foreground">
-                  Vous pouvez inventer une adresse email, mais si vous perdez votre mot de passe, vous perdrez le compte : le lien « Mot de passe oublié » s'envoie à cette adresse.
+                  Pas besoin de votre adresse du travail : vous pouvez en inventer une. En cas d'oubli du mot de passe, Hugo vous en donne un provisoire.
                 </p>
               )}
             </div>
