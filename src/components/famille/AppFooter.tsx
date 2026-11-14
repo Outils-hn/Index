@@ -26,7 +26,7 @@ export function AppFooter() {
       <p className="inline-block rounded-md bg-background px-2 py-0.5 text-xs text-muted-foreground">
         {APP_NAME} v{APP_VERSION} ·{" "}
         <button type="button" onClick={() => setOpen(true)} className="underline-offset-2 transition-colors hover:text-foreground hover:underline">
-          Conçu par {APP_AUTHOR}
+          À propos
         </button>{" "}
         · {APP_YEAR} ·{" "}
         <button type="button" onClick={save} className="underline-offset-2 transition-colors hover:text-foreground hover:underline">
