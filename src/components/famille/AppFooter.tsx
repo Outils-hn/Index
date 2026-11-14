@@ -1,4 +1,5 @@
 import { LienRetour } from "./LienRetour";
+import { RaccourcisApplis, useToucheAide } from "./RaccourcisApplis";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -13,6 +14,8 @@ import { IndexMark } from "./IndexMark";
  */
 export function AppFooter() {
   const [open, setOpen] = useState(false);
+  const [raccourcis, setRaccourcis] = useState(false);
+  useToucheAide(() => setRaccourcis(true));
   const { user } = useAuth();
   const save = () => !user ? toast.message("Fichier JSON : compte requis", { description: "Sans compte, on ne peut pas télécharger la sauvegarde. Connectez-vous avec votre compte Index." }) : exportBackup().then(
     (n) => toast.success(`Sauvegarde téléchargée (${n} fiches, sans les PDF).`),
@@ -29,6 +32,7 @@ export function AppFooter() {
         <button type="button" onClick={save} className="underline-offset-2 transition-colors hover:text-foreground hover:underline">
           Sauvegarde
         </button>{" "}
+        · <button type="button" onClick={() => setRaccourcis(true)} className="text-inherit underline-offset-2 transition-colors hover:text-foreground hover:underline">Raccourcis</button>{" "}
         · <LienRetour app="Index" version={APP_VERSION} />
       </p>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -49,6 +53,7 @@ export function AppFooter() {
           <p className="border-t border-border pt-3 text-xs text-muted-foreground">Dernière mise à jour : {APP_UPDATED}</p>
         </DialogContent>
       </Dialog>
+      <RaccourcisApplis app="Index" open={raccourcis} onOpenChange={setRaccourcis} />
     </footer>
   );
 }
