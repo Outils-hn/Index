@@ -14,7 +14,7 @@ import { aRelire, depuis, DOSE_DU_MOIS, verifieesCeMois } from "@/lib/verificati
  * On ouvre la fiche (ou le site du fournisseur), on controle qu'elle est toujours la bonne,
  * puis « Toujours valable » remet sa date de verification a aujourd'hui ; la suivante prend sa place.
  */
-export function FichesARelire({ products, open: ouvert, onOpenChange }: { products: Product[]; open?: boolean; onOpenChange?: (o: boolean) => void }) {
+export function FichesARelire({ products, open: ouvert, onOpenChange, masquerPuce }: { products: Product[]; open?: boolean; onOpenChange?: (o: boolean) => void; masquerPuce?: boolean }) {
   // Ouverture pilotable de l'exterieur (bandeau de rappel) ; autonome sinon
   const [interne, setInterne] = useState(false);
   const open = ouvert ?? interne;
@@ -47,12 +47,14 @@ export function FichesARelire({ products, open: ouvert, onOpenChange }: { produc
   if (!liste.length && !faites) return null;
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-muted">
-        <span className="h-1.5 w-1.5 rounded-full bg-[var(--app)]" aria-hidden="true" />
-        Fiches à relire du mois
-        {/* Plus rien a relire : « 2/5 » serait trompeur (le quota ne peut plus etre atteint), on dit que tout est a jour */}
-        <span className="num text-muted-foreground">{liste.length ? `${Math.min(faites, DOSE_DU_MOIS)}/${DOSE_DU_MOIS}` : "À jour"}</span>
-      </button>
+      {!masquerPuce && (
+        <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-muted">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--app)]" aria-hidden="true" />
+          Fiches à relire du mois
+          {/* Plus rien a relire : « 2/5 » serait trompeur (le quota ne peut plus etre atteint), on dit que tout est a jour */}
+          <span className="num text-muted-foreground">{liste.length ? `${Math.min(faites, DOSE_DU_MOIS)}/${DOSE_DU_MOIS}` : "À jour"}</span>
+        </button>
+      )}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-xl [&>*]:min-w-0">
           <DialogHeader>

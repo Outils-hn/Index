@@ -113,7 +113,7 @@ await step("Bibliotheque", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Index v2.51 · À propos · 2026 · Sauvegarde · Raccourcis · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Index v2.52 · À propos · 2026 · Sauvegarde · Raccourcis · Suggestion / bug", pied);
   verif("Plus de de « fiche au hasard » ni de tuiles", !(await page.getByLabel("Fiche au hasard").count()) && !(await page.getByText("Total fiches").count()));
   const rech = page.getByLabel("Rechercher une fiche");
   for (const [q, attendu] of [["etancheite", 2], ["hft 140", 1], ["chevilles", 3], ["24-118", 1], ["poser", 1]]) {
@@ -174,7 +174,7 @@ await step("Telephone", async () => {
   verif("Lien d'evitement « Aller a la recherche » au premier Tab", await page.evaluate(() => document.activeElement?.textContent === "Aller à la recherche"));
   await page.locator("article").first().getByRole("button", { name: /Plus d.actions/ }).click(); await page.getByRole("menuitem", { name: "Copier le lien" }).click(); await page.waitForTimeout(300);
   verif("Copie du lien d'une fiche", await page.getByText("Lien copié").isVisible());
-  await page.locator("article").first().getByRole("button", { name: /vérifiée le/ }).click();
+  await page.locator("article").first().getByRole("button", { name: /vérifiée le|dernière vérification le/ }).click();
   verif("Explication de la mention de fraicheur", await page.getByText("vérifiée il y a moins de 12 mois").first().isVisible());
   await c.close();
 });
@@ -206,7 +206,7 @@ await step("Telephone : fenetres avec noms longs", async () => {
   verif("Telephone : barre de comparaison avec noms longs sans debordement de page", barre <= 0, `${barre} px`);
   const cmp = page.getByRole("button", { name: /^Comparer \(?\d|Voir la comparaison|Comparer les/ }).first();
   if (await cmp.count()) { await cmp.click(); await fenetre("Comparaison"); await page.keyboard.press("Escape"); await page.waitForTimeout(500); }
-  await page.getByRole("button", { name: /Fiches à relire du mois/ }).click();
+  await page.getByRole("button", { name: /Fiches à relire du mois|Relire maintenant/ }).first().click();
   await fenetre("Fiches a relire");
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   await aller(page);
@@ -373,7 +373,7 @@ await step("Crayon dans le lecteur PDF (2.10)", async () => {
 await step("Fiches a relire du mois", async () => {
   const { c, page, etat } = await ctx({ connecte: true });
   await aller(page);
-  await page.getByRole("button", { name: /Fiches à relire du mois/ }).click(); await page.waitForTimeout(300);
+  await page.getByRole("button", { name: /Fiches à relire du mois|Relire maintenant/ }).first().click(); await page.waitForTimeout(300);
   const d = page.getByRole("dialog");
   const n = await d.getByRole("button", { name: "Toujours valable" }).count();
   verif("Fiches à relire : 5 fiches proposées, les plus anciennes", n === 5 && /il y a 2 ans/.test(await d.innerText()), `${n}`);
@@ -490,7 +490,7 @@ await step("Compte en attente", async () => {
   await shot(page, "12-compte-en-attente", false);
   await aller(page);
   verif("Compte non validé : pas d'ajout ni de corbeille", !(await page.getByRole("button", { name: "Ajouter une fiche" }).count()) && !(await page.getByRole("button", { name: /^Mettre .* à la corbeille/ }).count()));
-  verif("Compte non validé : pas de bouton « Vérifiée » sur les fiches", !(await page.getByRole("button", { name: "Vérifiée", exact: true }).count()));
+  verif("Compte non validé : pas de bouton « Vérifiée » sur les fiches", !(await page.getByRole("button", { name: "C'est vérifié", exact: true }).count()));
   await c.close();
 });
 
