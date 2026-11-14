@@ -218,7 +218,7 @@ function IndexInner() {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {approved && !isLoading && !error && <FichesARelire products={all} open={relireOuvert} onOpenChange={setRelireOuvert} />}
+            {approved && !isLoading && !error && <FichesARelire products={all} open={relireOuvert} onOpenChange={setRelireOuvert} masquerPuce={rappel} />}
             {approved && !isLoading && !error && !offlineSince && (
               <>
                 {dansCorbeille.length > 0 && (
