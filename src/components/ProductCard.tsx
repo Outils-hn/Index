@@ -271,7 +271,7 @@ export const ProductCard = memo(function ProductCard({
           </div>
         )}
 
-        <div className="flex items-center gap-2 text-[11px]">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0 text-[11px]">
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${DOT[v]}`} aria-hidden="true" />
           <button type="button" onClick={() => setAide((a) => !a)} aria-expanded={aide} className={`py-2.5 text-left sm:py-0 ${TXT[v]}`} title="Comment est calculée cette mention ?">
             {VALIDITY_LABEL[v]} · {v === "valid" ? "vérifiée le" : "dernière vérification le"} <span className="num">{fmtDate(checkedAt(product))}</span>
@@ -281,7 +281,7 @@ export const ProductCard = memo(function ProductCard({
               type="button"
               onClick={() => revalidate.mutate()}
               disabled={revalidate.isPending}
-              className="ml-auto inline-flex items-center gap-1 rounded px-2 py-2.5 text-muted-foreground sm:px-1.5 sm:py-0.5 transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+              className="ml-auto inline-flex items-center gap-1 whitespace-nowrap rounded px-2 py-2.5 text-muted-foreground sm:px-1.5 sm:py-0.5 transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
               title="Marquer la fiche comme vérifiée aujourd'hui"
             >
               {revalidate.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
