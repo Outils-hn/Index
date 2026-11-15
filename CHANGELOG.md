@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.53 — 15 novembre 2026
+
+- Nouveauté : le menu des applis propose maintenant Maquette (visionneuse de maquettes IFC).
+
 ## 2.52 — 14 novembre 2026
 
 - Nouveauté : plus de doublon pour les fiches à relire (la pastille disparaît tant que le bandeau du mois est affiché). Sur chaque fiche, la mention est plus claire : « À vérifier · dernière vérification le … », et le bouton devient « C'est vérifié ».
