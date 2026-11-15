@@ -82,6 +82,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Index — fiches techniques" },
+      { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
       { name: "description", content: "Index — bibliothèque des fiches techniques du bureau d'études façade." },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Index — fiches techniques" },
