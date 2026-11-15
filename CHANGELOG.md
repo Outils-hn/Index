@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.55 — 15 novembre 2026
+
+- Nouveauté : dans le menu des applis, Maquette passe en dernier.
+
 ## 2.54 — 15 novembre 2026
 
 - Nouveauté : sur une fiche à vérifier, le bouton « C'est vérifié » ne se tasse plus sur deux lignes ; il passe sous la mention si la place manque.
