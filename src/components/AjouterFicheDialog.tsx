@@ -238,7 +238,7 @@ export function AjouterFicheDialog({ open, onOpenChange }: { open: boolean; onOp
 
             <div className="space-y-2">
               <Label>Fiche technique (PDF, max 5 Mo)</Label>
-              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">Uniquement des fiches techniques publiques de fournisseurs : jamais de plans, de documents de chantier ni de documents internes. Chaque PDF est vérifié par le concepteur avant d'être visible par l'équipe.</p>
+              <p className="mt-1 text-pretty text-[11px] leading-relaxed text-muted-foreground">Uniquement des fiches techniques publiques de fournisseurs : jamais de plans, de documents de chantier ni de documents internes. Chaque PDF est vérifié par le concepteur avant d'être visible par l'équipe.</p>
               <p className="text-xs text-muted-foreground -mt-1">
                 Facultatif si une URL produit est renseignée.
               </p>

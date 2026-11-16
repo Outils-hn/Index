@@ -173,7 +173,7 @@ export function EditProductDialog({ product, open, onOpenChange }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
+        <div className="space-y-5 py-2">
           <div className="space-y-2">
             <Label htmlFor="edit-name">Nom du produit *</Label>
             <Input id="edit-name" value={name} onChange={(e) => setName(e.target.value)} />

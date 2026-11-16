@@ -154,7 +154,7 @@ function IndexInner() {
   const modifier = useCallback((p: Product) => setAModifier(p), []);
   const { trash } = useCorbeille();
   const supprimer = useCallback(async (p: Product) => {
-    if (await ask({ title: `Mettre « ${p.name} » à la corbeille ?`, message: "Vous pourrez la restaurer pendant 30 jours, PDF compris.", confirm: "Mettre à la corbeille", danger: true })) {
+    if (await ask({ title: `Mettre « ${p.name} » à la corbeille ?`, message: "Vous pourrez la restaurer pendant 30\u00a0jours, PDF\u00a0compris.", confirm: "Mettre à la corbeille", danger: true })) {
       trash.mutate({ id: p.id });
     }
   }, [trash]);

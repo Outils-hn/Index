@@ -12,7 +12,7 @@ export function useCorbeille() {
       return back;
     },
     onSuccess: (back) => {
-      toast.success(back ? "Fiche restaurée." : "Fiche mise à la corbeille (restaurable 30 jours).");
+      toast.success(back ? "Fiche restaurée." : "Fiche mise à la corbeille (restaurable 30\u00a0jours).");
       qc.invalidateQueries({ queryKey: ["products"] });
     },
     onError: (e: Error) => toast.error(e.message),
