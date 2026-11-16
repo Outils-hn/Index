@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.56 — 16 novembre 2026
+
+- Nouveauté : petites retouches d'affichage : plus de mot isolé à la fin des textes d'aide et du message de la corbeille, et le formulaire « Modifier la fiche » a les mêmes espaces que « Ajouter une fiche ».
+
 ## 2.55 — 15 novembre 2026
 
 - Nouveauté : dans le menu des applis, Maquette passe en dernier.
